@@ -1,0 +1,6 @@
+{
+  "name": "QuickSurfaces - Catálogo Interactivo",
+  "description": "Catálogo interactivo de pisos SPC, laminados, porcelanatos, zócalos, molduras y paneles de pared con visualizador de ambientes y sistema de pedidos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

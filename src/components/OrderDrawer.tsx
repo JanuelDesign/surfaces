@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { OrderItem, ClientOrderInfo } from '../types';
 import { getSwatchBackground } from '../utils/textureUtils';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   isOpen: boolean;
@@ -43,6 +44,9 @@ export const OrderDrawer: React.FC<Props> = ({
   clientInfo,
   onUpdateClientInfo,
 }) => {
+  const { language, t } = useLanguage();
+  const isEn = language === 'en';
+
   const fullNameId = useId();
   const phoneId = useId();
   const emailId = useId();
@@ -70,41 +74,77 @@ export const OrderDrawer: React.FC<Props> = ({
 
   // Generate clean WhatsApp message
   const generateWhatsAppMessage = () => {
-    let text = `*SOLICITUD DE PEDIDO / COTIZACIÓN - QUICKSURFACES 2026*\n\n`;
-    text += `*Cliente:* ${clientInfo.fullName || 'No especificado'}\n`;
-    if (clientInfo.companyOrRole) text += `*Empresa / Rol:* ${clientInfo.companyOrRole}\n`;
-    text += `*Teléfono:* ${clientInfo.phone || 'No especificado'}\n`;
+    let text = isEn
+      ? `*ORDER / QUOTE REQUEST - SURFACES 2026*\n\n`
+      : `*SOLICITUD DE PEDIDO / COTIZACIÓN - SURFACES 2026*\n\n`;
+
+    text += isEn
+      ? `*Client:* ${clientInfo.fullName || 'Not specified'}\n`
+      : `*Cliente:* ${clientInfo.fullName || 'No especificado'}\n`;
+
+    if (clientInfo.companyOrRole) {
+      text += isEn
+        ? `*Company / Role:* ${clientInfo.companyOrRole}\n`
+        : `*Empresa / Rol:* ${clientInfo.companyOrRole}\n`;
+    }
+
+    text += isEn
+      ? `*Phone:* ${clientInfo.phone || 'Not specified'}\n`
+      : `*Teléfono:* ${clientInfo.phone || 'No especificado'}\n`;
+
     if (clientInfo.email) text += `*Email:* ${clientInfo.email}\n`;
-    if (clientInfo.projectCity) text += `*Ciudad / Proyecto:* ${clientInfo.projectCity}\n`;
-    if (clientInfo.needsInstallation) text += `*Servicio de Instalación:* Sí, solicitado\n`;
-    text += `\n*--- PRODUCTOS SOLICITADOS ---*\n`;
+    if (clientInfo.projectCity) {
+      text += isEn
+        ? `*City / Project Location:* ${clientInfo.projectCity}\n`
+        : `*Ciudad / Proyecto:* ${clientInfo.projectCity}\n`;
+    }
+    if (clientInfo.needsInstallation) {
+      text += isEn
+        ? `*Installation Service:* Yes, requested\n`
+        : `*Servicio de Instalación:* Sí, solicitado\n`;
+    }
+    text += isEn ? `\n*--- REQUESTED PRODUCTS ---*\n` : `\n*--- PRODUCTOS SOLICITADOS ---*\n`;
 
     if (quoteItems.length > 0) {
-      text += `\n*📦 MATERIAL PRINCIPAL / CAJAS:*\n`;
+      text += isEn ? `\n*📦 MAIN MATERIAL / BOXES:*\n` : `\n*📦 MATERIAL PRINCIPAL / CAJAS:*\n`;
       quoteItems.forEach((item, idx) => {
         text += `${idx + 1}. *${item.collectionName}* - ${item.selectedColor.name} ${
           item.selectedColor.code ? `(${item.selectedColor.code})` : ''
         }\n`;
-        text += `   • Cantidad: ${item.quantity} ${item.unit}\n`;
-        if (item.estimatedSqft) text += `   • Estimado: ≈ ${item.estimatedSqft} sqft\n`;
-        if (item.notes) text += `   • Nota: ${item.notes}\n`;
+        text += isEn
+          ? `   • Quantity: ${item.quantity} ${item.unit}\n`
+          : `   • Cantidad: ${item.quantity} ${item.unit}\n`;
+        if (item.estimatedSqft) {
+          text += isEn
+            ? `   • Estimated: ≈ ${item.estimatedSqft} sqft\n`
+            : `   • Estimado: ≈ ${item.estimatedSqft} sqft\n`;
+        }
+        if (item.notes) {
+          text += isEn ? `   • Note: ${item.notes}\n` : `   • Nota: ${item.notes}\n`;
+        }
       });
     }
 
     if (sampleItems.length > 0) {
-      text += `\n*🏷️ MUESTRAS DE MANO SOLICITADAS (HAND SAMPLES):*\n`;
+      text += isEn
+        ? `\n*🏷️ REQUESTED HAND SAMPLES:*\n`
+        : `\n*🏷️ MUESTRAS DE MANO SOLICITADAS (HAND SAMPLES):*\n`;
       sampleItems.forEach((item, idx) => {
         text += `${idx + 1}. *${item.collectionName}* - ${item.selectedColor.name} ${
           item.selectedColor.code ? `(${item.selectedColor.code})` : ''
-        } (Muestra física)\n`;
+        } (${isEn ? 'Hand sample' : 'Muestra física'})\n`;
       });
     }
 
     if (clientInfo.additionalNotes) {
-      text += `\n*Notas del Proyecto:* ${clientInfo.additionalNotes}\n`;
+      text += isEn
+        ? `\n*Project Notes:* ${clientInfo.additionalNotes}\n`
+        : `\n*Notas del Proyecto:* ${clientInfo.additionalNotes}\n`;
     }
 
-    text += `\n_Generado desde Catálogo Interactivo QuickSurfaces 2026 (quicksurfaces.com)_`;
+    text += isEn
+      ? `\n_Generated from SURFACES 2026 Official Catalog (surfaces.com)_`
+      : `\n_Generado desde Catálogo Interactivo SURFACES 2026 (surfaces.com)_`;
     return text;
   };
 
@@ -134,23 +174,24 @@ export const OrderDrawer: React.FC<Props> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drawer Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-200 bg-[#fcfdff] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#ff8407] flex items-center justify-center text-white shadow-md shadow-[#ff8407]/20">
+            <div className="w-10 h-10 rounded-xl bg-[#0a1680] flex items-center justify-center text-white shadow-md shadow-[#0a1680]/20">
               <ShoppingCart size={20} />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase text-[#ff8407] tracking-wider">
-                Sistema de Pedido sin Precios
+              <span className="text-[10px] font-bold uppercase text-[#0a1680] tracking-wider">
+                {t('drawer.title')}
               </span>
-              <h2 className="text-lg font-extrabold text-slate-900 leading-tight">
-                Mi Lista de Pedido & Muestras
+              <h2 className="text-lg font-extrabold text-[#0a1680] leading-tight">
+                {t('drawer.subtitle')}
               </h2>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center text-slate-700 transition"
+            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition cursor-pointer"
+            aria-label="Close quote drawer"
           >
             <X size={18} />
           </button>
@@ -160,26 +201,26 @@ export const OrderDrawer: React.FC<Props> = ({
         <div className="flex border-b border-slate-200 bg-white px-6">
           <button
             onClick={() => setActiveTab('cart')}
-            className={`flex-1 py-3 text-xs font-bold border-b-2 text-center transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3 text-xs font-bold border-b-2 text-center transition flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'cart'
-                ? 'border-[#ff8407] text-[#ff8407]'
+                ? 'border-[#0a1680] text-[#0a1680]'
                 : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <Package size={15} />
-            <span>Productos ({orderItems.length})</span>
+            <span>{t('drawer.tabItems')} ({orderItems.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('client')}
-            className={`flex-1 py-3 text-xs font-bold border-b-2 text-center transition flex items-center justify-center gap-2 ${
+            className={`flex-1 py-3 text-xs font-bold border-b-2 text-center transition flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'client'
-                ? 'border-[#ff8407] text-[#ff8407]'
+                ? 'border-[#0a1680] text-[#0a1680]'
                 : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
           >
             <User size={15} />
-            <span>Datos del Cliente & Envío</span>
+            <span>{t('drawer.tabClient')}</span>
           </button>
         </div>
 
@@ -190,15 +231,15 @@ export const OrderDrawer: React.FC<Props> = ({
               <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                 <ShoppingCart size={28} />
               </div>
-              <h3 className="text-base font-bold text-slate-800">Su lista de pedido está vacía</h3>
+              <h3 className="text-base font-bold text-slate-800">{t('drawer.emptyTitle')}</h3>
               <p className="text-xs text-slate-500 max-w-sm">
-                Explore nuestro catálogo y agregue cajas de pisos, molduras, zócalos o solicite muestras físicas de mano (Hand Samples).
+                {t('drawer.emptyDesc')}
               </p>
               <button
                 onClick={onClose}
-                className="mt-2 px-5 py-2.5 rounded-xl bg-[#ff8407] text-white text-xs font-bold shadow-md shadow-[#ff8407]/20"
+                className="mt-2 px-5 py-2.5 rounded-xl bg-[#0a1680] text-white text-xs font-bold shadow-md shadow-[#0a1680]/20 cursor-pointer"
               >
-                Explorar Catálogo de Productos
+                {t('drawer.exploreBtn')}
               </button>
             </div>
           ) : (
@@ -207,18 +248,18 @@ export const OrderDrawer: React.FC<Props> = ({
               {activeTab === 'cart' && (
                 <div className="space-y-6">
                   {/* Summary Metric Strip */}
-                  <div className="grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
+                  <div className="grid grid-cols-3 gap-2 bg-[#fcfdff] p-3 rounded-2xl border border-slate-200 text-center">
                     <div>
-                      <div className="text-[10px] text-slate-500 uppercase font-semibold">Total Cajas</div>
-                      <div className="text-lg font-extrabold text-[#ff8407]">{totalBoxes}</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-semibold">{t('drawer.totalBoxes')}</div>
+                      <div className="text-lg font-extrabold text-[#0a1680]">{totalBoxes}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500 uppercase font-semibold">Sq. Ft. Est.</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-semibold">{t('drawer.totalSqft')}</div>
                       <div className="text-lg font-extrabold text-slate-900">{totalEstSqft.toFixed(1)}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-500 uppercase font-semibold">Muestras</div>
-                      <div className="text-lg font-extrabold text-emerald-600">{sampleItems.length}</div>
+                      <div className="text-[10px] text-slate-500 uppercase font-semibold">{t('drawer.totalSamples')}</div>
+                      <div className="text-lg font-extrabold text-[#0a1680]">{sampleItems.length}</div>
                     </div>
                   </div>
 
@@ -226,8 +267,8 @@ export const OrderDrawer: React.FC<Props> = ({
                   {quoteItems.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                        <Package size={14} className="text-[#ff8407]" />
-                        Material & Cajas para Proyecto ({quoteItems.length})
+                        <Package size={14} className="text-[#0a1680]" />
+                        {isEn ? `Project Material & Boxes (${quoteItems.length})` : `Material & Cajas para Proyecto (${quoteItems.length})`}
                       </h4>
 
                       <div className="space-y-2.5">
@@ -236,7 +277,7 @@ export const OrderDrawer: React.FC<Props> = ({
                           return (
                             <div
                               key={item.id}
-                              className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs hover:border-slate-300 transition flex items-start gap-3"
+                              className="bg-white border border-slate-200 rounded-2xl p-3.5 shadow-xs hover:border-[#93b2f8] transition flex items-start gap-3"
                             >
                               {/* Swatch avatar */}
                               <div
@@ -248,7 +289,7 @@ export const OrderDrawer: React.FC<Props> = ({
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between">
                                   <div className="truncate">
-                                    <span className="text-[10px] uppercase font-bold text-[#ff8407]">
+                                    <span className="text-[10px] uppercase font-bold text-[#0a1680]">
                                       {item.collectionName}
                                     </span>
                                     <div className="text-sm font-bold text-slate-900 truncate">
@@ -263,8 +304,8 @@ export const OrderDrawer: React.FC<Props> = ({
 
                                   <button
                                     onClick={() => onRemoveItem(item.id)}
-                                    className="text-slate-400 hover:text-red-500 p-1 transition"
-                                    title="Eliminar"
+                                    className="text-slate-400 hover:text-red-500 p-1 transition cursor-pointer"
+                                    title={isEn ? 'Delete item' : 'Eliminar'}
                                   >
                                     <Trash2 size={15} />
                                   </button>
@@ -272,7 +313,7 @@ export const OrderDrawer: React.FC<Props> = ({
 
                                 {/* Estimated sqft & notes */}
                                 <div className="text-[11px] text-slate-500 mt-1">
-                                  {item.estimatedSqft ? `≈ ${item.estimatedSqft} sqft calculados` : ''}
+                                  {item.estimatedSqft ? `≈ ${item.estimatedSqft} sqft` : ''}
                                   {item.notes ? ` • ${item.notes}` : ''}
                                 </div>
 
@@ -281,7 +322,7 @@ export const OrderDrawer: React.FC<Props> = ({
                                   <div className="flex items-center gap-2">
                                     <button
                                       onClick={() => onUpdateQuantity(item.id, -1)}
-                                      className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center"
+                                      className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer"
                                     >
                                       <Minus size={12} />
                                     </button>
@@ -290,7 +331,7 @@ export const OrderDrawer: React.FC<Props> = ({
                                     </span>
                                     <button
                                       onClick={() => onUpdateQuantity(item.id, 1)}
-                                      className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center"
+                                      className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center cursor-pointer"
                                     >
                                       <Plus size={12} />
                                     </button>
@@ -311,8 +352,8 @@ export const OrderDrawer: React.FC<Props> = ({
                   {sampleItems.length > 0 && (
                     <div className="space-y-3">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                        <Sparkles size={14} className="text-emerald-600" />
-                        Muestras de Mano Solicitadas (Hand Samples) ({sampleItems.length})
+                        <Sparkles size={14} className="text-[#0a1680]" />
+                        {isEn ? `Requested Hand Samples (${sampleItems.length})` : `Muestras de Mano Solicitadas (Hand Samples) (${sampleItems.length})`}
                       </h4>
 
                       <div className="space-y-2">
@@ -321,26 +362,26 @@ export const OrderDrawer: React.FC<Props> = ({
                           return (
                             <div
                               key={item.id}
-                              className="bg-emerald-50/50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between gap-3"
+                              className="bg-[#fbedb0]/30 border border-[#f1b94c]/50 rounded-2xl p-3 flex items-center justify-between gap-3"
                             >
                               <div className="flex items-center gap-3">
                                 <div
-                                  className="w-8 h-8 rounded-lg shrink-0 border border-emerald-300"
+                                  className="w-8 h-8 rounded-lg shrink-0 border border-[#f1b94c]/60"
                                   style={swatchStyle}
                                 ></div>
                                 <div>
                                   <div className="text-xs font-bold text-slate-900">
                                     {item.selectedColor.name} ({item.collectionName})
                                   </div>
-                                  <div className="text-[10px] text-emerald-700 font-semibold">
-                                    Muestra de Mano Físicamente Disponible
+                                  <div className="text-[10px] text-[#0a1680] font-bold">
+                                    {isEn ? 'Physical Hand Sample Available' : 'Muestra de Mano Físicamente Disponible'}
                                   </div>
                                 </div>
                               </div>
 
                               <button
                                 onClick={() => onRemoveItem(item.id)}
-                                className="text-slate-400 hover:text-red-500 p-1"
+                                className="text-slate-400 hover:text-red-500 p-1 cursor-pointer"
                               >
                                 <Trash2 size={14} />
                               </button>
@@ -354,17 +395,17 @@ export const OrderDrawer: React.FC<Props> = ({
                   <div className="flex justify-between items-center pt-2">
                     <button
                       onClick={onClearOrder}
-                      className="text-xs text-slate-400 hover:text-red-500 transition flex items-center gap-1"
+                      className="text-xs text-slate-400 hover:text-red-500 transition flex items-center gap-1 cursor-pointer"
                     >
                       <Trash2 size={13} />
-                      <span>Vaciar Lista</span>
+                      <span>{t('drawer.clearCart')}</span>
                     </button>
 
                     <button
                       onClick={() => setActiveTab('client')}
-                      className="text-xs font-bold text-[#ff8407] hover:underline"
+                      className="text-xs font-bold text-[#0a1680] hover:underline cursor-pointer"
                     >
-                      Continuar a Datos de Envío →
+                      {t('drawer.continueBtn')} →
                     </button>
                   </div>
                 </div>
@@ -374,29 +415,35 @@ export const OrderDrawer: React.FC<Props> = ({
               {activeTab === 'client' && (
                 <div className="space-y-4">
                   <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-1">
-                    <h4 className="text-xs font-bold text-slate-900">Información del Proyecto</h4>
+                    <h4 className="text-xs font-bold text-slate-900">
+                      {isEn ? 'Project & Delivery Details' : 'Información del Proyecto'}
+                    </h4>
                     <p className="text-[11px] text-slate-500">
-                      Complete sus datos para generar la cotización formal o procesar su pedido directo por WhatsApp o PDF.
+                      {isEn
+                        ? 'Fill in your details to generate a formal quote or submit your direct order via WhatsApp or PDF.'
+                        : 'Complete sus datos para generar la cotización formal o procesar su pedido directo por WhatsApp o PDF.'}
                     </p>
                   </div>
 
                   <div className="space-y-3 text-xs">
                     <div>
-                      <label htmlFor={fullNameId} className="font-semibold text-slate-700 block mb-1">Nombre Completo *</label>
+                      <label htmlFor={fullNameId} className="font-semibold text-slate-700 block mb-1">
+                        {t('drawer.fullName')} *
+                      </label>
                       <input
                         id={fullNameId}
                         type="text"
                         value={clientInfo.fullName}
                         onChange={(e) => onUpdateClientInfo({ fullName: e.target.value })}
-                        placeholder="Ej. Arq. Carlos Mendoza / Juan Pérez"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                        placeholder={isEn ? 'e.g. John Doe / Architect Carlos' : 'Ej. Arq. Carlos Mendoza / Juan Pérez'}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label htmlFor={phoneId} className="font-semibold text-slate-700 block mb-1">
-                          Teléfono / WhatsApp *
+                          {t('drawer.phone')} *
                         </label>
                         <input
                           id={phoneId}
@@ -404,64 +451,72 @@ export const OrderDrawer: React.FC<Props> = ({
                           value={clientInfo.phone}
                           onChange={(e) => onUpdateClientInfo({ phone: e.target.value })}
                           placeholder="+1 (555) 000-0000"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                         />
                       </div>
                       <div>
-                        <label htmlFor={emailId} className="font-semibold text-slate-700 block mb-1">Correo Electrónico</label>
+                        <label htmlFor={emailId} className="font-semibold text-slate-700 block mb-1">
+                          {t('drawer.email')}
+                        </label>
                         <input
                           id={emailId}
                           type="email"
                           value={clientInfo.email}
                           onChange={(e) => onUpdateClientInfo({ email: e.target.value })}
-                          placeholder="contacto@ejemplo.com"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                          placeholder="contact@example.com"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                         />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label htmlFor={companyOrRoleId} className="font-semibold text-slate-700 block mb-1">Empresa / Rol</label>
+                        <label htmlFor={companyOrRoleId} className="font-semibold text-slate-700 block mb-1">
+                          {t('drawer.companyRole')}
+                        </label>
                         <input
                           id={companyOrRoleId}
                           type="text"
                           value={clientInfo.companyOrRole}
                           onChange={(e) => onUpdateClientInfo({ companyOrRole: e.target.value })}
-                          placeholder="Constructora / Propietario"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                          placeholder={isEn ? 'General Contractor / Architect' : 'Constructora / Propietario'}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                         />
                       </div>
                       <div>
-                        <label htmlFor={projectCityId} className="font-semibold text-slate-700 block mb-1">Ciudad / Estado</label>
+                        <label htmlFor={projectCityId} className="font-semibold text-slate-700 block mb-1">
+                          {t('drawer.city')}
+                        </label>
                         <input
                           id={projectCityId}
                           type="text"
                           value={clientInfo.projectCity}
                           onChange={(e) => onUpdateClientInfo({ projectCity: e.target.value })}
-                          placeholder="Ciudad del proyecto"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                          placeholder={isEn ? 'City & State' : 'Ciudad del proyecto'}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                         />
                       </div>
                     </div>
 
                     <div>
                       <label htmlFor={projectAddressId} className="font-semibold text-slate-700 block mb-1">
-                        Dirección de Entrega / Proyecto
+                        {t('drawer.address')}
                       </label>
                       <input
                         id={projectAddressId}
                         type="text"
                         value={clientInfo.projectAddress}
                         onChange={(e) => onUpdateClientInfo({ projectAddress: e.target.value })}
-                        placeholder="Calle, número, urbanización o punto de referencia"
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                        placeholder={isEn ? 'Street, building number, suite or landmark' : 'Calle, número, urbanización o punto de referencia'}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label htmlFor={projectTypeId} className="font-semibold text-slate-700 block mb-1">Tipo de Proyecto</label>
+                        <label htmlFor={projectTypeId} className="font-semibold text-slate-700 block mb-1">
+                          {t('drawer.projectType')}
+                        </label>
                         <select
                           id={projectTypeId}
                           value={clientInfo.projectType}
@@ -470,61 +525,63 @@ export const OrderDrawer: React.FC<Props> = ({
                               projectType: e.target.value as ClientOrderInfo['projectType'],
                             })
                           }
-                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none cursor-pointer"
                         >
-                          <option value="Residencial">Residencial</option>
-                          <option value="Comercial">Comercial</option>
-                          <option value="Contratista">Contratista</option>
-                          <option value="Diseño / Arquitectura">Diseño / Arquitectura</option>
-                          <option value="Otro">Otro</option>
+                          <option value="Residencial">{isEn ? 'Residential' : 'Residencial'}</option>
+                          <option value="Comercial">{isEn ? 'Commercial' : 'Comercial'}</option>
+                          <option value="Contratista">{isEn ? 'Contractor / Builder' : 'Contratista'}</option>
+                          <option value="Diseño / Arquitectura">{isEn ? 'Design / Architecture' : 'Diseño / Arquitectura'}</option>
+                          <option value="Otro">{isEn ? 'Other' : 'Otro'}</option>
                         </select>
                       </div>
 
                       <div>
                         <label htmlFor={deliveryTimeframeId} className="font-semibold text-slate-700 block mb-1">
-                          Tiempo Estimado de Entrega
+                          {t('drawer.deliveryTime')}
                         </label>
                         <input
                           id={deliveryTimeframeId}
                           type="text"
                           value={clientInfo.deliveryTimeframe}
                           onChange={(e) => onUpdateClientInfo({ deliveryTimeframe: e.target.value })}
-                          placeholder="Inmediato / En 2 semanas"
-                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                          placeholder={isEn ? 'Immediate / In 2 weeks' : 'Inmediato / En 2 semanas'}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                         />
                       </div>
                     </div>
 
                     {/* Needs Installation Checkbox */}
-                    <div className="p-3 bg-orange-50/60 border border-[#ff8407]/30 rounded-xl flex items-start gap-2.5">
+                    <div className="p-3 bg-[#93b2f8]/20 border border-[#93b2f8]/40 rounded-xl flex items-start gap-2.5">
                       <input
                         type="checkbox"
                         id={needsInstallationId}
                         checked={clientInfo.needsInstallation}
                         onChange={(e) => onUpdateClientInfo({ needsInstallation: e.target.checked })}
-                        className="mt-0.5 w-4 h-4 accent-[#ff8407] rounded"
+                        className="mt-0.5 w-4 h-4 accent-[#0a1680] rounded cursor-pointer"
                       />
                       <label htmlFor={needsInstallationId} className="text-xs text-slate-800 cursor-pointer">
-                        <span className="font-bold block">
-                          Deseo incluir el servicio de instalación QuickSurfaces
+                        <span className="font-bold block text-[#0a1680]">
+                          {t('drawer.includeInstallation')}
                         </span>
-                        <span className="text-[11px] text-slate-500">
-                          Nuestros técnicos certificados realizarán la nivelación, colocación y terminaciones.
+                        <span className="text-[11px] text-slate-600">
+                          {isEn
+                            ? 'Our certified technicians perform leveling, laying, acoustic underlay, and transitions.'
+                            : 'Nuestros técnicos certificados realizarán la nivelación, colocación y terminaciones.'}
                         </span>
                       </label>
                     </div>
 
                     <div>
                       <label htmlFor={additionalNotesId} className="font-semibold text-slate-700 block mb-1">
-                        Notas o requerimientos adicionales
+                        {t('drawer.notes')}
                       </label>
                       <textarea
                         id={additionalNotesId}
                         rows={2}
                         value={clientInfo.additionalNotes}
                         onChange={(e) => onUpdateClientInfo({ additionalNotes: e.target.value })}
-                        placeholder="Ej. Medidas específicas de gradas, corte especial, acceso al edificio..."
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#ff8407] outline-none"
+                        placeholder={isEn ? 'e.g. Specific stair measurements, custom cut, site delivery details...' : 'Ej. Medidas específicas de gradas, corte especial, acceso al edificio...'}
+                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-slate-900 focus:border-[#0a1680] outline-none"
                       />
                     </div>
                   </div>
@@ -540,39 +597,41 @@ export const OrderDrawer: React.FC<Props> = ({
             {/* Direct WhatsApp Order */}
             <button
               onClick={handleSendWhatsApp}
-              className="w-full py-3.5 px-5 rounded-2xl bg-[#ff8407] hover:bg-[#e67300] text-white font-extrabold text-sm shadow-lg shadow-[#ff8407]/25 transition flex items-center justify-center gap-2 transform active:scale-98"
+              className="w-full py-3.5 px-5 rounded-2xl bg-[#0a1680] hover:bg-[#081268] text-white font-extrabold text-sm shadow-lg shadow-[#0a1680]/25 transition flex items-center justify-center gap-2 transform active:scale-98 cursor-pointer"
             >
-              <Send size={18} />
-              <span>Enviar Pedido Oficial por WhatsApp</span>
+              <Send size={18} className="text-[#f1b94c]" />
+              <span>{t('drawer.submitWhatsApp')}</span>
             </button>
 
             <div className="grid grid-cols-2 gap-2">
               {/* Print / Save PDF */}
               <button
                 onClick={handlePrint}
-                className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+                className="py-2.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <Printer size={15} />
-                <span>Imprimir / PDF</span>
+                <span>{t('drawer.printPDF')}</span>
               </button>
 
               {/* Copy Summary */}
               <button
                 onClick={handleCopySummary}
-                className={`py-2.5 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
+                className={`py-2.5 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
                   copied
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
                     : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
                 }`}
               >
                 {copied ? <Check size={15} /> : <Copy size={15} />}
-                <span>{copied ? '¡Copiado!' : 'Copiar Resumen'}</span>
+                <span>{copied ? (isEn ? 'Copied!' : '¡Copiado!') : t('drawer.copySummary')}</span>
               </button>
             </div>
 
             {submitted && (
               <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center text-xs text-emerald-800 font-medium">
-                ✓ Se ha abierto WhatsApp con el desglose de su pedido. ¡Pronto un asesor le contactará!
+                {isEn
+                  ? '✓ WhatsApp opened with your quote breakdown. An advisor will contact you shortly!'
+                  : '✓ Se ha abierto WhatsApp con el desglose de su pedido. ¡Pronto un asesor le contactará!'}
               </div>
             )}
           </div>

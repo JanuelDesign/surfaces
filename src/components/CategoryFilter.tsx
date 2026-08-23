@@ -12,7 +12,8 @@ import {
   LayoutGrid,
 } from 'lucide-react';
 import { CategoryId } from '../types';
-import { CATEGORIES } from '../data/products';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedCategories } from '../i18n/localizedData';
 
 interface Props {
   selectedCategory: CategoryId | 'all';
@@ -54,24 +55,27 @@ export const CategoryFilter: React.FC<Props> = ({
   categoryCounts,
   totalCount,
 }) => {
+  const { language, t } = useLanguage();
+  const categories = getLocalizedCategories(language);
+
   return (
-    <div className="w-full bg-white border-b border-[#e2e8f0] sticky top-[70px] z-30 shadow-2xs">
+    <div className="w-full bg-white border-b border-[#93b2f8]/30 sticky top-[70px] z-30 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {/* All Categories button */}
           <button
             onClick={() => onSelectCategory('all')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
               selectedCategory === 'all'
-                ? 'bg-[#000000] text-white shadow-xs'
-                : 'bg-white text-[#64748b] hover:text-[#000000] hover:bg-[#e2e8f0]/40 border border-[#e2e8f0]'
+                ? 'bg-[#0a1680] text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:text-[#0a1680] hover:bg-slate-50 border border-slate-200'
             }`}
           >
             {getCategoryIcon('all')}
-            <span>Todas</span>
+            <span>{t('filters.allCategories')}</span>
             <span
               className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                selectedCategory === 'all' ? 'bg-[#ff8407] text-white' : 'bg-[#e2e8f0] text-[#000000]'
+                selectedCategory === 'all' ? 'bg-[#f1b94c] text-[#0a1680]' : 'bg-slate-100 text-slate-700'
               }`}
             >
               {totalCount}
@@ -79,7 +83,7 @@ export const CategoryFilter: React.FC<Props> = ({
           </button>
 
           {/* Category buttons */}
-          {CATEGORIES.map((cat) => {
+          {categories.map((cat) => {
             const count = categoryCounts[cat.id] || 0;
             const isSelected = selectedCategory === cat.id;
 
@@ -87,17 +91,17 @@ export const CategoryFilter: React.FC<Props> = ({
               <button
                 key={cat.id}
                 onClick={() => onSelectCategory(cat.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                   isSelected
-                    ? 'bg-[#ff8407] text-white shadow-xs'
-                    : 'bg-white text-[#64748b] hover:text-[#000000] hover:bg-[#e2e8f0]/40 border border-[#e2e8f0]'
+                    ? 'bg-[#0a1680] text-white shadow-xs'
+                    : 'bg-white text-slate-600 hover:text-[#0a1680] hover:bg-slate-50 border border-slate-200'
                 }`}
               >
                 {getCategoryIcon(cat.id)}
                 <span>{cat.shortName}</span>
                 <span
                   className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-[#e2e8f0] text-[#64748b]'
+                    isSelected ? 'bg-[#93b2f8]/30 text-[#fbedb0]' : 'bg-slate-100 text-slate-500'
                   }`}
                 >
                   {count}

@@ -15,7 +15,6 @@ import {
   X,
 } from 'lucide-react';
 import { CategoryId, Product, ProductColor, OrderItem, ClientOrderInfo } from './types';
-import { CATEGORIES, PRODUCTS } from './data/products';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { CategoryFilter } from './components/CategoryFilter';
@@ -26,11 +25,19 @@ import { StairsMoldingsGuide } from './components/StairsMoldingsGuide';
 import { OrderDrawer } from './components/OrderDrawer';
 import { PrintQuoteSheet } from './components/PrintQuoteSheet';
 import { Footer } from './components/Footer';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
+import { getLocalizedProducts, getLocalizedCategories } from './i18n/localizedData';
 
-const LOCAL_STORAGE_ORDER_KEY = 'quicksurfaces_order_items_v2';
-const LOCAL_STORAGE_CLIENT_KEY = 'quicksurfaces_client_info_v2';
+const LOCAL_STORAGE_ORDER_KEY = 'surfaces_order_items_v2';
+const LOCAL_STORAGE_CLIENT_KEY = 'surfaces_client_info_v2';
 
-export default function App() {
+function AppContent() {
+  const { language, t } = useLanguage();
+  const isEn = language === 'en';
+
+  const products = useMemo(() => getLocalizedProducts(language), [language]);
+  const categories = useMemo(() => getLocalizedCategories(language), [language]);
+
   // Navigation & Search State
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -52,7 +59,9 @@ export default function App() {
   // Order Items State with localStorage persistence
   const [orderItems, setOrderItems] = useState<OrderItem[]>(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_ORDER_KEY);
+      const saved =
+        localStorage.getItem(LOCAL_STORAGE_ORDER_KEY) ||
+        localStorage.getItem('quicksurfaces_order_items_v2');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -62,7 +71,9 @@ export default function App() {
   // Client Info State
   const [clientInfo, setClientInfo] = useState<ClientOrderInfo>(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_CLIENT_KEY);
+      const saved =
+        localStorage.getItem(LOCAL_STORAGE_CLIENT_KEY) ||
+        localStorage.getItem('quicksurfaces_client_info_v2');
       return saved
         ? JSON.parse(saved)
         : {
@@ -74,7 +85,7 @@ export default function App() {
             projectAddress: '',
             needsInstallation: false,
             projectType: 'Residencial',
-            deliveryTimeframe: 'Inmediato',
+            deliveryTimeframe: 'Immediate',
             additionalNotes: '',
           };
     } catch {
@@ -87,7 +98,7 @@ export default function App() {
         projectAddress: '',
         needsInstallation: false,
         projectType: 'Residencial',
-        deliveryTimeframe: 'Inmediato',
+        deliveryTimeframe: 'Immediate',
         additionalNotes: '',
       };
     }
@@ -125,7 +136,11 @@ export default function App() {
     );
 
     if (existingIndex >= 0) {
-      showToast(`Ya tienes la muestra de ${color.name} en tu lista`);
+      showToast(
+        isEn
+          ? `Sample for ${color.name} is already in your quote list`
+          : `Ya tienes la muestra de ${color.name} en tu lista`
+      );
       return;
     }
 
@@ -139,11 +154,17 @@ export default function App() {
       itemType: 'sample',
       quantity: 1,
       unit: 'sample_unit',
-      notes: `Muestra física de mano (${color.code || 'estándar'})`,
+      notes: isEn
+        ? `Physical hand sample (${color.code || 'standard'})`
+        : `Muestra física de mano (${color.code || 'estándar'})`,
     };
 
     setOrderItems((prev) => [newItem, ...prev]);
-    showToast(`✓ Muestra de ${color.name} agregada a tu lista`);
+    showToast(
+      isEn
+        ? `✓ Sample of ${color.name} added to your list`
+        : `✓ Muestra de ${color.name} agregada a tu lista`
+    );
   };
 
   // Add Product / Boxes to Quote Order
@@ -176,7 +197,11 @@ export default function App() {
             : item
         )
       );
-      showToast(`Se agregaron +${quantity} ${unit} de ${color.name} a tu pedido`);
+      showToast(
+        isEn
+          ? `Added +${quantity} ${unit} of ${color.name} to your quote`
+          : `Se agregaron +${quantity} ${unit} de ${color.name} a tu pedido`
+      );
     } else {
       const newItem: OrderItem = {
         id: `order_${product.id}_${color.name}_${Date.now()}`,
@@ -189,10 +214,14 @@ export default function App() {
         quantity,
         unit,
         estimatedSqft,
-        notes: notes || `Color: ${color.name} (${color.code || ''})`,
+        notes: notes || `${isEn ? 'Color' : 'Color'}: ${color.name} (${color.code || ''})`,
       };
       setOrderItems((prev) => [newItem, ...prev]);
-      showToast(`✓ ${quantity} ${unit} de ${color.name} agregados al pedido`);
+      showToast(
+        isEn
+          ? `✓ ${quantity} ${unit} of ${color.name} added to quote`
+          : `✓ ${quantity} ${unit} de ${color.name} agregados al pedido`
+      );
     }
   };
 
@@ -222,14 +251,20 @@ export default function App() {
 
   // Clear All
   const handleClearOrder = () => {
-    if (window.confirm('¿Está seguro de vaciar toda su lista de pedido y muestras?')) {
+    if (
+      window.confirm(
+        isEn
+          ? 'Are you sure you want to clear your entire order list and samples?'
+          : '¿Está seguro de vaciar toda su lista de pedido y muestras?'
+      )
+    ) {
       setOrderItems([]);
     }
   };
 
   // Filtered Products Calculation
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return products.filter((product) => {
       // Category filter
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
@@ -248,7 +283,7 @@ export default function App() {
         }
       }
 
-      // Search Query filter (matches product name, collection, color name, or color code)
+      // Search Query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const matchesName = product.name.toLowerCase().includes(q);
@@ -271,32 +306,35 @@ export default function App() {
 
       return true;
     });
-  }, [selectedCategory, onlySamplesAvailable, selectedWearFilter, searchQuery]);
+  }, [products, selectedCategory, onlySamplesAvailable, selectedWearFilter, searchQuery]);
 
   // Category counts
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    CATEGORIES.forEach((cat) => {
-      counts[cat.id] = PRODUCTS.filter((p) => p.category === cat.id).length;
+    categories.forEach((cat) => {
+      counts[cat.id] = products.filter((p) => p.category === cat.id).length;
     });
     return counts;
-  }, []);
+  }, [categories, products]);
 
   const sampleCount = orderItems.filter((i) => i.itemType === 'sample').length;
   const orderCount = orderItems.filter((i) => i.itemType === 'order').length;
 
+  const currentCategoryObj = categories.find((c) => c.id === selectedCategory);
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col selection:bg-[#ff8407]/20 selection:text-[#ff8407]">
+    <div className="min-h-screen bg-[#fcfdff] text-slate-900 flex flex-col selection:bg-[#93b2f8]/30 selection:text-[#0a1680]">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 bg-[#0f172a] text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="w-6 h-6 rounded-full bg-[#ff8407] flex items-center justify-center text-white text-xs font-bold shrink-0">
+        <div className="fixed top-20 right-4 z-50 bg-[#0a1680] text-white px-4 py-3 rounded-2xl shadow-xl border border-[#93b2f8]/30 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="w-6 h-6 rounded-full bg-[#f1b94c] flex items-center justify-center text-[#0a1680] text-xs font-bold shrink-0">
             ✓
           </div>
-          <span className="text-xs font-semibold">{toastMessage}</span>
+          <span className="text-xs font-semibold text-white">{toastMessage}</span>
           <button
             onClick={() => setToastMessage(null)}
-            className="text-slate-400 hover:text-white ml-1"
+            className="text-white/70 hover:text-white ml-1 cursor-pointer"
+            aria-label="Dismiss toast"
           >
             <X size={14} />
           </button>
@@ -338,33 +376,36 @@ export default function App() {
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         categoryCounts={categoryCounts}
-        totalCount={PRODUCTS.length}
+        totalCount={products.length}
       />
 
       {/* Main Catalog Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Active Category Header & Secondary Quick Filters - Bento Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#93b2f8]/30 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold text-[#ff8407] tracking-widest bg-orange-50 px-2 py-0.5 rounded-sm">
+              <span className="text-[10px] uppercase font-bold text-[#0a1680] tracking-widest bg-[#93b2f8]/20 px-2 py-0.5 rounded-sm">
                 {selectedCategory === 'all'
-                  ? 'Catálogo Completo 2026'
-                  : CATEGORIES.find((c) => c.id === selectedCategory)?.name}
+                  ? (isEn ? 'Official 2026 Catalog' : 'Catálogo Completo 2026')
+                  : currentCategoryObj?.name}
               </span>
               <span className="text-xs text-[#64748b]">•</span>
               <span className="text-xs text-[#64748b] font-medium">
-                {filteredProducts.length} colecciones disponibles
+                {filteredProducts.length}{' '}
+                {isEn
+                  ? `${filteredProducts.length === 1 ? 'collection' : 'collections'} available`
+                  : `${filteredProducts.length === 1 ? 'colección disponible' : 'colecciones disponibles'}`}
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#000000] mt-1 tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#0a1680] mt-1 tracking-tight">
               {selectedCategory === 'all'
-                ? 'Superficies, Pisos & Revestimientos'
-                : CATEGORIES.find((c) => c.id === selectedCategory)?.tagline}
+                ? (isEn ? 'High-Performance Surfaces, Flooring & Panels' : 'Superficies, Pisos & Revestimientos')
+                : currentCategoryObj?.tagline}
             </h2>
             {selectedCategory !== 'all' && (
-              <p className="text-xs text-[#64748b] mt-1 max-w-2xl">
-                {CATEGORIES.find((c) => c.id === selectedCategory)?.description}
+              <p className="text-xs text-slate-600 mt-1 max-w-2xl">
+                {currentCategoryObj?.description}
               </p>
             )}
           </div>
@@ -375,26 +416,26 @@ export default function App() {
             <select
               value={selectedWearFilter}
               onChange={(e) => setSelectedWearFilter(e.target.value)}
-              className="bg-white hover:bg-[#e2e8f0]/40 text-[#000000] text-xs font-semibold px-3 py-2 rounded-full border border-[#e2e8f0] outline-none"
+              className="bg-white hover:bg-slate-50 text-[#0a1680] text-xs font-semibold px-3 py-2 rounded-full border border-slate-200 focus:border-[#0a1680] outline-none cursor-pointer"
             >
-              <option value="all">Todas las Capas de Uso</option>
-              <option value="20 Mil">20 Mil (Residencial/Comercial)</option>
-              <option value="22 Mil">22 Mil (Ultra Resistente)</option>
-              <option value="AC5">AC5 (Tráfico Pesado)</option>
-              <option value="AC6">AC6 (Comercial Intenso - Finsa)</option>
+              <option value="all">{isEn ? 'All Wear Layers' : 'Todas las Capas de Uso'}</option>
+              <option value="20 Mil">20 Mil ({isEn ? 'Residential / Commercial' : 'Residencial/Comercial'})</option>
+              <option value="22 Mil">22 Mil ({isEn ? 'Heavy Commercial' : 'Ultra Resistente'})</option>
+              <option value="AC5">AC5 ({isEn ? 'Heavy Traffic' : 'Tráfico Pesado'})</option>
+              <option value="AC6">AC6 ({isEn ? 'Intense Commercial - Finsa' : 'Comercial Intenso - Finsa'})</option>
             </select>
 
             {/* Hand samples available filter */}
             <button
               onClick={() => setOnlySamplesAvailable(!onlySamplesAvailable)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all cursor-pointer ${
                 onlySamplesAvailable
-                  ? 'bg-[#ff8407] border-[#ff8407] text-white shadow-xs'
-                  : 'bg-white border-[#e2e8f0] text-[#64748b] hover:text-[#000000] hover:bg-[#e2e8f0]/40'
+                  ? 'bg-[#0a1680] border-[#0a1680] text-white shadow-xs'
+                  : 'bg-white border-slate-200 text-slate-700 hover:text-[#0a1680] hover:bg-slate-50'
               }`}
             >
-              <Sparkles size={13} />
-              <span>Solo Muestras</span>
+              <Sparkles size={13} className={onlySamplesAvailable ? 'text-[#fbedb0]' : 'text-[#f1b94c]'} />
+              <span>{isEn ? 'Samples Only' : 'Solo Muestras'}</span>
             </button>
           </div>
         </div>
@@ -424,13 +465,17 @@ export default function App() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-[#e2e8f0] p-12 text-center space-y-4 max-w-md mx-auto shadow-xs">
-            <div className="w-16 h-16 rounded-full bg-orange-50 text-[#ff8407] flex items-center justify-center mx-auto border border-[#ff8407]/20">
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-4 max-w-md mx-auto shadow-xs">
+            <div className="w-16 h-16 rounded-full bg-[#93b2f8]/20 text-[#0a1680] flex items-center justify-center mx-auto border border-[#93b2f8]/40">
               <Search size={26} />
             </div>
-            <h3 className="text-lg font-bold text-[#000000]">No se encontraron productos</h3>
-            <p className="text-xs text-[#64748b]">
-              No hay coincidencias con los filtros actuales. Intente cambiar los términos de búsqueda o limpiar los filtros.
+            <h3 className="text-lg font-bold text-[#0a1680]">
+              {isEn ? 'No products found' : 'No se encontraron productos'}
+            </h3>
+            <p className="text-xs text-slate-600">
+              {isEn
+                ? 'No matching results found for current filters. Try changing your search query or reset filters.'
+                : 'No hay coincidencias con los filtros actuales. Intente cambiar los términos de búsqueda o limpiar los filtros.'}
             </p>
             <button
               onClick={() => {
@@ -439,34 +484,36 @@ export default function App() {
                 setSelectedWearFilter('all');
                 setOnlySamplesAvailable(false);
               }}
-              className="px-5 py-2.5 bg-[#000000] hover:bg-[#ff8407] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-xs transition-colors"
+              className="px-5 py-2.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-xs transition-colors cursor-pointer"
             >
-              Restablecer Filtros
+              {isEn ? 'Reset All Filters' : 'Restablecer Filtros'}
             </button>
           </div>
         )}
 
-        {/* Visual Callout for Stair Treads & Moldings - Bento Black Tile */}
-        <div className="bg-[#000000] text-white rounded-2xl p-6 sm:p-8 border border-black flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm relative overflow-hidden">
-          <div className="absolute right-0 top-0 w-72 h-72 bg-[#ff8407]/15 rounded-full blur-3xl pointer-events-none"></div>
+        {/* Visual Callout for Stair Treads & Moldings */}
+        <div className="bg-[#0a1680] text-white rounded-2xl p-6 sm:p-8 border border-[#0a1680] flex flex-col md:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-72 h-72 bg-[#93b2f8]/20 rounded-full blur-3xl pointer-events-none"></div>
           <div className="space-y-2 relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ff8407] text-white text-[10px] font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f1b94c] text-[#0a1680] text-[10px] font-bold uppercase tracking-wider">
               <Footprints size={13} />
-              <span>TERMINACIONES & ACABADOS</span>
+              <span>{isEn ? 'FINISHES & TRIMS' : 'TERMINACIONES & ACABADOS'}</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              Gradas a Juego Exacto & Molduras de Transición
+            <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+              {isEn ? 'Color-Matched Stair Treads & Transition Moldings' : 'Gradas a Juego Exacto & Molduras de Transición'}
             </h3>
-            <p className="text-white/70 text-xs sm:text-sm max-w-xl font-light leading-relaxed">
-              Complete su proyecto con gradas personalizadas Double Rounded o Square Step, zócalos de pino y molduras CM Reducer / T-Molding diseñadas al mismo tono de sus pisos.
+            <p className="text-[#93b2f8] text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
+              {isEn
+                ? 'Complete your project with custom Double Rounded or Square Step treads, pine baseboards, and CM Reducer / T-Moldings precision-matched to your floor color.'
+                : 'Complete su proyecto con gradas personalizadas Double Rounded o Square Step, zócalos de pino y molduras CM Reducer / T-Molding diseñadas al mismo tono de sus pisos.'}
             </p>
           </div>
 
           <button
             onClick={() => setIsStairsGuideOpen(true)}
-            className="shrink-0 px-6 py-3 rounded-full bg-[#ff8407] hover:bg-[#e67300] text-white text-xs sm:text-sm font-bold uppercase tracking-wider shadow-sm transition transform hover:scale-102 relative z-10"
+            className="shrink-0 px-6 py-3 rounded-full bg-[#f1b94c] hover:bg-[#e0a83b] text-[#0a1680] text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-md transition transform hover:scale-102 relative z-10 cursor-pointer"
           >
-            Ver Guía de Gradas & Molduras
+            {isEn ? 'Explore Stairs & Moldings Guide' : 'Ver Guía de Gradas & Molduras'}
           </button>
         </div>
       </main>
@@ -476,11 +523,11 @@ export default function App() {
         <div className="fixed bottom-5 right-5 z-40 animate-in slide-in-from-bottom duration-200">
           <button
             onClick={() => setIsOrderDrawerOpen(true)}
-            className="flex items-center gap-3 px-5 py-3.5 rounded-full bg-[#ff8407] hover:bg-[#e67300] text-white font-extrabold text-xs sm:text-sm shadow-2xl shadow-[#ff8407]/40 border-2 border-white transition transform hover:scale-105"
+            className="flex items-center gap-3 px-5 py-3.5 rounded-full bg-[#0a1680] hover:bg-[#081268] text-white font-extrabold text-xs sm:text-sm shadow-2xl shadow-[#0a1680]/40 border-2 border-[#93b2f8] transition transform hover:scale-105 cursor-pointer"
           >
-            <ShoppingCart size={18} />
-            <span>Ver Pedido ({orderCount + sampleCount})</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+            <ShoppingCart size={18} className="text-[#f1b94c]" />
+            <span>{isEn ? 'View Quote' : 'Ver Pedido'} ({orderCount + sampleCount})</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#f1b94c] animate-ping"></span>
           </button>
         </div>
       )}
@@ -555,5 +602,13 @@ export default function App() {
         onOpenStairsGuide={() => setIsStairsGuideOpen(true)}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

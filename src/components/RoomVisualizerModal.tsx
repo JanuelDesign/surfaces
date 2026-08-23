@@ -15,8 +15,9 @@ import {
   Layers,
 } from 'lucide-react';
 import { Product, ProductColor, CategoryId } from '../types';
-import { PRODUCTS } from '../data/products';
 import { getSwatchBackground } from '../utils/textureUtils';
+import { useLanguage } from '../i18n/LanguageContext';
+import { getLocalizedProducts } from '../i18n/localizedData';
 
 interface Props {
   initialProduct?: Product | null;
@@ -28,54 +29,75 @@ interface Props {
 
 interface RoomScene {
   id: string;
-  name: string;
+  nameEn: string;
+  nameEs: string;
   categoryType: 'flooring' | 'wall' | 'porcelain';
-  subtitle: string;
-  description: string;
+  subtitleEn: string;
+  subtitleEs: string;
+  descriptionEn: string;
+  descriptionEs: string;
 }
 
 const ROOM_SCENES: RoomScene[] = [
   {
     id: 'living',
-    name: 'Sala de Estar Contemporánea',
+    nameEn: 'Contemporary Living Room',
+    nameEs: 'Sala de Estar Contemporánea',
     categoryType: 'flooring',
-    subtitle: 'Living Room con Sofá Moderno y Ventanal',
-    description: 'Aprecia la calidez y el reflejo de luz natural en un espacio residencial amplio.',
+    subtitleEn: 'Living Room with Modern Sofa & Panoramic Window',
+    subtitleEs: 'Living Room con Sofá Moderno y Ventanal',
+    descriptionEn: 'Experience natural light warmth and plank reflection in a spacious residential setting.',
+    descriptionEs: 'Aprecia la calidez y el reflejo de luz natural en un espacio residencial amplio.',
   },
   {
     id: 'kitchen',
-    name: 'Cocina & Isla de Concepto Abierto',
+    nameEn: 'Open Concept Kitchen & Island',
+    nameEs: 'Cocina & Isla de Concepto Abierto',
     categoryType: 'flooring',
-    subtitle: 'Kitchen Island & Bar Stools',
-    description: 'Visualiza la resistencia al agua y el contraste con gabinetes y mesones.',
+    subtitleEn: 'Kitchen Island & Bar Stools',
+    subtitleEs: 'Kitchen Island & Bar Stools',
+    descriptionEn: 'Check waterproof resilience and elegant contrast with cabinetry and quartz counters.',
+    descriptionEs: 'Visualiza la resistencia al agua y el contraste con gabinetes y mesones.',
   },
   {
     id: 'dining',
-    name: 'Comedor de Diseño',
+    nameEn: 'Designer Dining Room',
+    nameEs: 'Comedor de Diseño',
     categoryType: 'flooring',
-    subtitle: 'Dining Room & Designer Chairs',
-    description: 'Perfecto para evaluar pisos de gran formato y patrones Herringbone.',
+    subtitleEn: 'Dining Room & Designer Chairs',
+    subtitleEs: 'Dining Room & Designer Chairs',
+    descriptionEn: 'Ideal for evaluating extra-wide XL formats and herringbone patterns.',
+    descriptionEs: 'Perfecto para evaluar pisos de gran formato y patrones Herringbone.',
   },
   {
     id: 'porcelain-lobby',
-    name: 'Lobby & Muros de Porcelanato',
+    nameEn: 'Lobby & Porcelain Feature Walls',
+    nameEs: 'Lobby & Muros de Porcelanato',
     categoryType: 'porcelain',
-    subtitle: 'TilePULSE 24"x48" Gran Formato Makrana',
-    description: 'Acabados Satin, Glossy y Matte con vetas continuas de mármol.',
+    subtitleEn: 'TilePULSE 24"x48" Large Format Makrana',
+    subtitleEs: 'TilePULSE 24"x48" Gran Formato Makrana',
+    descriptionEn: 'Satin, Glossy, and Matte finishes with continuous Italian-style marble veining.',
+    descriptionEs: 'Acabados Satin, Glossy y Matte con vetas continuas de mármol.',
   },
   {
     id: 'wall-slat',
-    name: 'Muro Acento con Paneles WPC',
+    nameEn: 'Accent Wall with WPC Acoustic Slats',
+    nameEs: 'Muro Acento con Paneles WPC',
     categoryType: 'wall',
-    subtitle: 'Indoor Fluted Slat Wall & TV Accent',
-    description: 'Ranurado 3D para aportar calidez, textura y absorción acústica.',
+    subtitleEn: 'Indoor Fluted Slat Wall & TV Accent',
+    subtitleEs: 'Indoor Fluted Slat Wall & TV Accent',
+    descriptionEn: '3D fluted structure for acoustic comfort and warm interior depth.',
+    descriptionEs: 'Ranurado 3D para aportar calidez, textura y absorción acústica.',
   },
   {
     id: 'outdoor-deck',
-    name: 'Terraza & Fachada Exterior',
+    nameEn: 'Outdoor Terrace & Cladding Deck',
+    nameEs: 'Terraza & Fachada Exterior',
     categoryType: 'wall',
-    subtitle: 'Outdoor WPC Composite Panels',
-    description: 'Paneles de 26 mm resistentes a los rayos UV e intemperie.',
+    subtitleEn: 'Outdoor WPC Composite Panels',
+    subtitleEs: 'Outdoor WPC Composite Panels',
+    descriptionEn: '26 mm thick exterior panels engineered for UV and extreme weather resistance.',
+    descriptionEs: 'Paneles de 26 mm resistentes a los rayos UV e intemperie.',
   },
 ];
 
@@ -86,8 +108,11 @@ export const RoomVisualizerModal: React.FC<Props> = ({
   onAddSample,
   onAddToOrder,
 }) => {
+  const { language, t } = useLanguage();
+  const products = getLocalizedProducts(language);
+
   // Default to initial or first flooring product
-  const defaultProd = initialProduct || PRODUCTS[0];
+  const defaultProd = initialProduct || products[0];
   const [selectedProduct, setSelectedProduct] = useState<Product>(defaultProd);
   const [selectedColor, setSelectedColor] = useState<ProductColor>(
     initialColor || defaultProd.colors[0]
@@ -102,6 +127,9 @@ export const RoomVisualizerModal: React.FC<Props> = ({
   const [sampleSuccess, setSampleSuccess] = useState<boolean>(false);
 
   const activeRoom = ROOM_SCENES.find((r) => r.id === activeRoomId) || ROOM_SCENES[0];
+  const roomName = language === 'en' ? activeRoom.nameEn : activeRoom.nameEs;
+  const roomSubtitle = language === 'en' ? activeRoom.subtitleEn : activeRoom.subtitleEs;
+  const roomDesc = language === 'en' ? activeRoom.descriptionEn : activeRoom.descriptionEs;
 
   const handleProductChange = (prod: Product) => {
     setSelectedProduct(prod);
@@ -142,20 +170,20 @@ export const RoomVisualizerModal: React.FC<Props> = ({
         {/* Header */}
         <div className="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-[#ff8407] flex items-center justify-center text-white">
-              <Eye size={18} />
+            <div className="w-8 h-8 rounded-xl bg-[#0a1680] flex items-center justify-center text-white shadow-md shadow-[#0a1680]/30">
+              <Eye size={18} className="text-[#f1b94c]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs uppercase font-bold text-[#ff8407] tracking-wider">
+                <span className="text-xs uppercase font-bold text-[#93b2f8] tracking-wider">
                   Seeing is Believing!
                 </span>
                 <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-slate-300">
-                  Visualizador Interactivo
+                  {language === 'en' ? 'Interactive 3D Room Visualizer' : 'Visualizador Interactivo'}
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-extrabold text-white">
-                Our Floors, Your Room!
+                {language === 'en' ? 'Our Surfaces, Your Real Space' : 'Nuestros Pisos en Tu Espacio Real'}
               </h2>
             </div>
           </div>
@@ -164,21 +192,24 @@ export const RoomVisualizerModal: React.FC<Props> = ({
             {/* Compare Toggle */}
             <button
               onClick={() => setIsCompareMode(!isCompareMode)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                 isCompareMode
-                  ? 'bg-[#ff8407] border-[#ff8407] text-white'
+                  ? 'bg-[#0a1680] border-[#93b2f8] text-white'
                   : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
               }`}
             >
               <Columns size={14} />
-              <span className="hidden sm:inline">Comparar 2 Colores</span>
-              <span className="sm:hidden">Comparar</span>
+              <span className="hidden sm:inline">
+                {language === 'en' ? 'Compare 2 Colors' : 'Comparar 2 Colores'}
+              </span>
+              <span className="sm:hidden">{language === 'en' ? 'Compare' : 'Comparar'}</span>
             </button>
 
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition"
+              className="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition cursor-pointer"
+              aria-label="Close visualizer"
             >
               <X size={18} />
             </button>
@@ -191,19 +222,23 @@ export const RoomVisualizerModal: React.FC<Props> = ({
           <div className="lg:col-span-8 p-4 flex flex-col justify-between space-y-3 bg-slate-950 overflow-y-auto">
             {/* Room Scene Navigation Tabs */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-              {ROOM_SCENES.map((room) => (
-                <button
-                  key={room.id}
-                  onClick={() => setActiveRoomId(room.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
-                    activeRoomId === room.id
-                      ? 'bg-[#ff8407] text-white shadow-md'
-                      : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
-                  }`}
-                >
-                  {room.name}
-                </button>
-              ))}
+              {ROOM_SCENES.map((room) => {
+                const isSelected = activeRoomId === room.id;
+                const rName = language === 'en' ? room.nameEn : room.nameEs;
+                return (
+                  <button
+                    key={room.id}
+                    onClick={() => setActiveRoomId(room.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#0a1680] text-white shadow-md border border-[#93b2f8]/40'
+                        : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
+                    }`}
+                  >
+                    {rName}
+                  </button>
+                );
+              })}
             </div>
 
             {/* The Room Canvas / Perspective View */}
@@ -226,7 +261,9 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                 ) : (
                   <div className="absolute top-8 left-1/2 -translate-x-1/2 w-3/4 h-36 bg-slate-800/80 border border-slate-700/60 rounded-xl p-3 flex items-center justify-between">
                     <div className="w-1/3 h-full rounded-lg bg-gradient-to-br from-sky-400/20 to-indigo-900/40 border border-sky-300/20 flex flex-col justify-end p-2">
-                      <span className="text-[10px] text-sky-200 font-medium">Luz Natural Exterior</span>
+                      <span className="text-[10px] text-sky-200 font-medium">
+                        {language === 'en' ? 'Natural Window Lighting' : 'Luz Natural Exterior'}
+                      </span>
                     </div>
                     <div className="w-1/2 h-full flex flex-col justify-center space-y-1">
                       <div className="h-2 bg-slate-700 rounded w-3/4"></div>
@@ -273,7 +310,7 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                             clipPath: `polygon(${sliderPosition * 2}% 0, 100% 0, 100% 100%, ${sliderPosition * 2}% 100%)`,
                           }}
                         >
-                          <div className="absolute top-4 right-4 bg-black/80 px-2 py-1 rounded text-[10px] font-bold text-[#ff8407] z-10">
+                          <div className="absolute top-4 right-4 bg-black/80 px-2 py-1 rounded text-[10px] font-bold text-[#f1b94c] z-10">
                             {compareColor.name}
                           </div>
                         </div>
@@ -302,13 +339,13 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                   {/* Left sofa element */}
                   <div className="w-48 sm:w-64 h-24 bg-gradient-to-t from-zinc-900 via-zinc-800 to-zinc-700/80 rounded-t-3xl border-t border-zinc-600/50 shadow-2xl p-3 flex flex-col justify-between">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#ff8407]"></span>
+                      <span className="w-2 h-2 rounded-full bg-[#f1b94c]"></span>
                       <span className="text-[10px] font-semibold text-zinc-300">
-                        {activeRoom.subtitle}
+                        {roomSubtitle}
                       </span>
                     </div>
                     <div className="text-[11px] text-zinc-400">
-                      Grosor: {selectedProduct.specs.totalThickness || '5.5 mm - 10 mm'}
+                      {language === 'en' ? 'Thickness' : 'Grosor'}: {selectedProduct.specs.totalThickness || '5.5 mm - 10 mm'}
                     </div>
                   </div>
 
@@ -333,10 +370,10 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                     max="90"
                     value={sliderPosition}
                     onChange={(e) => setSliderPosition(parseInt(e.target.value))}
-                    aria-label="Ajustar divisor de comparación de colores"
-                    className="w-full accent-[#ff8407] cursor-pointer"
+                    aria-label="Adjust color comparison divider"
+                    className="w-full accent-[#f1b94c] cursor-pointer"
                   />
-                  <span className="text-[10px] font-bold text-[#ff8407] shrink-0">
+                  <span className="text-[10px] font-bold text-[#f1b94c] shrink-0">
                     B: {compareColor.name}
                   </span>
                 </div>
@@ -346,37 +383,39 @@ export const RoomVisualizerModal: React.FC<Props> = ({
             {/* Bottom Controls: Lighting and Room descriptions */}
             <div className="flex items-center justify-between flex-wrap gap-2 pt-1 text-xs">
               <div className="flex items-center gap-2">
-                <span className="text-slate-400 text-[11px]">Iluminación del ambiente:</span>
+                <span className="text-slate-400 text-[11px]">
+                  {language === 'en' ? 'Atmosphere Lighting:' : 'Iluminación del ambiente:'}
+                </span>
                 <div className="flex bg-slate-800 rounded-lg p-0.5">
                   <button
                     onClick={() => setLightingMode('daylight')}
-                    className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition ${
-                      lightingMode === 'daylight' ? 'bg-[#ff8407] text-white' : 'text-slate-400'
+                    className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                      lightingMode === 'daylight' ? 'bg-[#0a1680] text-white' : 'text-slate-400'
                     }`}
                   >
-                    <Sun size={12} /> Luz Día
+                    <Sun size={12} /> {language === 'en' ? 'Daylight' : 'Luz Día'}
                   </button>
                   <button
                     onClick={() => setLightingMode('warm')}
-                    className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition ${
-                      lightingMode === 'warm' ? 'bg-[#ff8407] text-white' : 'text-slate-400'
+                    className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                      lightingMode === 'warm' ? 'bg-[#0a1680] text-white' : 'text-slate-400'
                     }`}
                   >
-                    <Moon size={12} /> Cálida
+                    <Moon size={12} /> {language === 'en' ? 'Warm Evening' : 'Cálida'}
                   </button>
                   <button
                     onClick={() => setLightingMode('studio')}
-                    className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition ${
-                      lightingMode === 'studio' ? 'bg-[#ff8407] text-white' : 'text-slate-400'
+                    className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                      lightingMode === 'studio' ? 'bg-[#0a1680] text-white' : 'text-slate-400'
                     }`}
                   >
-                    <Sparkles size={12} /> Estudio
+                    <Sparkles size={12} /> {language === 'en' ? 'Studio Pure' : 'Estudio'}
                   </button>
                 </div>
               </div>
 
               <div className="text-[11px] text-slate-400">
-                {activeRoom.description}
+                {roomDesc}
               </div>
             </div>
           </div>
@@ -387,19 +426,19 @@ export const RoomVisualizerModal: React.FC<Props> = ({
               {/* Collection Switcher */}
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1.5">
-                  Colección QuickSurfaces:
+                  {language === 'en' ? 'SURFACES Collection:' : 'Colección SURFACES:'}
                 </label>
                 <select
                   value={selectedProduct.id}
                   onChange={(e) => {
-                    const found = PRODUCTS.find((p) => p.id === e.target.value);
+                    const found = products.find((p) => p.id === e.target.value);
                     if (found) handleProductChange(found);
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:border-[#ff8407] outline-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:border-[#93b2f8] outline-none cursor-pointer"
                 >
-                  {PRODUCTS.map((p) => (
+                  {products.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} ({p.colors.length} tonos)
+                      {p.name} ({p.colors.length} {language === 'en' ? 'colors' : 'tonos'})
                     </option>
                   ))}
                 </select>
@@ -409,9 +448,11 @@ export const RoomVisualizerModal: React.FC<Props> = ({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Tono Activo ({selectedProduct.colors.length}):
+                    {language === 'en'
+                      ? `Active Color (${selectedProduct.colors.length}):`
+                      : `Tono Activo (${selectedProduct.colors.length}):`}
                   </span>
-                  <span className="text-xs text-[#ff8407] font-extrabold">
+                  <span className="text-xs text-[#f1b94c] font-extrabold">
                     {selectedColor.name}
                   </span>
                 </div>
@@ -423,9 +464,9 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                       <button
                         key={c.name}
                         onClick={() => setSelectedColor(c)}
-                        className={`flex items-center gap-2 p-2 rounded-xl text-left border transition ${
+                        className={`flex items-center gap-2 p-2 rounded-xl text-left border transition cursor-pointer ${
                           isSelected
-                            ? 'border-[#ff8407] bg-[#ff8407]/15 ring-2 ring-[#ff8407]/30'
+                            ? 'border-[#f1b94c] bg-[#f1b94c]/15 ring-2 ring-[#f1b94c]/30'
                             : 'border-slate-800 hover:border-slate-700 bg-slate-800/60'
                         }`}
                       >
@@ -448,8 +489,8 @@ export const RoomVisualizerModal: React.FC<Props> = ({
               {/* If in Compare Mode: Selector for Color B */}
               {isCompareMode && (
                 <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700 space-y-2">
-                  <div className="text-xs font-bold text-[#ff8407] flex items-center justify-between">
-                    <span>Segundo Color a Comparar (B):</span>
+                  <div className="text-xs font-bold text-[#f1b94c] flex items-center justify-between">
+                    <span>{language === 'en' ? 'Secondary Comparison Color (B):' : 'Segundo Color a Comparar (B):'}</span>
                     <span>{compareColor.name}</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto">
@@ -458,9 +499,9 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                         key={'comp-' + c.name}
                         onClick={() => setCompareColor(c)}
                         title={c.name}
-                        className={`w-6 h-6 rounded-full border-2 transition ${
+                        className={`w-6 h-6 rounded-full border-2 transition cursor-pointer ${
                           compareColor.name === c.name
-                            ? 'border-white scale-110 ring-2 ring-[#ff8407]'
+                            ? 'border-[#f1b94c] scale-110 ring-2 ring-[#f1b94c]'
                             : 'border-slate-600 hover:border-slate-400'
                         }`}
                         style={{ backgroundColor: c.hexColor }}
@@ -473,21 +514,21 @@ export const RoomVisualizerModal: React.FC<Props> = ({
               {/* Quick Specifications */}
               <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/70 text-xs space-y-1 text-slate-300">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Wear Layer:</span>
+                  <span className="text-slate-400">{t('detailModal.wearLayer')}:</span>
                   <span className="font-semibold text-white">
                     {selectedProduct.specs.wearLayer || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Espesor Total:</span>
+                  <span className="text-slate-400">{t('productCard.thickness')}:</span>
                   <span className="font-semibold text-white">
                     {selectedProduct.specs.totalThickness || 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Rendimiento:</span>
-                  <span className="font-semibold text-[#ff8407]">
-                    {selectedProduct.specs.sqftPerBox ? `${selectedProduct.specs.sqftPerBox} sqft/caja` : 'Según medida'}
+                  <span className="text-slate-400">{t('detailModal.boxSqft')}:</span>
+                  <span className="font-semibold text-[#93b2f8]">
+                    {selectedProduct.specs.sqftPerBox ? `${selectedProduct.specs.sqftPerBox} sqft/${language === 'en' ? 'box' : 'caja'}` : (language === 'en' ? 'By dimension' : 'Según medida')}
                   </span>
                 </div>
               </div>
@@ -497,15 +538,17 @@ export const RoomVisualizerModal: React.FC<Props> = ({
             <div className="space-y-2 pt-2 border-t border-slate-800">
               <button
                 onClick={handleSampleClick}
-                className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 ${
+                className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold border transition flex items-center justify-center gap-2 cursor-pointer ${
                   sampleSuccess
                     ? 'bg-emerald-600 text-white border-emerald-500'
                     : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
                 }`}
               >
-                {sampleSuccess ? <Check size={16} /> : <Plus size={16} className="text-[#ff8407]" />}
+                {sampleSuccess ? <Check size={16} /> : <Plus size={16} className="text-[#f1b94c]" />}
                 <span>
-                  {sampleSuccess ? 'Muestra Agregada' : `Pedir Muestra de ${selectedColor.name}`}
+                  {sampleSuccess
+                    ? (language === 'en' ? 'Sample Added to List' : 'Muestra Agregada')
+                    : (language === 'en' ? `Order Hand Sample: ${selectedColor.name}` : `Pedir Muestra de ${selectedColor.name}`)}
                 </span>
               </button>
 
@@ -514,10 +557,10 @@ export const RoomVisualizerModal: React.FC<Props> = ({
                   onAddToOrder(selectedProduct, selectedColor);
                   onClose();
                 }}
-                className="w-full py-3 px-4 rounded-xl bg-[#ff8407] hover:bg-[#e67300] text-white text-xs font-bold shadow-lg shadow-[#ff8407]/20 transition flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-xl bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold shadow-lg shadow-[#0a1680]/30 transition flex items-center justify-center gap-2 border border-[#93b2f8]/30 cursor-pointer"
               >
-                <ShoppingCart size={16} />
-                <span>Agregar este Piso al Pedido</span>
+                <ShoppingCart size={16} className="text-[#f1b94c]" />
+                <span>{language === 'en' ? 'Add This Surface to Quote' : 'Agregar este Piso al Pedido'}</span>
               </button>
             </div>
           </div>

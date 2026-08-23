@@ -3,10 +3,12 @@
 @layer base {
   body {
     font-family: 'Poppins', sans-serif;
+    background-color: #fcfdff;
+    color: #0a1680;
   }
 }
 
-/* Custom scrollbar for fast interactive catalog */
+/* Custom scrollbar matching palette */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -17,12 +19,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #93b2f8;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff8407;
+  background: #0a1680;
 }
 
 @media print {

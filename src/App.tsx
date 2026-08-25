@@ -13,6 +13,7 @@ import {
   Phone,
   SlidersHorizontal,
   X,
+  Database,
 } from 'lucide-react';
 import { CategoryId, Product, ProductColor, OrderItem, ClientOrderInfo } from './types';
 import { Navbar } from './components/Navbar';
@@ -20,13 +21,15 @@ import { HeroSection } from './components/HeroSection';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
-import { RoomVisualizerModal } from './components/RoomVisualizerModal';
 import { StairsMoldingsGuide } from './components/StairsMoldingsGuide';
+import { GoogleSheetsModal } from './components/GoogleSheetsModal';
 import { OrderDrawer } from './components/OrderDrawer';
 import { PrintQuoteSheet } from './components/PrintQuoteSheet';
 import { Footer } from './components/Footer';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { getLocalizedProducts, getLocalizedCategories } from './i18n/localizedData';
+import { getStoredProducts } from './utils/googleSheetsSync';
+import { openRoomVisualizer } from './utils/constants';
 
 const LOCAL_STORAGE_ORDER_KEY = 'surfaces_order_items_v2';
 const LOCAL_STORAGE_CLIENT_KEY = 'surfaces_client_info_v2';
@@ -35,7 +38,18 @@ function AppContent() {
   const { language, t } = useLanguage();
   const isEn = language === 'en';
 
-  const products = useMemo(() => getLocalizedProducts(language), [language]);
+  const [catalogVersion, setCatalogVersion] = useState(0);
+
+  const baseProducts = useMemo(() => {
+    // If user has custom products synced from Google Sheets, use them; otherwise use localized catalog
+    const custom = getStoredProducts();
+    const isCustomStored = localStorage.getItem('surfaces_custom_synced_products_v1');
+    if (isCustomStored) {
+      return custom;
+    }
+    return getLocalizedProducts(language);
+  }, [language, catalogVersion]);
+
   const categories = useMemo(() => getLocalizedCategories(language), [language]);
 
   // Navigation & Search State
@@ -47,10 +61,8 @@ function AppContent() {
   // Modals & Drawers State
   const [activeDetailProduct, setActiveDetailProduct] = useState<Product | null>(null);
   const [activeDetailColor, setActiveDetailColor] = useState<ProductColor | undefined>(undefined);
-  const [isVisualizerOpen, setIsVisualizerOpen] = useState<boolean>(false);
-  const [visualizerProduct, setVisualizerProduct] = useState<Product | null>(null);
-  const [visualizerColor, setVisualizerColor] = useState<ProductColor | null>(null);
   const [isStairsGuideOpen, setIsStairsGuideOpen] = useState<boolean>(false);
+  const [isGoogleSheetsOpen, setIsGoogleSheetsOpen] = useState<boolean>(false);
   const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState<boolean>(false);
 
   // Toast Notification State
@@ -185,7 +197,6 @@ function AppContent() {
     );
 
     if (existingIndex >= 0) {
-      // update quantity
       setOrderItems((prev) =>
         prev.map((item, idx) =>
           idx === existingIndex
@@ -264,7 +275,7 @@ function AppContent() {
 
   // Filtered Products Calculation
   const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
+    return baseProducts.filter((product) => {
       // Category filter
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
         return false;
@@ -306,16 +317,16 @@ function AppContent() {
 
       return true;
     });
-  }, [products, selectedCategory, onlySamplesAvailable, selectedWearFilter, searchQuery]);
+  }, [baseProducts, selectedCategory, onlySamplesAvailable, selectedWearFilter, searchQuery]);
 
   // Category counts
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     categories.forEach((cat) => {
-      counts[cat.id] = products.filter((p) => p.category === cat.id).length;
+      counts[cat.id] = baseProducts.filter((p) => p.category === cat.id).length;
     });
     return counts;
-  }, [categories, products]);
+  }, [categories, baseProducts]);
 
   const sampleCount = orderItems.filter((i) => i.itemType === 'sample').length;
   const orderCount = orderItems.filter((i) => i.itemType === 'order').length;
@@ -326,7 +337,7 @@ function AppContent() {
     <div className="min-h-screen bg-[#fcfdff] text-slate-900 flex flex-col selection:bg-[#93b2f8]/30 selection:text-[#0a1680]">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-4 z-50 bg-[#0a1680] text-white px-4 py-3 rounded-2xl shadow-xl border border-[#93b2f8]/30 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
+        <div className="fixed top-16 right-4 z-50 bg-[#0a1680] text-white px-4 py-3 rounded-2xl shadow-xl border border-[#93b2f8]/30 flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
           <div className="w-6 h-6 rounded-full bg-[#f1b94c] flex items-center justify-center text-[#0a1680] text-xs font-bold shrink-0">
             ✓
           </div>
@@ -341,7 +352,7 @@ function AppContent() {
         </div>
       )}
 
-      {/* Main Navbar */}
+      {/* Main Compact Navbar */}
       <Navbar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -350,23 +361,16 @@ function AppContent() {
         orderItemCount={orderCount}
         sampleItemCount={sampleCount}
         onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
-        onOpenVisualizer={() => {
-          setVisualizerProduct(null);
-          setVisualizerColor(null);
-          setIsVisualizerOpen(true);
-        }}
+        onOpenVisualizer={openRoomVisualizer}
         onOpenStairsGuide={() => setIsStairsGuideOpen(true)}
+        onOpenDatabaseSync={() => setIsGoogleSheetsOpen(true)}
       />
 
-      {/* Hero Banner only when on all categories or no search */}
+      {/* Hero Banner only when on all categories and no search */}
       {selectedCategory === 'all' && !searchQuery && (
         <HeroSection
           onSelectCategory={(cat) => setSelectedCategory(cat)}
-          onOpenVisualizer={() => {
-            setVisualizerProduct(null);
-            setVisualizerColor(null);
-            setIsVisualizerOpen(true);
-          }}
+          onOpenVisualizer={openRoomVisualizer}
           onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
         />
       )}
@@ -376,13 +380,13 @@ function AppContent() {
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         categoryCounts={categoryCounts}
-        totalCount={products.length}
+        totalCount={baseProducts.length}
       />
 
       {/* Main Catalog Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 py-6 space-y-6">
         {/* Active Category Header & Secondary Quick Filters - Bento Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#93b2f8]/30 shadow-xs">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-2xl border border-[#93b2f8]/30 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] uppercase font-bold text-[#0a1680] tracking-widest bg-[#93b2f8]/20 px-2 py-0.5 rounded-sm">
@@ -416,7 +420,7 @@ function AppContent() {
             <select
               value={selectedWearFilter}
               onChange={(e) => setSelectedWearFilter(e.target.value)}
-              className="bg-white hover:bg-slate-50 text-[#0a1680] text-xs font-semibold px-3 py-2 rounded-full border border-slate-200 focus:border-[#0a1680] outline-none cursor-pointer"
+              className="bg-white hover:bg-slate-50 text-[#0a1680] text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 focus:border-[#0a1680] outline-none cursor-pointer"
             >
               <option value="all">{isEn ? 'All Wear Layers' : 'Todas las Capas de Uso'}</option>
               <option value="20 Mil">20 Mil ({isEn ? 'Residential / Commercial' : 'Residencial/Comercial'})</option>
@@ -428,7 +432,7 @@ function AppContent() {
             {/* Hand samples available filter */}
             <button
               onClick={() => setOnlySamplesAvailable(!onlySamplesAvailable)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all cursor-pointer ${
                 onlySamplesAvailable
                   ? 'bg-[#0a1680] border-[#0a1680] text-white shadow-xs'
                   : 'bg-white border-slate-200 text-slate-700 hover:text-[#0a1680] hover:bg-slate-50'
@@ -451,11 +455,7 @@ function AppContent() {
                   setActiveDetailProduct(prod);
                   setActiveDetailColor(color);
                 }}
-                onOpenVisualizerWithProduct={(prod, color) => {
-                  setVisualizerProduct(prod);
-                  setVisualizerColor(color);
-                  setIsVisualizerOpen(true);
-                }}
+                onOpenVisualizerWithProduct={() => openRoomVisualizer()}
                 onAddSample={(prod, color) => handleAddSample(prod, color)}
                 onAddToOrder={(prod, color) => {
                   setActiveDetailProduct(prod);
@@ -538,29 +538,10 @@ function AppContent() {
           product={activeDetailProduct}
           initialColor={activeDetailColor}
           onClose={() => setActiveDetailProduct(null)}
-          onOpenVisualizer={(prod, color) => {
-            setActiveDetailProduct(null);
-            setVisualizerProduct(prod);
-            setVisualizerColor(color);
-            setIsVisualizerOpen(true);
-          }}
+          onOpenVisualizer={() => openRoomVisualizer()}
           onAddSample={(prod, color) => handleAddSample(prod, color)}
           onAddToOrder={(prod, color, qty, unit, sqft, notes) => {
             handleAddToOrder(prod, color, qty, unit, sqft, notes);
-          }}
-        />
-      )}
-
-      {/* 3D Room Visualizer Modal */}
-      {isVisualizerOpen && (
-        <RoomVisualizerModal
-          initialProduct={visualizerProduct}
-          initialColor={visualizerColor}
-          onClose={() => setIsVisualizerOpen(false)}
-          onAddSample={(prod, color) => handleAddSample(prod, color)}
-          onAddToOrder={(prod, color) => {
-            handleAddToOrder(prod, color, 10, 'boxes', 0);
-            setIsOrderDrawerOpen(true);
           }}
         />
       )}
@@ -572,6 +553,17 @@ function AppContent() {
           onAddToOrder={(prod, color, qty, unit, sqft, notes) => {
             handleAddToOrder(prod, color, qty, unit, sqft, notes);
             setIsOrderDrawerOpen(true);
+          }}
+        />
+      )}
+
+      {/* Google Sheets Database Sync Modal */}
+      {isGoogleSheetsOpen && (
+        <GoogleSheetsModal
+          onClose={() => setIsGoogleSheetsOpen(false)}
+          onSyncComplete={() => {
+            setCatalogVersion((v) => v + 1);
+            showToast(isEn ? 'Catalog refreshed from database' : 'Catálogo actualizado desde la base de datos');
           }}
         />
       )}
@@ -594,11 +586,7 @@ function AppContent() {
       {/* Footer */}
       <Footer
         onSelectCategory={setSelectedCategory}
-        onOpenVisualizer={() => {
-          setVisualizerProduct(null);
-          setVisualizerColor(null);
-          setIsVisualizerOpen(true);
-        }}
+        onOpenVisualizer={openRoomVisualizer}
         onOpenStairsGuide={() => setIsStairsGuideOpen(true)}
       />
     </div>

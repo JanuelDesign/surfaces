@@ -1,11 +1,12 @@
 import React from 'react';
-import { Phone, Mail, Globe, MapPin, ShieldCheck, Sparkles, Footprints, Layers } from 'lucide-react';
+import { Phone, Mail, Globe, MapPin, ShieldCheck, Sparkles, Footprints, Layers, ExternalLink } from 'lucide-react';
 import { CategoryId } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 
 interface Props {
   onSelectCategory: (id: CategoryId) => void;
-  onOpenVisualizer: () => void;
+  onOpenVisualizer?: () => void;
   onOpenStairsGuide: () => void;
 }
 
@@ -89,19 +90,30 @@ export const Footer: React.FC<Props> = ({
             </div>
             <p className="text-white/70 text-xs leading-relaxed">
               {isEn
-                ? 'Official catalog of high-engineered architectural flooring and surfaces with authorized distribution.'
-                : 'Catálogo oficial de pisos y superficies arquitectónicas de alta ingeniería con distribución autorizada.'}
+                ? 'Official 2026 catalog of high-engineered architectural flooring and surfaces.'
+                : 'Catálogo oficial 2026 de pisos y superficies arquitectónicas de alta ingeniería.'}
             </p>
-            <div className="pt-1">
+            
+            {/* Direct Contact Details */}
+            <div className="pt-2 space-y-2 text-xs">
               <a
-                href="https://surfaces.com"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[#f1b94c] hover:underline font-semibold flex items-center gap-1"
+                href="tel:+17866583677"
+                className="flex items-center gap-2 text-[#f1b94c] hover:text-[#fbedb0] font-bold"
               >
+                <Phone size={13} />
+                <span>(786) 658-3677</span>
+              </a>
+              <a
+                href="mailto:marketingquicksurfaces@gmail.com"
+                className="flex items-center gap-2 text-[#93b2f8] hover:text-white transition"
+              >
+                <Mail size={13} />
+                <span>marketingquicksurfaces@gmail.com</span>
+              </a>
+              <div className="flex items-center gap-2 text-white/60">
                 <Globe size={13} />
                 <span>surfaces.com</span>
-              </a>
+              </div>
             </div>
           </div>
 
@@ -219,28 +231,31 @@ export const Footer: React.FC<Props> = ({
           {/* Contacto & Herramientas */}
           <div className="space-y-3">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider">
-              {isEn ? 'Interactive Tools' : 'Herramientas'}
+              {isEn ? 'Contact & Tools' : 'Contacto y Herramientas'}
             </h4>
-            <button
-              onClick={onOpenVisualizer}
+            <a
+              href={ROOMVO_VISUALIZER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full py-2.5 px-4 rounded-full bg-white/10 hover:bg-[#f1b94c] hover:text-[#0a1680] text-white text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 border border-white/15 cursor-pointer"
             >
               <Sparkles size={14} className="text-[#f1b94c]" />
               <span>{isEn ? '3D Room Visualizer' : 'Visualizador 3D'}</span>
-            </button>
+              <ExternalLink size={12} className="opacity-70" />
+            </a>
 
             <a
-              href="https://wa.me/18005550199?text=Hello%20SURFACES,%20I%20would%20like%20information%20on%20your%20products"
+              href="https://wa.me/17866583677?text=Hello%20SURFACES,%20I%20would%20like%20information%20on%20your%20flooring%20products"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-2.5 px-4 rounded-full bg-[#f1b94c] hover:bg-[#e4ac3f] text-[#0a1680] text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
             >
               <Phone size={14} />
-              <span>{isEn ? 'Commercial WhatsApp' : 'WhatsApp Comercial'}</span>
+              <span>{isEn ? 'WhatsApp (786) 658-3677' : 'WhatsApp (786) 658-3677'}</span>
             </a>
 
             <div className="pt-2 text-[11px] text-white/50">
-              © 2026 SURFACES. {isEn ? 'Interactive Catalog.' : 'Catálogo Interactivo.'}
+              © 2026 SURFACES. {isEn ? 'Interactive Architectural Catalog.' : 'Catálogo Arquitectónico Interactivo.'}
             </div>
           </div>
         </div>

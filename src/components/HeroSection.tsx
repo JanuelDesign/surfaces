@@ -1,11 +1,12 @@
 import React from 'react';
-import { Eye, Package, Sparkles, ArrowRight } from 'lucide-react';
+import { Eye, Package, Sparkles, ArrowRight, ExternalLink } from 'lucide-react';
 import { CategoryId } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 
 interface Props {
   onSelectCategory: (cat: CategoryId) => void;
-  onOpenVisualizer: () => void;
+  onOpenVisualizer?: () => void;
   onOpenOrderDrawer: () => void;
 }
 
@@ -55,13 +56,16 @@ export const HeroSection: React.FC<Props> = ({
           </div>
 
           <div className="relative z-10 pt-6 flex flex-wrap items-center gap-3">
-            <button
-              onClick={onOpenVisualizer}
+            <a
+              href={ROOMVO_VISUALIZER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#f1b94c] hover:bg-[#e0a83b] text-[#0a1680] text-xs font-bold uppercase tracking-wider shadow-sm transition transform hover:scale-102 cursor-pointer"
             >
               <Eye size={15} />
               <span>{t('hero.btnVisualizer')}</span>
-            </button>
+              <ExternalLink size={12} className="opacity-80" />
+            </a>
             <button
               onClick={onOpenOrderDrawer}
               className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold uppercase tracking-wider border border-white/20 transition cursor-pointer"

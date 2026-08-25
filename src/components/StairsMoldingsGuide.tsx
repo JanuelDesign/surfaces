@@ -9,10 +9,20 @@ import {
   Plus,
   ArrowRight,
   Layers,
+  Calculator,
+  Check,
+  Building2,
+  Maximize2,
 } from 'lucide-react';
 import { Product, ProductColor } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 import { getLocalizedProducts } from '../i18n/localizedData';
+import {
+  STAIR_PROFILES,
+  STAIR_EXAMPLE_CARDS,
+  MOLDING_IMAGES,
+  BASEBOARD_IMAGES,
+} from '../utils/imageCatalog';
 
 interface Props {
   onClose: () => void;
@@ -33,6 +43,24 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
 
   const [activeTab, setActiveTab] = useState<'stairs' | 'moldings' | 'baseboards'>('stairs');
   const [addedItem, setAddedItem] = useState<string | null>(null);
+  const [displayMode, setDisplayMode] = useState<'both' | 'diagram' | 'photo'>('both');
+  const [cardViewMap, setCardViewMap] = useState<Record<string, 'diagram' | 'photo'>>({});
+
+  const toggleCardView = (cardId: string, type: 'diagram' | 'photo') => {
+    setCardViewMap((prev) => ({ ...prev, [cardId]: type }));
+  };
+
+  const getEffectiveView = (cardId: string): 'diagram' | 'photo' | 'both' => {
+    if (displayMode === 'both') return 'both';
+    return cardViewMap[cardId] || displayMode;
+  };
+
+  // Stair Calculator States
+  const [stairStepsCount, setStairStepsCount] = useState<number>(14);
+  const [stairTreadLength, setStairTreadLength] = useState<string>('48"');
+  const [stairProfileChoice, setStairProfileChoice] = useState<'DoubleRounded' | 'SquareStep'>('DoubleRounded');
+  const [includeMatchingRisers, setIncludeMatchingRisers] = useState<boolean>(true);
+  const [openEndReturns, setOpenEndReturns] = useState<'none' | 'left' | 'right' | 'both'>('none');
 
   const stairsProduct = products.find((p) => p.id === 'stair-steps-treads') || products[0];
   const moldingsProduct = products.find((p) => p.id === 'moldings-transitions') || products[0];
@@ -49,6 +77,16 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
     onAddToOrder(prod, colorObj, quantity, unit, 0, notes);
     setAddedItem(colorName);
     setTimeout(() => setAddedItem(null), 1500);
+  };
+
+  const handleAddStairPackage = () => {
+    const colorObj = stairsProduct.colors[0] || { name: 'Color-Matched to Floor', hexColor: '#c7b28e' };
+    const notes = `Custom Stair Package: ${stairStepsCount} Steps (${stairTreadLength} length), Profile: ${stairProfileChoice}, Risers: ${
+      includeMatchingRisers ? 'Yes (Matching)' : 'No (White/Paint)'
+    }, Open Returns: ${openEndReturns}`;
+    onAddToOrder(stairsProduct, colorObj, stairStepsCount, 'pieces', 0, notes);
+    setAddedItem('stair-calc-package');
+    setTimeout(() => setAddedItem(null), 2000);
   };
 
   return (
@@ -81,41 +119,77 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 bg-white px-6">
-          <button
-            onClick={() => setActiveTab('stairs')}
-            className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer ${
-              activeTab === 'stairs'
-                ? 'border-[#0a1680] text-[#0a1680]'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Footprints size={16} />
-            <span>{isEn ? 'Stairs & Treads' : 'Gradas & Escaleras (Stair Treads)'}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('moldings')}
-            className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer ${
-              activeTab === 'moldings'
-                ? 'border-[#0a1680] text-[#0a1680]'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Sliders size={16} />
-            <span>{isEn ? 'Moldings & Transitions' : 'Molduras & Transiciones'}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('baseboards')}
-            className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer ${
-              activeTab === 'baseboards'
-                ? 'border-[#0a1680] text-[#0a1680]'
-                : 'border-transparent text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Square size={16} />
-            <span>{isEn ? 'Baseboards & Trim' : 'Zócalos & Rodapiés (Baseboards)'}</span>
-          </button>
+        {/* Tab Navigation & Global View Mode */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 bg-white px-6 gap-2 py-2 sm:py-0">
+          <div className="flex overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('stairs')}
+              className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                activeTab === 'stairs'
+                  ? 'border-[#0a1680] text-[#0a1680]'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Footprints size={16} />
+              <span>{isEn ? 'Stairs & Treads' : 'Gradas & Escaleras (Stair Treads)'}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('moldings')}
+              className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                activeTab === 'moldings'
+                  ? 'border-[#0a1680] text-[#0a1680]'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Sliders size={16} />
+              <span>{isEn ? 'Moldings & Transitions' : 'Molduras & Transiciones'}</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('baseboards')}
+              className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+                activeTab === 'baseboards'
+                  ? 'border-[#0a1680] text-[#0a1680]'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Square size={16} />
+              <span>{isEn ? 'Baseboards & Trim' : 'Zócalos & Rodapiés (Baseboards)'}</span>
+            </button>
+          </div>
+
+          {/* Visual Display Mode Selector */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-[11px] font-semibold self-start sm:self-auto mb-2 sm:mb-0">
+            <button
+              onClick={() => setDisplayMode('both')}
+              className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
+                displayMode === 'both'
+                  ? 'bg-white text-[#0a1680] shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {isEn ? '✨ Both (Diagram + Photo)' : '✨ Ver Ambos (Plano + Foto)'}
+            </button>
+            <button
+              onClick={() => setDisplayMode('diagram')}
+              className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
+                displayMode === 'diagram'
+                  ? 'bg-white text-[#0a1680] shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {isEn ? '📐 Blueprint CAD' : '📐 Planos CAD'}
+            </button>
+            <button
+              onClick={() => setDisplayMode('photo')}
+              className={`px-2.5 py-1 rounded-lg transition cursor-pointer ${
+                displayMode === 'photo'
+                  ? 'bg-white text-[#0a1680] shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {isEn ? '📸 3D Photo' : '📸 Fotos 3D'}
+            </button>
+          </div>
         </div>
 
         {/* Content Body */}
@@ -127,8 +201,8 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                 <h3 className="text-sm font-bold text-[#0a1680] flex items-center gap-2">
                   <Sparkles size={16} className="text-[#0a1680]" />
                   {isEn
-                    ? 'Quality at Every Step: Color-Matched Stair Treads'
-                    : 'Quality at Every Step: Gradas y Treads a Juego Exacto'}
+                    ? 'Quality at Every Step: Color-Matched Stair Treads & Architectural Blueprints'
+                    : 'Quality at Every Step: Gradas y Treads a Juego con Planos Técnicos Vectoriales'}
                 </h3>
                 <p className="text-xs text-slate-600 mt-1">
                   {isEn
@@ -137,399 +211,605 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                 </p>
               </div>
 
-              {/* Step Profiles: Double Rounded vs Square Step */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Double Rounded */}
-                <div className="bg-[#fcfdff] border border-slate-200 rounded-2xl p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-[#0a1680]">
-                      {isEn ? 'Classic Profile' : 'Perfil Clásico'}
-                    </span>
-                    <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold text-slate-700">
-                      {isEn ? 'Available in SPC Flooring' : 'Disponible en SPC Flooring'}
-                    </span>
-                  </div>
-                  <h4 className="text-base font-extrabold text-[#0a1680]">Double Rounded</h4>
-                  <p className="text-xs text-slate-600">
-                    {isEn
-                      ? 'Smooth front edge with double soft bullnose radius for enhanced safety and comfort.'
-                      : 'Borde frontal con doble redondeo suave para mayor ergonomía y seguridad familiar.'}
-                  </p>
-
-                  <div className="bg-white p-3 rounded-xl border border-slate-200 text-center">
-                    <svg viewBox="0 0 200 90" className="w-full h-20 mx-auto">
-                      <path
-                        d="M 15 30 L 135 30 Q 155 30 155 50 L 155 70 Q 155 80 145 80 L 125 80 Q 115 80 115 70 L 115 50 L 15 50 Z"
-                        fill="#0a1680"
-                        fillOpacity="0.15"
-                        stroke="#0a1680"
-                        strokeWidth="2.5"
-                      />
-                      <text x="65" y="24" fontSize="9" fill="#64748b" textAnchor="middle">Custom Length</text>
-                      <text x="175" y="55" fontSize="9" fill="#64748b">1-1/2"</text>
-                      <text x="135" y="88" fontSize="9" fill="#64748b">7/8"</text>
-                    </svg>
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(
-                        stairsProduct,
-                        'Double Rounded SPC (All Colors)',
-                        12,
-                        'pieces',
-                        isEn ? 'Double Rounded SPC Stair Treads' : 'Gradas perfil Double Rounded SPC'
-                      )
-                    }
-                    className="w-full py-2.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                  >
-                    <Plus size={14} className="text-[#f1b94c]" />
-                    <span>
-                      {addedItem === 'Double Rounded SPC (All Colors)'
-                        ? (isEn ? 'Added to Quote!' : '¡Agregado al Pedido!')
-                        : (isEn ? 'Quote Double Rounded Treads' : 'Cotizar Gradas Double Rounded')}
-                    </span>
-                  </button>
+              {/* Step Technical CAD Blueprints: Double Rounded vs Square Step */}
+              <div>
+                <div className="mb-3 flex items-center justify-between">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    {isEn ? '1. Technical Profile Blueprints & 3D Installed Renders' : '1. Planos Vectoriales de Perfiles & Vistas 3D'}
+                  </h4>
+                  <span className="text-[11px] text-slate-500 font-mono">CAD Vectors & 3D Reality</span>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Double Rounded */}
+                  <div className="bg-[#060e36] text-white border border-blue-900/60 rounded-2xl p-5 space-y-3 shadow-md">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase text-[#fbedb0]">
+                        {isEn ? 'Classic Profile' : 'Perfil Clásico'}
+                      </span>
+                      <div className="flex items-center gap-1 bg-blue-950/80 p-0.5 rounded-lg border border-blue-700/50">
+                        <button
+                          onClick={() => toggleCardView('dr-step', 'diagram')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
+                            getEffectiveView('dr-step') === 'diagram' ? 'bg-blue-600 text-white' : 'text-blue-300'
+                          }`}
+                        >
+                          {isEn ? 'Diagram' : 'Plano'}
+                        </button>
+                        <button
+                          onClick={() => toggleCardView('dr-step', 'photo')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
+                            getEffectiveView('dr-step') === 'photo' ? 'bg-blue-600 text-white' : 'text-blue-300'
+                          }`}
+                        >
+                          {isEn ? '3D Photo' : 'Foto 3D'}
+                        </button>
+                      </div>
+                    </div>
+                    <h4 className="text-base font-extrabold text-white">Double Rounded Bullnose</h4>
+                    <p className="text-xs text-blue-200/80">
+                      {isEn
+                        ? 'Smooth front edge with double soft bullnose radius (1-3/4" Height x 1-1/2" Nose x 7/8" Thick) for ergonomic comfort and family safety.'
+                        : 'Borde frontal con doble redondeo suave (1-3/4" Altura x 1-1/2" Nariz x 7/8" Grosor) para mayor ergonomía y seguridad familiar.'}
+                    </p>
 
-                {/* Square Step */}
-                <div className="bg-[#fcfdff] border border-slate-200 rounded-2xl p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-[#0a1680]">
-                      {isEn ? 'Modern Profile' : 'Perfil Moderno'}
-                    </span>
-                    <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-semibold text-slate-700">
-                      {isEn ? 'Available in SPC & Laminate' : 'Disponible en SPC & Laminate'}
-                    </span>
+                    {/* Dual or Single Visual Rendering */}
+                    {getEffectiveView('dr-step') === 'both' ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
+                          <img
+                            src={STAIR_PROFILES.DoubleRounded.profileSvg}
+                            alt="Double Rounded Blueprint"
+                            className="w-full h-36 object-contain"
+                          />
+                        </div>
+                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
+                          <img
+                            src={STAIR_PROFILES.DoubleRounded.photoUrl}
+                            alt="Double Rounded 3D Installed"
+                            className="w-full h-36 object-contain"
+                          />
+                        </div>
+                      </div>
+                    ) : getEffectiveView('dr-step') === 'photo' ? (
+                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
+                        <img
+                          src={STAIR_PROFILES.DoubleRounded.photoUrl}
+                          alt="Double Rounded 3D Installed"
+                          className="w-full h-44 object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
+                        <img
+                          src={STAIR_PROFILES.DoubleRounded.profileSvg}
+                          alt="Double Rounded Blueprint"
+                          className="w-full h-44 object-contain"
+                        />
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() =>
+                        handleQuickAdd(
+                          stairsProduct,
+                          'Double Rounded SPC (All Colors)',
+                          12,
+                          'pieces',
+                          isEn ? 'Double Rounded SPC Stair Treads' : 'Gradas perfil Double Rounded SPC'
+                        )
+                      }
+                      className="w-full py-2.5 bg-[#0a1680] hover:bg-[#1627b0] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border border-blue-500/40"
+                    >
+                      <Plus size={14} className="text-[#f1b94c]" />
+                      <span>
+                        {addedItem === 'Double Rounded SPC (All Colors)'
+                          ? (isEn ? 'Added to Quote!' : '¡Agregado al Pedido!')
+                          : (isEn ? 'Quote Double Rounded Treads' : 'Cotizar Gradas Double Rounded')}
+                      </span>
+                    </button>
                   </div>
-                  <h4 className="text-base font-extrabold text-[#0a1680]">Square Step</h4>
-                  <p className="text-xs text-slate-600">
-                    {isEn
-                      ? 'Crisp 90-degree squared nosing edge for contemporary minimalist architecture.'
-                      : 'Borde en ángulo recto de 90 grados para proyectos de diseño minimalista contemporáneo.'}
-                  </p>
 
-                  <div className="bg-white p-3 rounded-xl border border-slate-200 text-center">
-                    <svg viewBox="0 0 200 90" className="w-full h-20 mx-auto">
-                      <path
-                        d="M 15 30 L 145 30 L 145 75 L 125 75 L 125 50 L 15 50 Z"
-                        fill="#0a1680"
-                        fillOpacity="0.12"
-                        stroke="#0a1680"
-                        strokeWidth="2.5"
-                      />
-                      <text x="65" y="24" fontSize="9" fill="#64748b" textAnchor="middle">Custom Length</text>
-                      <text x="170" y="55" fontSize="9" fill="#64748b">1-3/8"</text>
-                      <text x="135" y="88" fontSize="9" fill="#64748b">7/8"</text>
-                    </svg>
+                  {/* Square Step */}
+                  <div className="bg-[#060e36] text-white border border-blue-900/60 rounded-2xl p-5 space-y-3 shadow-md">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase text-[#fbedb0]">
+                        {isEn ? 'Modern Profile' : 'Perfil Moderno'}
+                      </span>
+                      <div className="flex items-center gap-1 bg-blue-950/80 p-0.5 rounded-lg border border-blue-700/50">
+                        <button
+                          onClick={() => toggleCardView('sq-step', 'diagram')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
+                            getEffectiveView('sq-step') === 'diagram' ? 'bg-blue-600 text-white' : 'text-blue-300'
+                          }`}
+                        >
+                          {isEn ? 'Diagram' : 'Plano'}
+                        </button>
+                        <button
+                          onClick={() => toggleCardView('sq-step', 'photo')}
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
+                            getEffectiveView('sq-step') === 'photo' ? 'bg-blue-600 text-white' : 'text-blue-300'
+                          }`}
+                        >
+                          {isEn ? '3D Photo' : 'Foto 3D'}
+                        </button>
+                      </div>
+                    </div>
+                    <h4 className="text-base font-extrabold text-white">Square Step 90° Edge</h4>
+                    <p className="text-xs text-blue-200/80">
+                      {isEn
+                        ? 'Crisp 90-degree squared nosing edge (1-3/4" Height x 1-3/8" Nose x 7/8" Thick) with precision mitered joint for luxury modern architecture.'
+                        : 'Borde en ángulo recto de 90 grados (1-3/4" Altura x 1-3/8" Nariz x 7/8" Grosor) con unión biselada para proyectos modernos de lujo.'}
+                    </p>
+
+                    {/* Dual or Single Visual Rendering */}
+                    {getEffectiveView('sq-step') === 'both' ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
+                          <img
+                            src={STAIR_PROFILES.SquareStep.profileSvg}
+                            alt="Square Step Blueprint"
+                            className="w-full h-36 object-contain"
+                          />
+                        </div>
+                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
+                          <img
+                            src={STAIR_PROFILES.SquareStep.photoUrl}
+                            alt="Square Step 3D Installed"
+                            className="w-full h-36 object-contain"
+                          />
+                        </div>
+                      </div>
+                    ) : getEffectiveView('sq-step') === 'photo' ? (
+                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
+                        <img
+                          src={STAIR_PROFILES.SquareStep.photoUrl}
+                          alt="Square Step 3D Installed"
+                          className="w-full h-44 object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
+                        <img
+                          src={STAIR_PROFILES.SquareStep.profileSvg}
+                          alt="Square Step Blueprint"
+                          className="w-full h-44 object-contain"
+                        />
+                      </div>
+                    )}
+
+                    <button
+                      onClick={() =>
+                        handleQuickAdd(
+                          stairsProduct,
+                          'Square Step SPC (All Colors)',
+                          12,
+                          'pieces',
+                          isEn ? 'Square Step SPC Stair Treads' : 'Gradas perfil Square Step SPC'
+                        )
+                      }
+                      className="w-full py-2.5 bg-[#0a1680] hover:bg-[#1627b0] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border border-blue-500/40"
+                    >
+                      <Plus size={14} className="text-[#f1b94c]" />
+                      <span>
+                        {addedItem === 'Square Step SPC (All Colors)'
+                          ? (isEn ? 'Added to Quote!' : '¡Agregado al Pedido!')
+                          : (isEn ? 'Quote Square Step Treads' : 'Cotizar Gradas Square Step')}
+                      </span>
+                    </button>
                   </div>
-
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(
-                        stairsProduct,
-                        'Square Step SPC (All Colors)',
-                        12,
-                        'pieces',
-                        isEn ? 'Square Step SPC Stair Treads' : 'Gradas perfil Square Step SPC'
-                      )
-                    }
-                    className="w-full py-2.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                  >
-                    <Plus size={14} className="text-[#f1b94c]" />
-                    <span>
-                      {addedItem === 'Square Step SPC (All Colors)'
-                        ? (isEn ? 'Added to Quote!' : '¡Agregado al Pedido!')
-                        : (isEn ? 'Quote Square Step Treads' : 'Cotizar Gradas Square Step')}
-                    </span>
-                  </button>
                 </div>
               </div>
 
-              {/* Full Steps vs Regular Steps */}
-              <div className="bg-[#0a1680] text-white rounded-2xl p-5 space-y-3">
+              {/* Full Steps vs Regular Steps Blueprint & 3D Photo Section */}
+              <div className="bg-[#0a1680] text-white rounded-2xl p-5 space-y-4 shadow-md">
                 <h4 className="text-sm font-bold text-[#f1b94c]">
                   {isEn
-                    ? 'Stair Configurations: Full Steps vs. Regular Steps'
-                    : 'Configuraciones de Escalera: Full Steps vs Regular Steps'}
+                    ? '2. Construction Methods: Full Steps (Monolithic) vs Regular Steps (Modular)'
+                    : '2. Métodos de Construcción: Full Steps (Monolíticas) vs Regular Steps (Modulares)'}
                 </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-white/80">
-                  <div className="p-3 bg-[#081268] rounded-xl border border-white/15 space-y-1">
-                    <div className="font-bold text-white text-sm">Full Steps</div>
-                    <p className="text-white/70 text-[11px]">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div className="p-4 bg-[#081268] rounded-xl border border-white/15 space-y-2">
+                    <div className="font-extrabold text-white text-base">Full Steps (Monolithic Tread)</div>
+                    <p className="text-white/80 text-[11px] leading-relaxed">
                       {isEn
-                        ? 'The step spans the full stair tread width in a single seamless monolithic piece without mid-joints. Supported on floating stringers or between walls.'
-                        : 'La grada ocupa todo el ancho de la escalera en una sola pieza monolítica sin uniones intermedias. Soportada en estructura central o paredes laterales.'}
+                        ? 'Continuous unbroken single-piece 12" depth tread with integrated nosing. Zero seams across the step surface. Ideal for floating open stringers.'
+                        : 'Grada continua de una sola pieza monolítica de 12" de profundidad con nariz integrada. Cero uniones sobre la superficie. Ideal para escaleras flotantes.'}
                     </p>
-                  </div>
-                  <div className="p-3 bg-[#081268] rounded-xl border border-white/15 space-y-1">
-                    <div className="font-bold text-white text-sm">
-                      {isEn ? 'Regular Steps (with Filler Plank & Riser)' : 'Regular Steps (con Plancha de Relleno)'}
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#060e36]">
+                        <img src={STAIR_PROFILES.FullStep.profileSvg} alt="Full Step Blueprint" className="w-full h-28 object-contain" />
+                      </div>
+                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#0f172a]">
+                        <img src={STAIR_PROFILES.FullStep.photoUrl} alt="Full Step 3D View" className="w-full h-28 object-contain" />
+                      </div>
                     </div>
-                    <p className="text-white/70 text-[11px]">
+                  </div>
+
+                  <div className="p-4 bg-[#081268] rounded-xl border border-white/15 space-y-2">
+                    <div className="font-extrabold text-white text-base">
+                      {isEn ? 'Regular Steps (Modular Assembly)' : 'Regular Steps (Ensamblaje Modular)'}
+                    </div>
+                    <p className="text-white/80 text-[11px] leading-relaxed">
                       {isEn
-                        ? 'Combines the front bullnose piece with standard interlocking flooring planks and a vertical riser.'
-                        : 'Usa la nariz frontal de grada combinada con la tabla de piso estándar y contrahuella (riser) en la parte vertical.'}
+                        ? 'Modular system combining the front nose tread piece with matching flooring planks and matching or crisp white risers.'
+                        : 'Sistema modular que une la nariz frontal con tablas estándar de piso y contrahuella (riser) a juego o blanca.'}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#060e36]">
+                        <img src={STAIR_PROFILES.RegularStep.profileSvg} alt="Regular Step Blueprint" className="w-full h-28 object-contain" />
+                      </div>
+                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#1e293b]">
+                        <img src={STAIR_PROFILES.RegularStep.photoUrl} alt="Regular Step 3D View" className="w-full h-28 object-contain" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4 Rich Step Application & Example Visual Cards (Specifically requested by user) */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                      {isEn ? '3. Step Applications & Real Architectural Examples' : '3. Aplicaciones y Ejemplos Reales de Gradas'}
+                    </h4>
+                    <p className="text-[11px] text-slate-500">
+                      {isEn
+                        ? 'Visual rendering examples and technical specifications for diverse architectural staircase layouts'
+                        : 'Renders visuales y especificaciones técnicas para los distintos tipos de instalación y diseños de escalera'}
                     </p>
                   </div>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {STAIR_EXAMPLE_CARDS.map((card) => (
+                    <div
+                      key={card.id}
+                      className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-2xl p-4 space-y-3 shadow-xs hover:shadow-md transition"
+                    >
+                      <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-950">
+                        <img
+                          src={card.imageSvg}
+                          alt={isEn ? card.titleEn : card.titleEs}
+                          className="w-full h-48 object-contain"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-[#0a1680] uppercase tracking-wide">
+                            {card.category}
+                          </span>
+                          <span className="text-[10px] text-slate-500 font-mono">{card.dimensions}</span>
+                        </div>
+                        <h4 className="text-sm font-extrabold text-slate-900">
+                          {isEn ? card.titleEn : card.titleEs}
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed">
+                          {isEn ? card.subtitleEn : card.subtitleEs}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {card.tags.map((tag, idx) => (
+                          <span
+                            key={idx}
+                            className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() =>
+                          handleQuickAdd(
+                            stairsProduct,
+                            isEn ? card.titleEn : card.titleEs,
+                            14,
+                            'pieces',
+                            isEn ? `Configuration: ${card.titleEn}` : `Configuración: ${card.titleEs}`
+                          )
+                        }
+                        className="w-full py-2 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <Plus size={14} />
+                        <span>{isEn ? 'Add this Stair Configuration' : 'Cotizar esta Configuración'}</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Interactive Stair Package Configurator & Quote Builder */}
+              <div className="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Calculator size={18} className="text-[#0a1680]" />
+                  <h4 className="text-sm font-bold text-slate-900">
+                    {isEn ? 'Staircase Calculator & Custom Quote Builder' : 'Calculadora de Escaleras y Cotizador a Medida'}
+                  </h4>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                  {/* Step Count */}
+                  <div className="space-y-1">
+                    <label className="font-semibold text-slate-700 block">
+                      {isEn ? 'Number of Steps:' : 'Número de Gradas:'}
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={stairStepsCount}
+                      onChange={(e) => setStairStepsCount(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                    />
+                  </div>
+
+                  {/* Tread Length */}
+                  <div className="space-y-1">
+                    <label className="font-semibold text-slate-700 block">
+                      {isEn ? 'Tread Length:' : 'Largo de Grada:'}
+                    </label>
+                    <select
+                      value={stairTreadLength}
+                      onChange={(e) => setStairTreadLength(e.target.value)}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                    >
+                      <option value='48"'>48" (Standard / Estándar)</option>
+                      <option value='60"'>60" (Wide / Amplia)</option>
+                      <option value='72"'>72" (Grand / Extra)</option>
+                    </select>
+                  </div>
+
+                  {/* Profile choice */}
+                  <div className="space-y-1">
+                    <label className="font-semibold text-slate-700 block">
+                      {isEn ? 'Nosing Profile:' : 'Perfil de Nariz:'}
+                    </label>
+                    <select
+                      value={stairProfileChoice}
+                      onChange={(e) => setStairProfileChoice(e.target.value as any)}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                    >
+                      <option value="DoubleRounded">Double Rounded (SPC)</option>
+                      <option value="SquareStep">Square Step 90° (SPC/Lam)</option>
+                    </select>
+                  </div>
+
+                  {/* Open-end returns */}
+                  <div className="space-y-1">
+                    <label className="font-semibold text-slate-700 block">
+                      {isEn ? 'Open Side Miter Caps:' : 'Terminales Laterales:'}
+                    </label>
+                    <select
+                      value={openEndReturns}
+                      onChange={(e) => setOpenEndReturns(e.target.value as any)}
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                    >
+                      <option value="none">{isEn ? 'None (Closed between walls)' : 'Ninguno (Entre paredes)'}</option>
+                      <option value="left">{isEn ? 'Left Open End' : 'Abierto a la Izquierda'}</option>
+                      <option value="right">{isEn ? 'Right Open End' : 'Abierto a la Derecha'}</option>
+                      <option value="both">{isEn ? 'Both Sides Open' : 'Abierto Ambos Lados'}</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includeMatchingRisers}
+                      onChange={(e) => setIncludeMatchingRisers(e.target.checked)}
+                      className="w-4 h-4 rounded text-[#0a1680]"
+                    />
+                    <span>
+                      {isEn
+                        ? 'Include Color-Matched Vertical Risers (Contrahuellas a juego)'
+                        : 'Incluir Contrahuellas (Risers) en el mismo tono del piso'}
+                    </span>
+                  </label>
+                </div>
+
+                <button
+                  onClick={handleAddStairPackage}
+                  className="w-full py-3 bg-[#0a1680] hover:bg-[#081268] text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer"
+                >
+                  {addedItem === 'stair-calc-package' ? <Check size={16} /> : <Plus size={16} className="text-[#f1b94c]" />}
+                  <span>
+                    {addedItem === 'stair-calc-package'
+                      ? (isEn ? 'Stair Package Added to Quote!' : '¡Paquete de Escalera Agregado a la Cotización!')
+                      : (isEn
+                          ? `Add ${stairStepsCount} Steps Package (${stairTreadLength}) to Quote`
+                          : `Agregar Paquete de ${stairStepsCount} Gradas (${stairTreadLength}) al Pedido`)}
+                  </span>
+                </button>
               </div>
             </div>
           )}
 
-          {/* TAB 2: MOLDINGS */}
+          {/* TAB 2: MOLDINGS (All Complete Models) */}
           {activeTab === 'moldings' && (
             <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                <h3 className="text-sm font-bold text-slate-900">
-                  {isEn ? 'Infinite Design Possibilities with Moldings' : 'Posibilidades Infinitas con Molduras'}
-                </h3>
-                <p className="text-xs text-slate-600 mt-1">
-                  {isEn
-                    ? 'Elegant, durable transition solutions between differing floor types, expansion gaps, thresholds, and perimeter terminations.'
-                    : 'Soluciones elegantes y funcionales para transiciones entre diferentes pisos, dilataciones y remates.'}
-                </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {isEn ? 'Infinite Design Possibilities with Moldings' : 'Posibilidades Infinitas con Molduras'}
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-1">
+                    {isEn
+                      ? 'Complete catalog of transition moldings: CM and standard profiles for level floors, step-down reducers, sliding door end caps, and expansion transitions with technical blueprints & 3D renders.'
+                      : 'Catálogo completo de molduras de transición: perfiles CM y estándar para pisos a nivel, reductores de desnivel, remates para puertas correderas y dilataciones con planos CAD y renders 3D.'}
+                  </p>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {/* CM T-Molding */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#0a1680] uppercase">
-                      {isEn ? 'Flush Transition' : 'Transición Nivel'}
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-900">CM T-Molding</h4>
-                    <div className="text-xs text-slate-500 font-mono">1-3/4” x 3/8”</div>
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      {isEn
-                        ? 'Provides a smooth aesthetic transition between two rooms with same-height flooring.'
-                        : 'Proporciona una transición estética y funcional entre dos áreas al mismo nivel.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(moldingsProduct, 'CM T-Molding', 5, 'pieces', 'Moldura CM T-Molding')
-                    }
-                    className="w-full py-1.5 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add to Quote' : 'Agregar a Cotización'}
-                  </button>
-                </div>
+                {Object.entries(MOLDING_IMAGES).map(([key, molding]) => {
+                  const cardView = getEffectiveView(`molding-${key}`);
+                  return (
+                    <div key={key} className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-2xl p-4 space-y-3 shadow-xs transition flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-[#0a1680] uppercase bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                            {molding.dimensions}
+                          </span>
+                          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                            <button
+                              onClick={() => toggleCardView(`molding-${key}`, 'diagram')}
+                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
+                                cardView === 'diagram' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
+                              }`}
+                            >
+                              {isEn ? 'Plan' : 'Plano'}
+                            </button>
+                            <button
+                              onClick={() => toggleCardView(`molding-${key}`, 'photo')}
+                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
+                                cardView === 'photo' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
+                              }`}
+                            >
+                              {isEn ? '3D' : 'Foto'}
+                            </button>
+                          </div>
+                        </div>
 
-                {/* CM Reducer */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#0a1680] uppercase">
-                      {isEn ? 'Height Transition' : 'Desnivel'}
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-900">CM Reducer</h4>
-                    <div className="text-xs text-slate-500 font-mono">1-3/4” x 3/8”</div>
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      {isEn
-                        ? 'Ramps down cleanly to adjoining floors of lower height (e.g. vinyl to ceramic tile).'
-                        : 'Ideal para nivelar superficies con diferente altura (ej. piso vinílico a baldosa).'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(moldingsProduct, 'CM Reducer', 5, 'pieces', 'Moldura CM Reducer')
-                    }
-                    className="w-full py-1.5 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add to Quote' : 'Agregar a Cotización'}
-                  </button>
-                </div>
+                        <div>
+                          <h4 className="text-sm font-extrabold text-slate-900">{key.replace('-', ' ')}</h4>
+                          <p className="text-[11px] text-slate-500 font-sans line-clamp-2 mt-0.5">{molding.description}</p>
+                        </div>
 
-                {/* Standard T-Molding */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#0a1680] uppercase">
-                      {isEn ? 'Standard' : 'Estándar'}
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-900">T-Molding</h4>
-                    <div className="text-xs text-slate-500 font-mono">1-3/4” x 1/4”</div>
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      {isEn
-                        ? 'Standard T-transition profile ensuring smooth walking between equal height floors.'
-                        : 'Perfecto para unir diferentes tipos de suelo asegurando paso suave.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(moldingsProduct, 'Standard T-Molding', 5, 'pieces', 'Moldura T-Molding estándar')
-                    }
-                    className="w-full py-1.5 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add to Quote' : 'Agregar a Cotización'}
-                  </button>
-                </div>
+                        {/* Visual Display: Dual or Single */}
+                        {cardView === 'both' ? (
+                          <div className="grid grid-cols-2 gap-1.5">
+                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0a1680] relative group">
+                              <img src={molding.profileSvg} alt={`${key} Diagram`} className="w-full h-28 object-contain" />
+                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-blue-200 px-1 py-0.2 rounded font-mono">CAD PLAN</span>
+                            </div>
+                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a] relative group">
+                              <img src={molding.photoUrl} alt={`${key} 3D Photo`} className="w-full h-28 object-contain" />
+                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-[#fbedb0] px-1 py-0.2 rounded font-mono">3D PHOTO</span>
+                            </div>
+                          </div>
+                        ) : cardView === 'photo' ? (
+                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a]">
+                            <img src={molding.photoUrl} alt={`${key} 3D Installed Photo`} className="w-full h-36 object-contain" />
+                          </div>
+                        ) : (
+                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0a1680]">
+                            <img src={molding.profileSvg} alt={`${key} Technical Blueprint`} className="w-full h-36 object-contain" />
+                          </div>
+                        )}
+                      </div>
 
-                {/* Reducer */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#0a1680] uppercase">
-                      {isEn ? 'Standard' : 'Estándar'}
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-900">
-                      {isEn ? 'Standard Reducer' : 'Reducer Estándar'}
-                    </h4>
-                    <div className="text-xs text-slate-500 font-mono">1-3/4” x 3/8”</div>
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      {isEn
-                        ? 'Facilitates a gradual gradient between floor levels of different thickness.'
-                        : 'Facilita la transición entre pisos de diferentes alturas, versátil.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(moldingsProduct, 'Standard Reducer', 5, 'pieces', 'Moldura Reducer estándar')
-                    }
-                    className="w-full py-1.5 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add to Quote' : 'Agregar a Cotización'}
-                  </button>
-                </div>
-
-                {/* End Cap */}
-                <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-bold text-[#0a1680] uppercase">
-                      {isEn ? 'Perimeter Cap' : 'Remate Final'}
-                    </span>
-                    <h4 className="text-sm font-bold text-slate-900">End Cap</h4>
-                    <div className="text-xs text-slate-500 font-mono">1-3/8” x 3/8”</div>
-                    <p className="text-[11px] text-slate-600 mt-2">
-                      {isEn
-                        ? 'Clean termination against sliding glass door tracks, fireplace hearths, and carpet edges.'
-                        : 'Completa la instalación contra marcos de puertas corredizas y alfombras.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(moldingsProduct, 'End Cap', 5, 'pieces', 'Moldura End Cap')
-                    }
-                    className="w-full py-1.5 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-700 text-xs font-semibold rounded-lg transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add to Quote' : 'Agregar a Cotización'}
-                  </button>
-                </div>
+                      <button
+                        onClick={() => handleQuickAdd(moldingsProduct, `${key} (${molding.dimensions})`, 5, 'pieces', molding.description)}
+                        className="w-full py-2 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                      >
+                        <Plus size={14} />
+                        <span>{isEn ? `Add ${key.replace('-', ' ')}` : `Agregar ${key.replace('-', ' ')}`}</span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* TAB 3: BASEBOARDS */}
+          {/* TAB 3: BASEBOARDS (All Complete Models) */}
           {activeTab === 'baseboards' && (
             <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4">
-                <h3 className="text-sm font-bold text-slate-900">
-                  {isEn ? 'Baseboards: Details That Make the Difference' : 'Zócalos: Detalles que Marcan la Diferencia'}
-                </h3>
-                <p className="text-xs text-slate-600 mt-1">
-                  {isEn
-                    ? 'Premium pre-primed finger-joint pine baseboards and 100% waterproof EPS polymer moldings.'
-                    : 'Zócalos en madera de pino pre-pintado blanco de alta calidad y opciones en polímero EPS impermeable.'}
-                </p>
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    {isEn ? 'Complete Solid Finger-Joint Pine & Waterproof Baseboards Collection' : 'Colección Completa de Zócalos de Madera Pino Finger-Joint e Impermeables EPS'}
+                  </h3>
+                  <p className="text-xs text-slate-600 mt-1">
+                    {isEn
+                      ? 'All models: BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620 in 14mm & 18mm thicknesses with lengths up to 17 feet, plus 100% waterproof EPS Quarter Round with architectural blueprints & 3D photos.'
+                      : 'Todos los modelos: BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620 en grosores de 14mm y 18mm con largos de hasta 17 pies, además de Cuarto de Bocel EPS impermeable con planos y renders 3D.'}
+                  </p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {/* BB1x6 */}
-                <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                  <div className="font-bold text-slate-900 text-xs">BB1x6 | Pine</div>
-                  <div className="text-[11px] text-slate-500">
-                    {isEn ? 'Thickness: 14mm / 18mm • Height: 5 1/2" • Length: 16 ft' : 'Grosor: 14mm / 18mm • Alto: 5 1/2" • Largo: 16 ft'}
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(baseboardsProduct, 'BB1x6 Pine (14mm / 18mm)', 10, 'pieces', 'Zócalos BB1x6 Pine 16ft')
-                    }
-                    className="mt-2 w-full py-1 text-xs bg-slate-100 hover:bg-[#0a1680] hover:text-white rounded font-medium transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add Pieces' : 'Agregar Tiras'}
-                  </button>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {Object.entries(BASEBOARD_IMAGES).map(([key, baseboard]) => {
+                  const cardView = getEffectiveView(`baseboard-${key}`);
+                  return (
+                    <div key={key} className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-2xl p-4 space-y-3 shadow-xs transition flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold text-[#0a1680] uppercase bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                            {baseboard.height}
+                          </span>
+                          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                            <button
+                              onClick={() => toggleCardView(`baseboard-${key}`, 'diagram')}
+                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
+                                cardView === 'diagram' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
+                              }`}
+                            >
+                              {isEn ? 'Plan' : 'Plano'}
+                            </button>
+                            <button
+                              onClick={() => toggleCardView(`baseboard-${key}`, 'photo')}
+                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
+                                cardView === 'photo' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
+                              }`}
+                            >
+                              {isEn ? '3D' : 'Foto'}
+                            </button>
+                          </div>
+                        </div>
 
-                {/* BB1x4 */}
-                <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                  <div className="font-bold text-slate-900 text-xs">BB1x4 | Pine</div>
-                  <div className="text-[11px] text-slate-500">
-                    {isEn ? 'Thickness: 14mm / 18mm • Height: 3 1/2" • Length: 17 ft' : 'Grosor: 14mm / 18mm • Alto: 3 1/2" • Largo: 17 ft'}
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(baseboardsProduct, 'BB1x4 Pine (14mm / 18mm)', 10, 'pieces', 'Zócalos BB1x4 Pine 17ft')
-                    }
-                    className="mt-2 w-full py-1 text-xs bg-slate-100 hover:bg-[#0a1680] hover:text-white rounded font-medium transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add Pieces' : 'Agregar Tiras'}
-                  </button>
-                </div>
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-extrabold text-slate-900">{key.replace('-', ' ')}</h4>
+                            <span className="text-[10px] font-semibold text-slate-500 font-mono">
+                              {baseboard.length}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 font-sans line-clamp-1">{baseboard.description}</p>
+                        </div>
 
-                {/* BB1x3 */}
-                <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                  <div className="font-bold text-slate-900 text-xs">BB1x3 | Pine</div>
-                  <div className="text-[11px] text-slate-500">
-                    {isEn ? 'Thickness: 18mm • Height: 1 1/2" or 2 1/2" • Length: 17 ft' : 'Grosor: 18mm • Alto: 1 1/2" o 2 1/2" • Largo: 17 ft'}
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(baseboardsProduct, 'BB1x3 Pine (18mm)', 10, 'pieces', 'Zócalos BB1x3 Pine 17ft')
-                    }
-                    className="mt-2 w-full py-1 text-xs bg-slate-100 hover:bg-[#0a1680] hover:text-white rounded font-medium transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add Pieces' : 'Agregar Tiras'}
-                  </button>
-                </div>
+                        {/* Visual Display: Dual or Single */}
+                        {cardView === 'both' ? (
+                          <div className="grid grid-cols-2 gap-1.5">
+                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#09132e] relative group">
+                              <img src={baseboard.profileSvg} alt={`${key} Diagram`} className="w-full h-28 object-contain" />
+                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-blue-200 px-1 py-0.2 rounded font-mono">CAD PLAN</span>
+                            </div>
+                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a] relative group">
+                              <img src={baseboard.photoUrl} alt={`${key} 3D Photo`} className="w-full h-28 object-contain" />
+                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-[#fbedb0] px-1 py-0.2 rounded font-mono">3D PHOTO</span>
+                            </div>
+                          </div>
+                        ) : cardView === 'photo' ? (
+                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a]">
+                            <img src={baseboard.photoUrl} alt={`${key} 3D Installed Photo`} className="w-full h-36 object-contain" />
+                          </div>
+                        ) : (
+                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#09132e]">
+                            <img src={baseboard.profileSvg} alt={`${key} Technical Blueprint`} className="w-full h-36 object-contain" />
+                          </div>
+                        )}
 
-                {/* BB5180 */}
-                <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                  <div className="font-bold text-slate-900 text-xs">BB5180 | Pine Molded</div>
-                  <div className="text-[11px] text-slate-500">
-                    {isEn ? 'Thickness: 14mm • Height: 5 1/4" • Length: 16 ft' : 'Grosor: 14mm • Alto: 5 1/4" • Largo: 16 ft'}
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(baseboardsProduct, 'BB5180 Molded Pine', 10, 'pieces', 'Zócalos BB5180 Pine 16ft')
-                    }
-                    className="mt-2 w-full py-1 text-xs bg-slate-100 hover:bg-[#0a1680] hover:text-white rounded font-medium transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add Pieces' : 'Agregar Tiras'}
-                  </button>
-                </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-600 px-1 pt-1 border-t border-slate-100">
+                          <span>{isEn ? 'Thickness:' : 'Grosor:'} <strong className="text-slate-800">{baseboard.thickness}</strong></span>
+                          <span>{isEn ? 'Length:' : 'Largo:'} <strong className="text-slate-800">{baseboard.length}</strong></span>
+                        </div>
+                      </div>
 
-                {/* BB618 */}
-                <div className="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
-                  <div className="font-bold text-slate-900 text-xs">BB618 | Pine</div>
-                  <div className="text-[11px] text-slate-500">
-                    {isEn ? 'Thickness: 14mm • Height: 5 1/2" • Length: 16 ft' : 'Grosor: 14mm • Alto: 5 1/2" • Largo: 16 ft'}
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(baseboardsProduct, 'BB618 Profile Pine', 10, 'pieces', 'Zócalos BB618 Pine 16ft')
-                    }
-                    className="mt-2 w-full py-1 text-xs bg-slate-100 hover:bg-[#0a1680] hover:text-white rounded font-medium transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add Pieces' : 'Agregar Tiras'}
-                  </button>
-                </div>
-
-                {/* Quarter Round EPS */}
-                <div className="p-3 bg-[#93b2f8]/15 border border-[#93b2f8]/40 rounded-xl space-y-1">
-                  <div className="font-bold text-slate-900 text-xs flex items-center justify-between">
-                    <span>Quarter Round EPS</span>
-                    <span className="text-[9px] bg-[#0a1680] text-white px-1.5 py-0.2 rounded font-bold">Waterproof</span>
-                  </div>
-                  <div className="text-[11px] text-slate-600">
-                    {isEn ? '100% Waterproof polymer • Length: 12 ft' : '100% Resistente al agua • Largo: 12 ft'}
-                  </div>
-                  <button
-                    onClick={() =>
-                      handleQuickAdd(baseboardsProduct, 'Quarter Round EPS Waterproof', 10, 'pieces', 'Quarter Round EPS 12ft')
-                    }
-                    className="mt-2 w-full py-1 text-xs bg-white hover:bg-[#0a1680] hover:text-white rounded font-medium border border-slate-200 transition cursor-pointer"
-                  >
-                    + {isEn ? 'Add Pieces' : 'Agregar Tiras'}
-                  </button>
-                </div>
+                      <button
+                        onClick={() => handleQuickAdd(baseboardsProduct, `${key} (${baseboard.height} - ${baseboard.length})`, 10, 'pieces', baseboard.description)}
+                        className="w-full py-2 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                      >
+                        <Plus size={14} />
+                        <span>{isEn ? `Add ${key.replace('-', ' ')}` : `Agregar ${key.replace('-', ' ')}`}</span>
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

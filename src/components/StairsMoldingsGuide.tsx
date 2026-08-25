@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Footprints,
@@ -7,12 +7,17 @@ import {
   Sparkles,
   CheckCircle2,
   Plus,
-  ArrowRight,
+  ArrowLeft,
   Layers,
   Calculator,
   Check,
-  Building2,
   Maximize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  ShoppingCart,
+  Download,
+  Info,
 } from 'lucide-react';
 import { Product, ProductColor } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -34,9 +39,33 @@ interface Props {
     estimatedSqft: number,
     notes?: string
   ) => void;
+  orderCount?: number;
+  onOpenOrderDrawer?: () => void;
 }
 
-export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) => {
+interface FullViewData {
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  dimensions?: string;
+  category?: string;
+  type: 'cad' | 'photo';
+  specs?: { label: string; value: string }[];
+  itemForQuote?: {
+    product: Product;
+    colorName: string;
+    quantity: number;
+    unit: 'boxes' | 'sqft' | 'linear_ft' | 'pieces';
+    notes: string;
+  };
+}
+
+export const StairsMoldingsGuide: React.FC<Props> = ({
+  onClose,
+  onAddToOrder,
+  orderCount = 0,
+  onOpenOrderDrawer,
+}) => {
   const { language } = useLanguage();
   const isEn = language === 'en';
   const products = getLocalizedProducts(language);
@@ -45,6 +74,26 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const [displayMode, setDisplayMode] = useState<'both' | 'diagram' | 'photo'>('both');
   const [cardViewMap, setCardViewMap] = useState<Record<string, 'diagram' | 'photo'>>({});
+
+  // Full view modal state
+  const [fullViewData, setFullViewData] = useState<FullViewData | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+
+  // Keyboard navigation: Esc to close full view or close guide
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (fullViewData) {
+          setFullViewData(null);
+          setZoomLevel(1);
+        } else {
+          onClose();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [fullViewData, onClose]);
 
   const toggleCardView = (cardId: string, type: 'diagram' | 'photo') => {
     setCardViewMap((prev) => ({ ...prev, [cardId]: type }));
@@ -76,7 +125,7 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
     const colorObj = prod.colors.find((c) => c.name === colorName) || prod.colors[0];
     onAddToOrder(prod, colorObj, quantity, unit, 0, notes);
     setAddedItem(colorName);
-    setTimeout(() => setAddedItem(null), 1500);
+    setTimeout(() => setAddedItem(null), 1800);
   };
 
   const handleAddStairPackage = () => {
@@ -86,74 +135,108 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
     }, Open Returns: ${openEndReturns}`;
     onAddToOrder(stairsProduct, colorObj, stairStepsCount, 'pieces', 0, notes);
     setAddedItem('stair-calc-package');
-    setTimeout(() => setAddedItem(null), 2000);
+    setTimeout(() => setAddedItem(null), 2200);
+  };
+
+  const openImageFullView = (data: FullViewData) => {
+    setZoomLevel(1);
+    setFullViewData(data);
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6">
-      <div
-        className="bg-white w-full max-w-5xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-200 bg-[#fcfdff] flex items-center justify-between">
+    <div className="fixed inset-0 z-50 bg-[#f8fafc] flex flex-col w-full h-full overflow-hidden animate-in fade-in duration-200">
+      {/* Sticky Full-Width Page Header */}
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-xs shrink-0">
+        <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+          {/* Left: Back Button & Page Title */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#0a1680] flex items-center justify-center text-white shadow-md shadow-[#0a1680]/20">
-              <Footprints size={20} className="text-[#f1b94c]" />
-            </div>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0a1680]">
-                {isEn ? 'Technical Finish Guide' : 'Guía Técnica de Acabados'}
-              </span>
-              <h2 className="text-lg font-extrabold text-[#0a1680]">
-                {isEn ? 'SURFACES Stairs, Moldings & Baseboards' : 'Gradas, Molduras & Zócalos SURFACES'}
-              </h2>
+            <button
+              onClick={onClose}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-[#0a1680] text-xs font-bold transition cursor-pointer"
+              title={isEn ? 'Back to Catalog' : 'Volver al Catálogo'}
+            >
+              <ArrowLeft size={16} />
+              <span className="hidden sm:inline">{isEn ? 'Back to Catalog' : 'Volver al Catálogo'}</span>
+              <span className="sm:hidden">{isEn ? 'Back' : 'Atrás'}</span>
+            </button>
+
+            <div className="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#0a1680] flex items-center justify-center text-white shadow-xs">
+                <Footprints size={17} className="text-[#f1b94c]" />
+              </div>
+              <div>
+                <h1 className="text-sm sm:text-base font-extrabold text-[#0a1680] tracking-tight leading-tight">
+                  {isEn ? 'Stairs, Moldings & Baseboards Technical Guide' : 'Guía Técnica de Gradas, Molduras & Zócalos'}
+                </h1>
+                <p className="text-[11px] text-slate-500 font-medium hidden md:block">
+                  {isEn
+                    ? 'CAD Blueprints, 3D Architectural Views & Material Specifications'
+                    : 'Planos CAD, Renders 3D y Especificaciones Técnicas Oficiales'}
+                </p>
+              </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition cursor-pointer"
-            aria-label="Close guide modal"
-          >
-            <X size={18} />
-          </button>
+
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {onOpenOrderDrawer && orderCount > 0 && (
+              <button
+                onClick={onOpenOrderDrawer}
+                className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold shadow-xs transition cursor-pointer"
+              >
+                <ShoppingCart size={14} className="text-[#f1b94c]" />
+                <span>{isEn ? `Quote (${orderCount})` : `Cotizar (${orderCount})`}</span>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center transition cursor-pointer"
+              aria-label="Close"
+              title="Close (Esc)"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Tab Navigation & Global View Mode */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 bg-white px-6 gap-2 py-2 sm:py-0">
-          <div className="flex overflow-x-auto">
+        {/* Full-Width Tab & Mode Navigation Bar */}
+        <div className="w-full bg-white border-t border-slate-100 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-1 sm:py-0">
+          <div className="flex overflow-x-auto space-x-1 sm:space-x-4 no-scrollbar">
             <button
               onClick={() => setActiveTab('stairs')}
-              className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 py-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === 'stairs'
                   ? 'border-[#0a1680] text-[#0a1680]'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Footprints size={16} />
-              <span>{isEn ? 'Stairs & Treads' : 'Gradas & Escaleras (Stair Treads)'}</span>
+              <Footprints size={15} />
+              <span>{isEn ? '1. Stairs & Treads' : '1. Gradas & Escaleras'}</span>
             </button>
             <button
               onClick={() => setActiveTab('moldings')}
-              className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 py-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === 'moldings'
                   ? 'border-[#0a1680] text-[#0a1680]'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Sliders size={16} />
-              <span>{isEn ? 'Moldings & Transitions' : 'Molduras & Transiciones'}</span>
+              <Sliders size={15} />
+              <span>{isEn ? '2. Moldings & Transitions' : '2. Molduras & Transiciones'}</span>
             </button>
             <button
               onClick={() => setActiveTab('baseboards')}
-              className={`flex items-center gap-2 py-3 px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 py-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition cursor-pointer whitespace-nowrap ${
                 activeTab === 'baseboards'
                   ? 'border-[#0a1680] text-[#0a1680]'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Square size={16} />
-              <span>{isEn ? 'Baseboards & Trim' : 'Zócalos & Rodapiés (Baseboards)'}</span>
+              <Square size={15} />
+              <span>{isEn ? '3. Baseboards & Trim' : '3. Zócalos & Rodapiés'}</span>
             </button>
           </div>
 
@@ -167,7 +250,7 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {isEn ? '✨ Both (Diagram + Photo)' : '✨ Ver Ambos (Plano + Foto)'}
+              {isEn ? '✨ Dual (CAD + 3D)' : '✨ Ambos (CAD + 3D)'}
             </button>
             <button
               onClick={() => setDisplayMode('diagram')}
@@ -177,7 +260,7 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {isEn ? '📐 Blueprint CAD' : '📐 Planos CAD'}
+              {isEn ? '📐 CAD Blueprint' : '📐 Plano CAD'}
             </button>
             <button
               onClick={() => setDisplayMode('photo')}
@@ -187,70 +270,103 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              {isEn ? '📸 3D Photo' : '📸 Fotos 3D'}
+              {isEn ? '📸 3D Photo' : '📸 Foto 3D'}
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
-          {/* TAB 1: STAIRS */}
+      {/* Main Full-Width Scrollable Content */}
+      <main className="flex-1 overflow-y-auto w-full">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+          {/* TAB 1: STAIRS & TREADS */}
           {activeTab === 'stairs' && (
-            <div className="space-y-6">
-              <div className="bg-[#93b2f8]/15 border border-[#93b2f8]/40 rounded-2xl p-4">
-                <h3 className="text-sm font-bold text-[#0a1680] flex items-center gap-2">
-                  <Sparkles size={16} className="text-[#0a1680]" />
+            <div className="space-y-8">
+              {/* Informative Banner */}
+              <div className="bg-[#93b2f8]/15 border border-[#93b2f8]/40 rounded-2xl p-5">
+                <h3 className="text-sm sm:text-base font-bold text-[#0a1680] flex items-center gap-2">
+                  <Sparkles size={18} className="text-[#0a1680]" />
                   {isEn
-                    ? 'Quality at Every Step: Color-Matched Stair Treads & Architectural Blueprints'
-                    : 'Quality at Every Step: Gradas y Treads a Juego con Planos Técnicos Vectoriales'}
+                    ? 'Custom-Fabricated Stair Treads & Technical CAD Profiles'
+                    : 'Gradas y Huellas a Medida con Planos Técnicos Vectoriales y Renders 3D'}
                 </h3>
-                <p className="text-xs text-slate-600 mt-1">
+                <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
                   {isEn
-                    ? 'Our treads are custom manufactured to precisely match the color and grain of your SPC or Laminate flooring, delivering cohesive architectural continuity across multi-level residences or commercial spaces.'
+                    ? 'Our treads are precision crafted from matching SPC and Laminate flooring boards to maintain flawless color, grain continuity, and abrasion resistance across multi-level staircases.'
                     : 'Nuestras gradas se fabrican a medida a juego con el mismo color y acabado de su piso SPC o Laminado, garantizando continuidad visual en toda su residencia o proyecto comercial.'}
                 </p>
               </div>
 
-              {/* Step Technical CAD Blueprints: Double Rounded vs Square Step */}
-              <div>
-                <div className="mb-4 flex items-center justify-between">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    {isEn ? '1. Technical Profiles & Dimension Diagrams' : '1. Perfiles Técnicos & Diagramas de Dimensiones'}
-                  </h4>
-                  <span className="text-[11px] text-slate-500 font-medium">
-                    {isEn ? 'Custom length fabrication' : 'Fabricación a medida'}
+              {/* Section 1: Step Profiles (Double Rounded vs Square Step) */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800">
+                    {isEn ? '1. Technical Profiles & Cross-Section Diagrams' : '1. Perfiles Técnicos & Diagramas de Sección'}
+                  </h3>
+                  <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                    {isEn ? 'Click any diagram or photo for Full View / Zoom' : 'Haz clic en cualquier imagen para ver en Pantalla Completa'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Double Rounded */}
-                  <div className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-3xl p-6 space-y-4 shadow-xs transition flex flex-col justify-between">
+                  <div className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-3xl p-6 space-y-4 shadow-xs transition flex flex-col justify-between">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#0a1680]">
-                          {isEn ? 'CLASSIC PROFILE' : 'PERFIL CLÁSICO'}
+                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#0a1680] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+                          {isEn ? 'CLASSIC COMFORT PROFILE' : 'PERFIL CLÁSICO'}
                         </span>
-                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
-                          {isEn ? 'Available in SPC Flooring' : 'Disponible en Pisos SPC'}
+                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
+                          {isEn ? 'Available in SPC' : 'Disponible en SPC'}
                         </span>
                       </div>
 
                       <div className="space-y-1">
-                        <h3 className="text-2xl font-black text-[#0a1680]">Double Rounded</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed">
+                        <h4 className="text-2xl font-black text-[#0a1680]">Double Rounded</h4>
+                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                           {isEn
-                            ? 'Smooth front edge with double soft bullnose radius for enhanced safety and comfort.'
-                            : 'Borde frontal con doble redondeo suave para máxima seguridad, ergonomía y confort.'}
+                            ? 'Smooth front edge with double soft bullnose radius for enhanced safety, ergonomic foot grip, and comfortable daily descent.'
+                            : 'Borde frontal con doble redondeo suave para máxima seguridad, ergonomía y confort en la pisada.'}
                         </p>
                       </div>
 
-                      {/* Clean White Diagram Container */}
-                      <div className="border border-slate-200 rounded-2xl p-4 bg-white flex items-center justify-center min-h-[160px]">
+                      {/* Interactive Diagram with Full-View Zoom Button */}
+                      <div
+                        onClick={() =>
+                          openImageFullView({
+                            title: 'Double Rounded Stair Tread Profile',
+                            subtitle: isEn ? 'Standard SPC Bullnose Nosing Profile' : 'Perfil SPC con doble redondeo ergonómico',
+                            imageUrl: STAIR_PROFILES.DoubleRounded.profileSvg,
+                            dimensions: '12" Depth x 48"/60"/72" Length',
+                            category: 'Stair Steps & Treads',
+                            type: 'cad',
+                            specs: [
+                              { label: isEn ? 'Profile Type' : 'Tipo de Perfil', value: 'Double Bullnose 12mm' },
+                              { label: isEn ? 'Core' : 'Núcleo', value: 'Stone Plastic Composite (SPC)' },
+                              { label: isEn ? 'Available Lengths' : 'Largos Disponibles', value: '48", 60", 72"' },
+                              { label: isEn ? 'Depth' : 'Profundidad', value: '12" (Standard Nosing)' },
+                            ],
+                            itemForQuote: {
+                              product: stairsProduct,
+                              colorName: 'Double Rounded SPC (All Colors)',
+                              quantity: 14,
+                              unit: 'pieces',
+                              notes: 'Double Rounded SPC Stair Treads',
+                            },
+                          })
+                        }
+                        className="border border-slate-200 rounded-2xl p-4 bg-white flex items-center justify-center min-h-[180px] relative group cursor-pointer hover:border-[#0a1680]/60 hover:shadow-md transition"
+                        title={isEn ? 'Click to inspect blueprint in Full View' : 'Clic para ver plano en pantalla completa'}
+                      >
                         <img
                           src={STAIR_PROFILES.DoubleRounded.profileSvg}
                           alt="Double Rounded Profile Diagram"
-                          className="w-full max-h-36 object-contain"
+                          className="w-full max-h-40 object-contain group-hover:scale-102 transition-transform"
                         />
+                        <div className="absolute top-3 right-3 bg-white/90 hover:bg-white text-[#0a1680] p-1.5 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1 text-[11px] font-bold">
+                          <Maximize2 size={13} />
+                          <span className="hidden sm:inline">{isEn ? 'Full View' : 'Ampliar'}</span>
+                        </div>
                       </div>
                     </div>
 
@@ -264,7 +380,7 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                           isEn ? 'Double Rounded SPC Stair Treads' : 'Gradas perfil Double Rounded SPC'
                         )
                       }
-                      className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer mt-2"
+                      className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs sm:text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer mt-2"
                     >
                       <Plus size={16} className="text-white" />
                       <span>
@@ -276,33 +392,63 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   </div>
 
                   {/* Square Step */}
-                  <div className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-3xl p-6 space-y-4 shadow-xs transition flex flex-col justify-between">
+                  <div className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-3xl p-6 space-y-4 shadow-xs transition flex flex-col justify-between">
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#0a1680]">
-                          {isEn ? 'MODERN PROFILE' : 'PERFIL MODERNO'}
+                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#0a1680] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+                          {isEn ? 'CONTEMPORARY 90° PROFILE' : 'PERFIL MODERNO 90°'}
                         </span>
-                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
+                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
                           {isEn ? 'Available in SPC & Laminate' : 'Disponible en SPC & Laminado'}
                         </span>
                       </div>
 
                       <div className="space-y-1">
-                        <h3 className="text-2xl font-black text-[#0a1680]">Square Step</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed">
+                        <h4 className="text-2xl font-black text-[#0a1680]">Square Step</h4>
+                        <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                           {isEn
-                            ? 'Crisp 90-degree squared nosing edge for contemporary minimalist architecture.'
-                            : 'Borde en ángulo recto de 90 grados para proyectos contemporáneos y minimalistas.'}
+                            ? 'Crisp 90-degree squared nosing edge for contemporary minimalist architecture and clean geometric lines.'
+                            : 'Borde en ángulo recto de 90 grados para proyectos contemporáneos, residencias de lujo y estética minimalista.'}
                         </p>
                       </div>
 
-                      {/* Clean White Diagram Container */}
-                      <div className="border border-slate-200 rounded-2xl p-4 bg-white flex items-center justify-center min-h-[160px]">
+                      {/* Interactive Diagram with Full-View Zoom Button */}
+                      <div
+                        onClick={() =>
+                          openImageFullView({
+                            title: 'Square Step 90° Stair Tread Profile',
+                            subtitle: isEn ? 'Modern Right-Angle Architectural Nosing' : 'Perfil en ángulo recto de 90° para SPC y Laminado',
+                            imageUrl: STAIR_PROFILES.SquareStep.profileSvg,
+                            dimensions: '12" Depth x 48"/60"/72" Length',
+                            category: 'Stair Steps & Treads',
+                            type: 'cad',
+                            specs: [
+                              { label: isEn ? 'Profile Type' : 'Tipo de Perfil', value: 'Square Nosing 90°' },
+                              { label: isEn ? 'Core' : 'Núcleo', value: 'SPC Ultra Mineral / Finsa HDF' },
+                              { label: isEn ? 'Available Lengths' : 'Largos Disponibles', value: '48", 60", 72"' },
+                              { label: isEn ? 'Depth' : 'Profundidad', value: '12" (Standard Nosing)' },
+                            ],
+                            itemForQuote: {
+                              product: stairsProduct,
+                              colorName: 'Square Step SPC (All Colors)',
+                              quantity: 14,
+                              unit: 'pieces',
+                              notes: 'Square Step 90° Stair Treads',
+                            },
+                          })
+                        }
+                        className="border border-slate-200 rounded-2xl p-4 bg-white flex items-center justify-center min-h-[180px] relative group cursor-pointer hover:border-[#0a1680]/60 hover:shadow-md transition"
+                        title={isEn ? 'Click to inspect blueprint in Full View' : 'Clic para ver plano en pantalla completa'}
+                      >
                         <img
                           src={STAIR_PROFILES.SquareStep.profileSvg}
                           alt="Square Step Profile Diagram"
-                          className="w-full max-h-36 object-contain"
+                          className="w-full max-h-40 object-contain group-hover:scale-102 transition-transform"
                         />
+                        <div className="absolute top-3 right-3 bg-white/90 hover:bg-white text-[#0a1680] p-1.5 rounded-lg border border-slate-200 shadow-xs flex items-center gap-1 text-[11px] font-bold">
+                          <Maximize2 size={13} />
+                          <span className="hidden sm:inline">{isEn ? 'Full View' : 'Ampliar'}</span>
+                        </div>
                       </div>
                     </div>
 
@@ -316,7 +462,7 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                           isEn ? 'Square Step SPC Stair Treads' : 'Gradas perfil Square Step SPC'
                         )
                       }
-                      className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer mt-2"
+                      className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs sm:text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer mt-2"
                     >
                       <Plus size={16} className="text-white" />
                       <span>
@@ -329,105 +475,209 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                 </div>
               </div>
 
-              {/* Full Steps vs Regular Steps Blueprint & 3D Photo Section */}
-              <div className="bg-[#0a1680] text-white rounded-2xl p-5 space-y-4 shadow-md">
-                <h4 className="text-sm font-bold text-[#f1b94c]">
-                  {isEn
-                    ? '2. Construction Methods: Full Steps (Monolithic) vs Regular Steps (Modular)'
-                    : '2. Métodos de Construcción: Full Steps (Monolíticas) vs Regular Steps (Modulares)'}
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 bg-[#081268] rounded-xl border border-white/15 space-y-2">
-                    <div className="font-extrabold text-white text-base">Full Steps (Monolithic Tread)</div>
-                    <p className="text-white/80 text-[11px] leading-relaxed">
-                      {isEn
-                        ? 'Continuous unbroken single-piece 12" depth tread with integrated nosing. Zero seams across the step surface. Ideal for floating open stringers.'
-                        : 'Grada continua de una sola pieza monolítica de 12" de profundidad con nariz integrada. Cero uniones sobre la superficie. Ideal para escaleras flotantes.'}
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#060e36]">
-                        <img src={STAIR_PROFILES.FullStep.profileSvg} alt="Full Step Blueprint" className="w-full h-28 object-contain" />
+              {/* Section 2: Construction Methods (Full Steps vs Regular Steps) */}
+              <div className="bg-[#0a1680] text-white rounded-3xl p-6 sm:p-8 space-y-6 shadow-lg relative overflow-hidden">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#f1b94c] text-[#0a1680] text-[10px] font-bold uppercase tracking-wider">
+                    {isEn ? 'CONSTRUCTION SPECIFICATIONS' : 'MÉTODOS CONSTRUCTIVOS'}
+                  </div>
+                  <h3 className="text-lg sm:text-2xl font-black text-white">
+                    {isEn
+                      ? 'Full Steps (Monolithic) vs Regular Steps (Modular Assembly)'
+                      : 'Full Steps (Monolíticas de 1 Pieza) vs Regular Steps (Ensamblaje Modular)'}
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs sm:text-sm">
+                  {/* Full Step */}
+                  <div className="p-5 bg-[#081268] rounded-2xl border border-white/15 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="font-extrabold text-white text-lg sm:text-xl flex items-center justify-between">
+                        <span>Full Steps (Monolithic Tread)</span>
+                        <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+                          {isEn ? 'Seamless 1-Piece' : '1 Sola Pieza'}
+                        </span>
                       </div>
-                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#0f172a]">
+                      <p className="text-white/80 text-xs sm:text-sm leading-relaxed">
+                        {isEn
+                          ? 'Continuous unbroken single-piece 12" depth tread with integrated front nosing. Zero seams across the step surface. Ideal for floating open stringers.'
+                          : 'Grada continua de una sola pieza monolítica de 12" de profundidad con nariz integrada. Cero uniones sobre la superficie. Ideal para escaleras flotantes.'}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      <div
+                        onClick={() =>
+                          openImageFullView({
+                            title: 'Full Step Monolithic Blueprint',
+                            imageUrl: STAIR_PROFILES.FullStep.profileSvg,
+                            dimensions: '12" Depth x 48"/60" Length',
+                            category: 'Monolithic Stair Steps',
+                            type: 'cad',
+                          })
+                        }
+                        className="rounded-xl overflow-hidden border border-white/20 bg-[#060e36] p-3 flex flex-col items-center justify-center min-h-[140px] relative group cursor-pointer hover:border-white/40 transition"
+                      >
+                        <img src={STAIR_PROFILES.FullStep.profileSvg} alt="Full Step Blueprint" className="w-full h-28 object-contain" />
+                        <span className="absolute bottom-2 left-2 bg-black/60 text-[9px] text-[#93b2f8] px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                          <Maximize2 size={10} /> CAD BLUEPRINT
+                        </span>
+                      </div>
+                      <div
+                        onClick={() =>
+                          openImageFullView({
+                            title: 'Full Step 3D Architectural View',
+                            imageUrl: STAIR_PROFILES.FullStep.photoUrl,
+                            dimensions: 'Monolithic Floating Tread',
+                            category: '3D Render & Installation',
+                            type: 'photo',
+                          })
+                        }
+                        className="rounded-xl overflow-hidden border border-white/20 bg-[#0f172a] p-3 flex flex-col items-center justify-center min-h-[140px] relative group cursor-pointer hover:border-white/40 transition"
+                      >
                         <img src={STAIR_PROFILES.FullStep.photoUrl} alt="Full Step 3D View" className="w-full h-28 object-contain" />
+                        <span className="absolute bottom-2 left-2 bg-black/60 text-[9px] text-[#fbedb0] px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                          <Maximize2 size={10} /> 3D RENDER
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-4 bg-[#081268] rounded-xl border border-white/15 space-y-2">
-                    <div className="font-extrabold text-white text-base">
-                      {isEn ? 'Regular Steps (Modular Assembly)' : 'Regular Steps (Ensamblaje Modular)'}
-                    </div>
-                    <p className="text-white/80 text-[11px] leading-relaxed">
-                      {isEn
-                        ? 'Modular system combining the front nose tread piece with matching flooring planks and matching or crisp white risers.'
-                        : 'Sistema modular que une la nariz frontal con tablas estándar de piso y contrahuella (riser) a juego o blanca.'}
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
-                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#060e36]">
-                        <img src={STAIR_PROFILES.RegularStep.profileSvg} alt="Regular Step Blueprint" className="w-full h-28 object-contain" />
+                  {/* Regular Step */}
+                  <div className="p-5 bg-[#081268] rounded-2xl border border-white/15 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="font-extrabold text-white text-lg sm:text-xl flex items-center justify-between">
+                        <span>Regular Steps (Modular)</span>
+                        <span className="text-xs bg-blue-500/20 text-blue-300 px-2.5 py-0.5 rounded-full border border-blue-400/30">
+                          {isEn ? 'Modular System' : 'Sistema Modular'}
+                        </span>
                       </div>
-                      <div className="rounded-lg overflow-hidden border border-white/20 bg-[#1e293b]">
+                      <p className="text-white/80 text-xs sm:text-sm leading-relaxed">
+                        {isEn
+                          ? 'Modular system combining the front nose tread piece with matching flooring planks and matching or crisp white risers.'
+                          : 'Sistema modular que une la nariz frontal con tablas estándar de piso y contrahuella (riser) a juego o blanca.'}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                      <div
+                        onClick={() =>
+                          openImageFullView({
+                            title: 'Regular Step Blueprint',
+                            imageUrl: STAIR_PROFILES.RegularStep.profileSvg,
+                            dimensions: 'Front Nose + Planks Assembly',
+                            category: 'Modular Stair Steps',
+                            type: 'cad',
+                          })
+                        }
+                        className="rounded-xl overflow-hidden border border-white/20 bg-[#060e36] p-3 flex flex-col items-center justify-center min-h-[140px] relative group cursor-pointer hover:border-white/40 transition"
+                      >
+                        <img src={STAIR_PROFILES.RegularStep.profileSvg} alt="Regular Step Blueprint" className="w-full h-28 object-contain" />
+                        <span className="absolute bottom-2 left-2 bg-black/60 text-[9px] text-[#93b2f8] px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                          <Maximize2 size={10} /> CAD BLUEPRINT
+                        </span>
+                      </div>
+                      <div
+                        onClick={() =>
+                          openImageFullView({
+                            title: 'Regular Step 3D Assembly View',
+                            imageUrl: STAIR_PROFILES.RegularStep.photoUrl,
+                            dimensions: 'Modular Tread + Riser',
+                            category: '3D Render & Installation',
+                            type: 'photo',
+                          })
+                        }
+                        className="rounded-xl overflow-hidden border border-white/20 bg-[#1e293b] p-3 flex flex-col items-center justify-center min-h-[140px] relative group cursor-pointer hover:border-white/40 transition"
+                      >
                         <img src={STAIR_PROFILES.RegularStep.photoUrl} alt="Regular Step 3D View" className="w-full h-28 object-contain" />
+                        <span className="absolute bottom-2 left-2 bg-black/60 text-[9px] text-[#fbedb0] px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                          <Maximize2 size={10} /> 3D RENDER
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* 4 Rich Step Application & Example Visual Cards (Specifically requested by user) */}
+              {/* Section 3: 4 Rich Architectural Example Cards */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                      {isEn ? '3. Step Applications & Real Architectural Examples' : '3. Aplicaciones y Ejemplos Reales de Gradas'}
-                    </h4>
-                    <p className="text-[11px] text-slate-500">
+                    <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-800">
+                      {isEn ? '3. Step Applications & Real Architectural Layouts' : '3. Aplicaciones y Diseños de Escaleras Reales'}
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
                       {isEn
-                        ? 'Visual rendering examples and technical specifications for diverse architectural staircase layouts'
-                        : 'Renders visuales y especificaciones técnicas para los distintos tipos de instalación y diseños de escalera'}
+                        ? 'High-resolution renders and technical specifications for diverse architectural staircase formats'
+                        : 'Renders en alta resolución y especificaciones técnicas para los distintos tipos de instalación'}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {STAIR_EXAMPLE_CARDS.map((card) => (
                     <div
                       key={card.id}
-                      className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-2xl p-4 space-y-3 shadow-xs hover:shadow-md transition"
+                      className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-3xl p-5 space-y-4 shadow-xs hover:shadow-md transition flex flex-col justify-between"
                     >
-                      <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-950">
-                        <img
-                          src={card.imageSvg}
-                          alt={isEn ? card.titleEn : card.titleEs}
-                          className="w-full h-48 object-contain"
-                        />
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-[#0a1680] uppercase tracking-wide">
-                            {card.category}
-                          </span>
-                          <span className="text-[10px] text-slate-500 font-mono">{card.dimensions}</span>
+                      <div className="space-y-3">
+                        <div
+                          onClick={() =>
+                            openImageFullView({
+                              title: isEn ? card.titleEn : card.titleEs,
+                              subtitle: isEn ? card.subtitleEn : card.subtitleEs,
+                              imageUrl: card.imageSvg,
+                              dimensions: card.dimensions,
+                              category: card.category,
+                              type: 'photo',
+                              specs: card.tags.map((t) => ({ label: 'Spec', value: t })),
+                              itemForQuote: {
+                                product: stairsProduct,
+                                colorName: isEn ? card.titleEn : card.titleEs,
+                                quantity: 14,
+                                unit: 'pieces',
+                                notes: `Stair Configuration: ${isEn ? card.titleEn : card.titleEs}`,
+                              },
+                            })
+                          }
+                          className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 p-2 relative group cursor-pointer"
+                        >
+                          <img
+                            src={card.imageSvg}
+                            alt={isEn ? card.titleEn : card.titleEs}
+                            className="w-full h-56 object-contain group-hover:scale-102 transition-transform"
+                          />
+                          <div className="absolute top-4 right-4 bg-black/70 hover:bg-black text-white p-2 rounded-xl border border-white/20 shadow-md flex items-center gap-1.5 text-xs font-bold">
+                            <Maximize2 size={14} className="text-[#f1b94c]" />
+                            <span>{isEn ? 'Full View' : 'Ver Pantalla Completa'}</span>
+                          </div>
                         </div>
-                        <h4 className="text-sm font-extrabold text-slate-900">
-                          {isEn ? card.titleEn : card.titleEs}
-                        </h4>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          {isEn ? card.subtitleEn : card.subtitleEs}
-                        </p>
-                      </div>
 
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {card.tags.map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-[#0a1680] uppercase tracking-wide bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                              {card.category}
+                            </span>
+                            <span className="text-xs text-slate-500 font-mono font-semibold">{card.dimensions}</span>
+                          </div>
+                          <h4 className="text-base font-extrabold text-slate-900">
+                            {isEn ? card.titleEn : card.titleEs}
+                          </h4>
+                          <p className="text-xs text-slate-600 leading-relaxed">
+                            {isEn ? card.subtitleEn : card.subtitleEs}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {card.tags.map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-medium"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
 
                       <button
@@ -440,9 +690,9 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                             isEn ? `Configuration: ${card.titleEn}` : `Configuración: ${card.titleEs}`
                           )
                         }
-                        className="w-full py-2 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full py-2.5 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
                       >
-                        <Plus size={14} />
+                        <Plus size={15} />
                         <span>{isEn ? 'Add this Stair Configuration' : 'Cotizar esta Configuración'}</span>
                       </button>
                     </div>
@@ -450,19 +700,28 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                 </div>
               </div>
 
-              {/* Interactive Stair Package Configurator & Quote Builder */}
-              <div className="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-4">
-                <div className="flex items-center gap-2">
-                  <Calculator size={18} className="text-[#0a1680]" />
-                  <h4 className="text-sm font-bold text-slate-900">
-                    {isEn ? 'Staircase Calculator & Custom Quote Builder' : 'Calculadora de Escaleras y Cotizador a Medida'}
-                  </h4>
+              {/* Interactive Stair Package Configurator */}
+              <div className="bg-white border border-slate-300 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#0a1680] flex items-center justify-center text-white">
+                    <Calculator size={18} className="text-[#f1b94c]" />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-extrabold text-slate-900">
+                      {isEn ? 'Staircase Calculator & Custom Quote Builder' : 'Calculadora de Escaleras y Cotizador a Medida'}
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      {isEn
+                        ? 'Calculate exact treads, matching risers, and side returns for your staircase'
+                        : 'Calcula huellas, contrahuellas a juego y retornos laterales para tu obra'}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                   {/* Step Count */}
-                  <div className="space-y-1">
-                    <label className="font-semibold text-slate-700 block">
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700 block">
                       {isEn ? 'Number of Steps:' : 'Número de Gradas:'}
                     </label>
                     <input
@@ -471,19 +730,19 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                       max="100"
                       value={stairStepsCount}
                       onChange={(e) => setStairStepsCount(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-bold focus:border-[#0a1680] focus:bg-white outline-none"
                     />
                   </div>
 
                   {/* Tread Length */}
-                  <div className="space-y-1">
-                    <label className="font-semibold text-slate-700 block">
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700 block">
                       {isEn ? 'Tread Length:' : 'Largo de Grada:'}
                     </label>
                     <select
                       value={stairTreadLength}
                       onChange={(e) => setStairTreadLength(e.target.value)}
-                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-bold focus:border-[#0a1680] focus:bg-white outline-none"
                     >
                       <option value='48"'>48" (Standard / Estándar)</option>
                       <option value='60"'>60" (Wide / Amplia)</option>
@@ -492,14 +751,14 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   </div>
 
                   {/* Profile choice */}
-                  <div className="space-y-1">
-                    <label className="font-semibold text-slate-700 block">
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700 block">
                       {isEn ? 'Nosing Profile:' : 'Perfil de Nariz:'}
                     </label>
                     <select
                       value={stairProfileChoice}
                       onChange={(e) => setStairProfileChoice(e.target.value as any)}
-                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-bold focus:border-[#0a1680] focus:bg-white outline-none"
                     >
                       <option value="DoubleRounded">Double Rounded (SPC)</option>
                       <option value="SquareStep">Square Step 90° (SPC/Lam)</option>
@@ -507,14 +766,14 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   </div>
 
                   {/* Open-end returns */}
-                  <div className="space-y-1">
-                    <label className="font-semibold text-slate-700 block">
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700 block">
                       {isEn ? 'Open Side Miter Caps:' : 'Terminales Laterales:'}
                     </label>
                     <select
                       value={openEndReturns}
                       onChange={(e) => setOpenEndReturns(e.target.value as any)}
-                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-900 font-bold focus:border-[#0a1680] outline-none"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-bold focus:border-[#0a1680] focus:bg-white outline-none"
                     >
                       <option value="none">{isEn ? 'None (Closed between walls)' : 'Ninguno (Entre paredes)'}</option>
                       <option value="left">{isEn ? 'Left Open End' : 'Abierto a la Izquierda'}</option>
@@ -524,8 +783,8 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-2">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                <div className="flex items-center gap-3 pt-1">
+                  <label className="flex items-center gap-2.5 text-xs font-semibold text-slate-800 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={includeMatchingRisers}
@@ -542,9 +801,9 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
 
                 <button
                   onClick={handleAddStairPackage}
-                  className="w-full py-3 bg-[#0a1680] hover:bg-[#081268] text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer"
+                  className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer"
                 >
-                  {addedItem === 'stair-calc-package' ? <Check size={16} /> : <Plus size={16} className="text-[#f1b94c]" />}
+                  {addedItem === 'stair-calc-package' ? <Check size={18} /> : <Plus size={18} className="text-[#f1b94c]" />}
                   <span>
                     {addedItem === 'stair-calc-package'
                       ? (isEn ? 'Stair Package Added to Quote!' : '¡Paquete de Escalera Agregado a la Cotización!')
@@ -557,44 +816,47 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
             </div>
           )}
 
-          {/* TAB 2: MOLDINGS (All Complete Models) */}
+          {/* TAB 2: MOLDINGS & TRANSITIONS */}
           {activeTab === 'moldings' && (
-            <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {isEn ? 'Infinite Design Possibilities with Moldings' : 'Posibilidades Infinitas con Molduras'}
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    {isEn ? 'Color-Matched Moldings & Transition Profiles' : 'Molduras de Transición y Terminaciones a Juego Exacto'}
                   </h3>
-                  <p className="text-xs text-slate-600 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
                     {isEn
-                      ? 'Complete catalog of transition moldings: CM and standard profiles for level floors, step-down reducers, sliding door end caps, and expansion transitions with technical blueprints & 3D renders.'
-                      : 'Catálogo completo de molduras de transición: perfiles CM y estándar para pisos a nivel, reductores de desnivel, remates para puertas correderas y dilataciones con planos CAD y renders 3D.'}
+                      ? 'Complete selection of transition profiles: CM and standard T-Moldings for level joints, reducers for gradual height drops, and end caps for sliding glass doors and carpet edges.'
+                      : 'Colección completa de molduras: T-Molding para uniones al mismo nivel, Reductores para desniveles suaves, y Terminales (End Caps) para puertas correderas y transiciones a alfombra.'}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.entries(MOLDING_IMAGES).map(([key, molding]) => {
                   const cardView = getEffectiveView(`molding-${key}`);
                   return (
-                    <div key={key} className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-2xl p-4 space-y-3 shadow-xs transition flex flex-col justify-between">
-                      <div className="space-y-2">
+                    <div
+                      key={key}
+                      className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-3xl p-5 space-y-4 shadow-xs hover:shadow-md transition flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-[#0a1680] uppercase bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                          <span className="text-[10px] font-extrabold text-[#0a1680] uppercase bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
                             {molding.dimensions}
                           </span>
                           <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                             <button
                               onClick={() => toggleCardView(`molding-${key}`, 'diagram')}
-                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer ${
                                 cardView === 'diagram' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
                               }`}
                             >
-                              {isEn ? 'Plan' : 'Plano'}
+                              {isEn ? 'CAD' : 'Plano'}
                             </button>
                             <button
                               onClick={() => toggleCardView(`molding-${key}`, 'photo')}
-                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer ${
                                 cardView === 'photo' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
                               }`}
                             >
@@ -604,29 +866,90 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                         </div>
 
                         <div>
-                          <h4 className="text-sm font-extrabold text-slate-900">{key.replace('-', ' ')}</h4>
-                          <p className="text-[11px] text-slate-500 font-sans line-clamp-2 mt-0.5">{molding.description}</p>
+                          <h4 className="text-base font-extrabold text-slate-900">{key.replace('-', ' ')}</h4>
+                          <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{molding.description}</p>
                         </div>
 
-                        {/* Visual Display: Dual or Single */}
+                        {/* Visual Display with Click-to-Zoom */}
                         {cardView === 'both' ? (
                           <div className="grid grid-cols-2 gap-2">
-                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-white p-2 flex items-center justify-center relative group">
+                            <div
+                              onClick={() =>
+                                openImageFullView({
+                                  title: `${key.replace('-', ' ')} CAD Blueprint`,
+                                  subtitle: molding.description,
+                                  imageUrl: molding.profileSvg,
+                                  dimensions: molding.dimensions,
+                                  category: 'Transition Moldings',
+                                  type: 'cad',
+                                })
+                              }
+                              className="rounded-2xl overflow-hidden border border-slate-200 bg-white p-2.5 flex items-center justify-center min-h-[140px] relative group cursor-pointer hover:border-[#0a1680]/60 transition"
+                              title={isEn ? 'Click for Full View' : 'Clic para pantalla completa'}
+                            >
                               <img src={molding.profileSvg} alt={`${key} Diagram`} className="w-full h-28 object-contain" />
-                              <span className="absolute bottom-1 left-1 bg-slate-100 text-[8px] text-[#0a1680] font-bold px-1.5 py-0.5 rounded border border-slate-200">CAD PLAN</span>
+                              <span className="absolute bottom-1.5 left-1.5 bg-slate-100 text-[8px] text-[#0a1680] font-bold px-1.5 py-0.5 rounded border border-slate-200 flex items-center gap-1">
+                                <Maximize2 size={9} /> CAD
+                              </span>
                             </div>
-                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 relative group">
+
+                            <div
+                              onClick={() =>
+                                openImageFullView({
+                                  title: `${key.replace('-', ' ')} 3D Render`,
+                                  subtitle: molding.description,
+                                  imageUrl: molding.photoUrl,
+                                  dimensions: molding.dimensions,
+                                  category: 'Transition Moldings',
+                                  type: 'photo',
+                                })
+                              }
+                              className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 p-2.5 flex items-center justify-center min-h-[140px] relative group cursor-pointer hover:border-[#0a1680]/60 transition"
+                              title={isEn ? 'Click for Full View' : 'Clic para pantalla completa'}
+                            >
                               <img src={molding.photoUrl} alt={`${key} 3D Photo`} className="w-full h-28 object-contain" />
-                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-[#fbedb0] px-1.5 py-0.5 rounded font-mono">3D PHOTO</span>
+                              <span className="absolute bottom-1.5 left-1.5 bg-black/70 text-[8px] text-[#fbedb0] px-1.5 py-0.5 rounded font-mono flex items-center gap-1">
+                                <Maximize2 size={9} /> 3D
+                              </span>
                             </div>
                           </div>
                         ) : cardView === 'photo' ? (
-                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 p-2 flex items-center justify-center">
+                          <div
+                            onClick={() =>
+                              openImageFullView({
+                                title: `${key.replace('-', ' ')} 3D Render`,
+                                subtitle: molding.description,
+                                imageUrl: molding.photoUrl,
+                                dimensions: molding.dimensions,
+                                category: 'Transition Moldings',
+                                type: 'photo',
+                              })
+                            }
+                            className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 p-3 flex items-center justify-center min-h-[160px] relative group cursor-pointer hover:border-[#0a1680]/60 transition"
+                          >
                             <img src={molding.photoUrl} alt={`${key} 3D Installed Photo`} className="w-full h-36 object-contain" />
+                            <div className="absolute top-2 right-2 bg-black/60 text-white p-1 rounded text-[10px] flex items-center gap-1">
+                              <Maximize2 size={11} />
+                            </div>
                           </div>
                         ) : (
-                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-white p-3 flex items-center justify-center">
+                          <div
+                            onClick={() =>
+                              openImageFullView({
+                                title: `${key.replace('-', ' ')} CAD Blueprint`,
+                                subtitle: molding.description,
+                                imageUrl: molding.profileSvg,
+                                dimensions: molding.dimensions,
+                                category: 'Transition Moldings',
+                                type: 'cad',
+                              })
+                            }
+                            className="rounded-2xl overflow-hidden border border-slate-200 bg-white p-3 flex items-center justify-center min-h-[160px] relative group cursor-pointer hover:border-[#0a1680]/60 transition"
+                          >
                             <img src={molding.profileSvg} alt={`${key} Technical Blueprint`} className="w-full h-36 object-contain" />
+                            <div className="absolute top-2 right-2 bg-white/90 text-[#0a1680] p-1 rounded border border-slate-200 text-[10px] flex items-center gap-1">
+                              <Maximize2 size={11} />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -635,7 +958,7 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                         onClick={() => handleQuickAdd(moldingsProduct, `${key} (${molding.dimensions})`, 5, 'pieces', molding.description)}
                         className="w-full py-2.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2 shadow-xs"
                       >
-                        <Plus size={14} className="text-white" />
+                        <Plus size={15} className="text-white" />
                         <span>{isEn ? `+ Quote ${key.replace('-', ' ')}` : `+ Cotizar ${key.replace('-', ' ')}`}</span>
                       </button>
                     </div>
@@ -645,85 +968,76 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
             </div>
           )}
 
-          {/* TAB 3: BASEBOARDS (All Complete Models) */}
+          {/* TAB 3: BASEBOARDS & TRIM */}
           {activeTab === 'baseboards' && (
-            <div className="space-y-4">
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">
-                    {isEn ? 'Complete Solid Finger-Joint Pine & Waterproof Baseboards Collection' : 'Colección Completa de Zócalos de Madera Pino Finger-Joint e Impermeables EPS'}
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    {isEn ? 'Finger-Joint Pine & Waterproof EPS Baseboards' : 'Colección Completa de Zócalos de Madera Pino Finger-Joint e Impermeables EPS'}
                   </h3>
-                  <p className="text-xs text-slate-600 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-3xl leading-relaxed">
                     {isEn
-                      ? 'All models: BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620 in 14mm & 18mm thicknesses with lengths up to 17 feet, plus 100% waterproof EPS Quarter Round with architectural blueprints & 3D photos.'
-                      : 'Todos los modelos: BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620 en grosores de 14mm y 18mm con largos de hasta 17 pies, además de Cuarto de Bocel EPS impermeable con planos y renders 3D.'}
+                      ? 'Solid finger-joint primed pine baseboards (BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620) in 14mm & 18mm thicknesses with lengths up to 17 feet, and 100% waterproof EPS Quarter Round profiles.'
+                      : 'Zócalos de pino finger-joint pre-pintados en blanco (BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620) en 14mm y 18mm con largos de hasta 17 pies, y perfiles Quarter Round EPS 100% impermeables.'}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.entries(BASEBOARD_IMAGES).map(([key, baseboard]) => {
-                  const cardView = getEffectiveView(`baseboard-${key}`);
                   return (
-                    <div key={key} className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-2xl p-4 space-y-3 shadow-xs transition flex flex-col justify-between">
-                      <div className="space-y-2">
+                    <div
+                      key={key}
+                      className="bg-white border border-slate-200 hover:border-[#0a1680]/50 rounded-3xl p-5 space-y-4 shadow-xs hover:shadow-md transition flex flex-col justify-between"
+                    >
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-[#0a1680] uppercase bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                          <span className="text-[10px] font-extrabold text-[#0a1680] uppercase bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
                             {baseboard.height}
                           </span>
-                          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-                            <button
-                              onClick={() => toggleCardView(`baseboard-${key}`, 'diagram')}
-                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
-                                cardView === 'diagram' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
-                              }`}
-                            >
-                              {isEn ? 'Plan' : 'Plano'}
-                            </button>
-                            <button
-                              onClick={() => toggleCardView(`baseboard-${key}`, 'photo')}
-                              className={`px-1.5 py-0.5 rounded text-[9px] font-semibold cursor-pointer ${
-                                cardView === 'photo' ? 'bg-[#0a1680] text-white' : 'text-slate-600'
-                              }`}
-                            >
-                              {isEn ? '3D' : 'Foto'}
-                            </button>
-                          </div>
+                          <span className="text-xs font-semibold text-slate-500 font-mono">
+                            {baseboard.length}
+                          </span>
                         </div>
 
                         <div>
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-extrabold text-slate-900">{key.replace('-', ' ')}</h4>
-                            <span className="text-[10px] font-semibold text-slate-500 font-mono">
-                              {baseboard.length}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 font-sans line-clamp-1">{baseboard.description}</p>
+                          <h4 className="text-base font-extrabold text-slate-900">{key.replace('-', ' ')}</h4>
+                          <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{baseboard.description}</p>
                         </div>
 
-                        {/* Visual Display: Dual or Single */}
-                        {cardView === 'both' ? (
-                          <div className="grid grid-cols-2 gap-1.5">
-                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#09132e] relative group">
-                              <img src={baseboard.profileSvg} alt={`${key} Diagram`} className="w-full h-28 object-contain" />
-                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-blue-200 px-1 py-0.2 rounded font-mono">CAD PLAN</span>
-                            </div>
-                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a] relative group">
-                              <img src={baseboard.photoUrl} alt={`${key} 3D Photo`} className="w-full h-28 object-contain" />
-                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-[#fbedb0] px-1 py-0.2 rounded font-mono">3D PHOTO</span>
-                            </div>
+                        {/* High-Res 3D Installed Photo Display */}
+                        <div
+                          onClick={() =>
+                            openImageFullView({
+                              title: `${key.replace('-', ' ')} 3D View`,
+                              subtitle: baseboard.description,
+                              imageUrl: baseboard.photoUrl,
+                              dimensions: `${baseboard.height} x ${baseboard.length}`,
+                              category: 'Baseboards & Trim',
+                              type: 'photo',
+                              specs: [
+                                { label: isEn ? 'Height' : 'Altura', value: baseboard.height },
+                                { label: isEn ? 'Length' : 'Largo', value: baseboard.length },
+                                { label: isEn ? 'Thickness' : 'Grosor', value: baseboard.thickness },
+                              ],
+                            })
+                          }
+                          className="rounded-2xl overflow-hidden border border-slate-200 bg-[#0f172a] p-3 flex items-center justify-center min-h-[170px] relative group cursor-pointer hover:border-[#0a1680]/60 transition"
+                          title={isEn ? 'Click to inspect in Full View' : 'Clic para ver en pantalla completa'}
+                        >
+                          <img
+                            src={baseboard.photoUrl}
+                            alt={`${key} 3D Installed Photo`}
+                            className="w-full h-40 object-contain group-hover:scale-105 transition-transform duration-200"
+                          />
+                          <div className="absolute top-2.5 right-2.5 bg-black/70 hover:bg-black text-white px-2 py-1 rounded-lg border border-white/20 text-[11px] font-bold flex items-center gap-1 shadow-xs">
+                            <Maximize2 size={12} className="text-[#f1b94c]" />
+                            <span>{isEn ? 'Full View' : 'Ampliar'}</span>
                           </div>
-                        ) : cardView === 'photo' ? (
-                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a]">
-                            <img src={baseboard.photoUrl} alt={`${key} 3D Installed Photo`} className="w-full h-36 object-contain" />
-                          </div>
-                        ) : (
-                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#09132e]">
-                            <img src={baseboard.profileSvg} alt={`${key} Technical Blueprint`} className="w-full h-36 object-contain" />
-                          </div>
-                        )}
+                        </div>
 
-                        <div className="flex items-center justify-between text-[11px] text-slate-600 px-1 pt-1 border-t border-slate-100">
+                        <div className="flex items-center justify-between text-xs text-slate-600 px-1 pt-1 border-t border-slate-100">
                           <span>{isEn ? 'Thickness:' : 'Grosor:'} <strong className="text-slate-800">{baseboard.thickness}</strong></span>
                           <span>{isEn ? 'Length:' : 'Largo:'} <strong className="text-slate-800">{baseboard.length}</strong></span>
                         </div>
@@ -731,10 +1045,10 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
 
                       <button
                         onClick={() => handleQuickAdd(baseboardsProduct, `${key} (${baseboard.height} - ${baseboard.length})`, 10, 'pieces', baseboard.description)}
-                        className="w-full py-2 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                        className="w-full py-2.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2 shadow-xs"
                       >
-                        <Plus size={14} />
-                        <span>{isEn ? `Add ${key.replace('-', ' ')}` : `Agregar ${key.replace('-', ' ')}`}</span>
+                        <Plus size={15} className="text-white" />
+                        <span>{isEn ? `+ Quote ${key.replace('-', ' ')}` : `+ Cotizar ${key.replace('-', ' ')}`}</span>
                       </button>
                     </div>
                   );
@@ -743,7 +1057,123 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
             </div>
           )}
         </div>
-      </div>
+      </main>
+
+      {/* FULL VIEW / LIGHTBOX MODAL WITH ZOOM */}
+      {fullViewData && (
+        <div
+          className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150"
+          onClick={() => {
+            setFullViewData(null);
+            setZoomLevel(1);
+          }}
+        >
+          <div
+            className="bg-slate-950 border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[95vh] overflow-hidden flex flex-col shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Lightbox Header */}
+            <div className="px-5 py-3.5 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between gap-3 shrink-0">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-[#f1b94c] uppercase tracking-wider bg-slate-800 px-2 py-0.5 rounded">
+                    {fullViewData.category || (fullViewData.type === 'cad' ? 'CAD Blueprint' : '3D High-Res View')}
+                  </span>
+                  {fullViewData.dimensions && (
+                    <span className="text-xs text-slate-400 font-mono">{fullViewData.dimensions}</span>
+                  )}
+                </div>
+                <h3 className="text-base sm:text-lg font-black text-white">{fullViewData.title}</h3>
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl">
+                  <button
+                    onClick={() => setZoomLevel((z) => Math.max(0.6, z - 0.2))}
+                    className="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-slate-700 transition cursor-pointer"
+                    title="Zoom Out"
+                  >
+                    <ZoomOut size={16} />
+                  </button>
+                  <span className="text-[11px] font-mono text-slate-300 px-1 font-bold">
+                    {Math.round(zoomLevel * 100)}%
+                  </span>
+                  <button
+                    onClick={() => setZoomLevel((z) => Math.min(2.5, z + 0.2))}
+                    className="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-slate-700 transition cursor-pointer"
+                    title="Zoom In"
+                  >
+                    <ZoomIn size={16} />
+                  </button>
+                  <button
+                    onClick={() => setZoomLevel(1)}
+                    className="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-slate-700 transition cursor-pointer"
+                    title="Reset Zoom"
+                  >
+                    <RotateCcw size={14} />
+                  </button>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setFullViewData(null);
+                    setZoomLevel(1);
+                  }}
+                  className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Lightbox Image Stage with Zoom */}
+            <div className="flex-1 overflow-auto p-4 sm:p-8 flex items-center justify-center bg-[#070d1f] min-h-[320px] max-h-[65vh]">
+              <div
+                className="transition-transform duration-150 flex items-center justify-center"
+                style={{ transform: `scale(${zoomLevel})` }}
+              >
+                <img
+                  src={fullViewData.imageUrl}
+                  alt={fullViewData.title}
+                  className="max-h-[58vh] max-w-full object-contain select-none"
+                />
+              </div>
+            </div>
+
+            {/* Lightbox Footer & Specs */}
+            <div className="px-5 py-3.5 border-t border-slate-800 bg-slate-900/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+              <div className="text-xs text-slate-300 space-y-0.5">
+                {fullViewData.subtitle && <p className="font-medium text-slate-300">{fullViewData.subtitle}</p>}
+                {fullViewData.specs && (
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-400 pt-0.5">
+                    {fullViewData.specs.map((s, idx) => (
+                      <span key={idx}>
+                        <strong className="text-slate-200">{s.label}:</strong> {s.value}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {fullViewData.itemForQuote && (
+                <button
+                  onClick={() => {
+                    if (fullViewData.itemForQuote) {
+                      const item = fullViewData.itemForQuote;
+                      handleQuickAdd(item.product, item.colorName, item.quantity, item.unit, item.notes);
+                    }
+                  }}
+                  className="px-5 py-2.5 bg-[#f1b94c] hover:bg-[#e0a83b] text-[#0a1680] text-xs font-black rounded-xl transition flex items-center justify-center gap-2 shadow-md cursor-pointer shrink-0"
+                >
+                  <Plus size={15} />
+                  <span>{isEn ? '+ Add to Quote List' : '+ Agregar a Cotización'}</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

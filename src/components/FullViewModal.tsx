@@ -77,7 +77,9 @@ export const FullViewModal: React.FC<Props> = ({
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
 
-  const currentDisplayImage = isAccessory
+  const currentDisplayImage = product.category === 'baseboards'
+    ? (accessoryData?.photoUrl || plankSvg)
+    : isAccessory
     ? (viewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
     : (viewMode === 'room' ? roomSvg : plankSvg);
 
@@ -107,31 +109,33 @@ export const FullViewModal: React.FC<Props> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            {/* View Mode Toggle: Plank vs Room */}
-            <div className="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
-              <button
-                onClick={() => setViewMode('plank')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                  viewMode === 'plank'
-                    ? 'bg-[#0a1680] text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Layers size={14} />
-                <span>{isAccessory ? (language === 'en' ? 'Profile Diagram' : 'Diagrama Perfil') : (language === 'en' ? 'Plank Closeup' : 'Foto Plank')}</span>
-              </button>
-              <button
-                onClick={() => setViewMode('room')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                  viewMode === 'room'
-                    ? 'bg-[#0a1680] text-white shadow-sm'
-                    : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                <Eye size={14} />
-                <span>{isAccessory ? (language === 'en' ? '3D Installation' : 'Instalación 3D') : (language === 'en' ? 'Room Scene' : 'Ambiente')}</span>
-              </button>
-            </div>
+            {/* View Mode Toggle: Plank vs Room - Hidden for Baseboards */}
+            {product.category !== 'baseboards' && (
+              <div className="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                <button
+                  onClick={() => setViewMode('plank')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    viewMode === 'plank'
+                      ? 'bg-[#0a1680] text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Layers size={14} />
+                  <span>{isAccessory ? (language === 'en' ? 'Profile Diagram' : 'Diagrama Perfil') : (language === 'en' ? 'Plank Closeup' : 'Foto Plank')}</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('room')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                    viewMode === 'room'
+                      ? 'bg-[#0a1680] text-white shadow-sm'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Eye size={14} />
+                  <span>{isAccessory ? (language === 'en' ? '3D Installation' : 'Instalación 3D') : (language === 'en' ? 'Room Scene' : 'Ambiente')}</span>
+                </button>
+              </div>
+            )}
 
             {/* Zoom Controls */}
             <div className="hidden sm:flex items-center gap-1 bg-slate-800 px-2 py-1 rounded-xl border border-slate-700">

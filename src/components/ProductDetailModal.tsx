@@ -154,7 +154,9 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
 
-  const currentDisplayImage = isAccessory
+  const currentDisplayImage = product.category === 'baseboards'
+    ? (accessoryData?.photoUrl || plankSvg)
+    : isAccessory
     ? (viewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
     : (viewMode === 'room' ? roomSvg : plankSvg);
 
@@ -200,31 +202,33 @@ export const ProductDetailModal: React.FC<Props> = ({
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
 
-                  {/* Top Switcher: Plank View vs Room Scene */}
-                  <div className="absolute top-3 left-3 flex bg-black/60 backdrop-blur-md p-1 rounded-xl border border-white/20 z-10">
-                    <button
-                      onClick={() => setViewMode('plank')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                        viewMode === 'plank'
-                          ? 'bg-[#0a1680] text-white shadow-sm'
-                          : 'text-white/80 hover:text-white'
-                      }`}
-                    >
-                      <Layers size={13} />
-                      <span>{isAccessory ? (language === 'en' ? 'Diagram' : 'Diagrama') : (language === 'en' ? 'Plank' : 'Plank')}</span>
-                    </button>
-                    <button
-                      onClick={() => setViewMode('room')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                        viewMode === 'room'
-                          ? 'bg-[#0a1680] text-white shadow-sm'
-                          : 'text-white/80 hover:text-white'
-                      }`}
-                    >
-                      <Eye size={13} />
-                      <span>{isAccessory ? (language === 'en' ? 'Photo' : 'Foto') : (language === 'en' ? 'Room' : 'Ambiente')}</span>
-                    </button>
-                  </div>
+                  {/* Top Switcher: Plank View vs Room Scene - Hidden for Baseboards */}
+                  {product.category !== 'baseboards' && (
+                    <div className="absolute top-3 left-3 flex bg-black/60 backdrop-blur-md p-1 rounded-xl border border-white/20 z-10">
+                      <button
+                        onClick={() => setViewMode('plank')}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          viewMode === 'plank'
+                            ? 'bg-[#0a1680] text-white shadow-sm'
+                            : 'text-white/80 hover:text-white'
+                        }`}
+                      >
+                        <Layers size={13} />
+                        <span>{isAccessory ? (language === 'en' ? 'Diagram' : 'Diagrama') : (language === 'en' ? 'Plank' : 'Plank')}</span>
+                      </button>
+                      <button
+                        onClick={() => setViewMode('room')}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                          viewMode === 'room'
+                            ? 'bg-[#0a1680] text-white shadow-sm'
+                            : 'text-white/80 hover:text-white'
+                        }`}
+                      >
+                        <Eye size={13} />
+                        <span>{isAccessory ? (language === 'en' ? 'Photo' : 'Foto') : (language === 'en' ? 'Room' : 'Ambiente')}</span>
+                      </button>
+                    </div>
+                  )}
 
                   {/* Full View Lightbox Expand Button */}
                   <button
@@ -234,20 +238,6 @@ export const ProductDetailModal: React.FC<Props> = ({
                   >
                     <Maximize2 size={15} />
                   </button>
-
-                  {/* 3D Visualizer & Roomvo Action Buttons */}
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <a
-                      href={ROOMVO_VISUALIZER_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 hover:bg-[#f1b94c] text-[#0a1680] text-xs font-bold shadow-md transition transform hover:scale-105 cursor-pointer"
-                    >
-                      <Eye size={14} className="text-[#0a1680]" />
-                      <span>{t('detailModal.openIn3D')}</span>
-                      <ExternalLink size={11} className="text-[#0a1680]/70" />
-                    </a>
-                  </div>
 
                   {/* Active Color Name Tag */}
                   <div className="absolute bottom-3 left-3 text-white">

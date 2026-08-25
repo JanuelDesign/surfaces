@@ -100,7 +100,9 @@ export const ProductCard: React.FC<Props> = ({
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
 
-  const currentDisplayImage = isAccessory
+  const currentDisplayImage = product.category === 'baseboards'
+    ? (accessoryData?.photoUrl || plankSvg)
+    : isAccessory
     ? (cardViewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
     : (cardViewMode === 'room' ? roomSvg : plankSvg);
 
@@ -119,32 +121,34 @@ export const ProductCard: React.FC<Props> = ({
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
-          {/* Top Left: View Switcher (Plank vs Room) */}
-          <div
-            className="absolute top-2.5 left-2.5 flex bg-black/60 backdrop-blur-md p-0.5 rounded-lg border border-white/20 z-10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setCardViewMode('plank')}
-              className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
-                cardViewMode === 'plank'
-                  ? 'bg-[#0a1680] text-white shadow-xs'
-                  : 'text-white/70 hover:text-white'
-              }`}
+          {/* Top Left: View Switcher (Plank vs Room) - Hidden for Baseboards */}
+          {product.category !== 'baseboards' && (
+            <div
+              className="absolute top-2.5 left-2.5 flex bg-black/60 backdrop-blur-md p-0.5 rounded-lg border border-white/20 z-10"
+              onClick={(e) => e.stopPropagation()}
             >
-              {isAccessory ? (language === 'en' ? 'Diagram' : 'Diagrama') : (language === 'en' ? 'Plank' : 'Plank')}
-            </button>
-            <button
-              onClick={() => setCardViewMode('room')}
-              className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
-                cardViewMode === 'room'
-                  ? 'bg-[#0a1680] text-white shadow-xs'
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              {isAccessory ? (language === 'en' ? 'Photo' : 'Foto') : (language === 'en' ? 'Room' : 'Ambiente')}
-            </button>
-          </div>
+              <button
+                onClick={() => setCardViewMode('plank')}
+                className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
+                  cardViewMode === 'plank'
+                    ? 'bg-[#0a1680] text-white shadow-xs'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                {isAccessory ? (language === 'en' ? 'Diagram' : 'Diagrama') : (language === 'en' ? 'Plank' : 'Plank')}
+              </button>
+              <button
+                onClick={() => setCardViewMode('room')}
+                className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
+                  cardViewMode === 'room'
+                    ? 'bg-[#0a1680] text-white shadow-xs'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                {isAccessory ? (language === 'en' ? 'Photo' : 'Foto') : (language === 'en' ? 'Room' : 'Ambiente')}
+              </button>
+            </div>
+          )}
 
           {/* Top Right: Full View Lightbox Trigger */}
           <button

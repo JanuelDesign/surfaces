@@ -72,18 +72,6 @@ export const Navbar: React.FC<Props> = ({
             <span>(786) 658-3677</span>
           </a>
 
-          {/* Database Sheet Sync Trigger */}
-          {onOpenDatabaseSync && (
-            <button
-              onClick={onOpenDatabaseSync}
-              className="hidden sm:flex items-center gap-1 text-emerald-300 hover:text-emerald-200 transition font-bold text-[10px] bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-500/30 cursor-pointer"
-              title="Google Sheets Database Integration"
-            >
-              <Database size={10} />
-              <span>Google Sheets Sync</span>
-            </button>
-          )}
-
           {/* Top Bar Language Selector */}
           <div className="flex items-center bg-white/10 rounded-full p-0.5 border border-white/20">
             <button
@@ -245,52 +233,12 @@ export const Navbar: React.FC<Props> = ({
       {/* Mobile expanded drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-[#93b2f8]/30 bg-white px-4 py-3 space-y-2 animate-in fade-in duration-150">
-          <div className="flex items-center justify-between p-2 rounded-xl bg-slate-100 border border-slate-200">
-            <span className="text-xs font-bold text-[#0a1680] flex items-center gap-1.5">
-              <Globe size={13} /> {language === 'en' ? 'Language:' : 'Idioma:'}
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setLanguage('en')}
-                className={`px-2.5 py-0.5 rounded-lg text-xs font-bold transition-all ${
-                  language === 'en' ? 'bg-[#0a1680] text-white shadow-xs' : 'bg-white text-slate-700'
-                }`}
-              >
-                English
-              </button>
-              <button
-                onClick={() => setLanguage('es')}
-                className={`px-2.5 py-0.5 rounded-lg text-xs font-bold transition-all ${
-                  language === 'es' ? 'bg-[#0a1680] text-white shadow-xs' : 'bg-white text-slate-700'
-                }`}
-              >
-                Español
-              </button>
-            </div>
-          </div>
-
-          {onOpenDatabaseSync && (
-            <button
-              onClick={() => {
-                onOpenDatabaseSync();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-between p-2 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-bold"
-            >
-              <span className="flex items-center gap-1.5">
-                <Database size={14} className="text-emerald-700" />
-                Google Sheets Sync
-              </span>
-              <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">Cloud</span>
-            </button>
-          )}
-
           <button
             onClick={() => {
               onSelectCategory('all');
               setMobileMenuOpen(false);
             }}
-            className="w-full flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-left text-xs font-bold text-[#0a1680]"
+            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-left text-xs font-bold text-[#0a1680] transition"
           >
             <span>{language === 'en' ? 'View All Products' : 'Ver Todos los Productos'}</span>
             <span className="text-[10px] bg-[#0a1680] text-white px-2 py-0.5 rounded-full font-bold">Catalog</span>
@@ -301,7 +249,7 @@ export const Navbar: React.FC<Props> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full flex items-center justify-between p-2 rounded-xl bg-[#93b2f8]/20 border border-[#93b2f8]/40 text-[#0a1680] font-bold text-xs"
+            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#93b2f8]/20 border border-[#93b2f8]/40 text-[#0a1680] font-bold text-xs transition hover:bg-[#93b2f8]/30"
           >
             <span className="flex items-center gap-2">
               <Eye size={14} className="text-[#0a1680]" /> 3D Room Visualizer
@@ -317,7 +265,7 @@ export const Navbar: React.FC<Props> = ({
               onOpenStairsGuide();
               setMobileMenuOpen(false);
             }}
-            className="w-full flex items-center gap-2 p-2 rounded-xl text-[#0a1680] font-bold text-xs hover:bg-slate-50 border border-slate-200"
+            className="w-full flex items-center gap-2 p-2.5 rounded-xl text-[#0a1680] font-bold text-xs hover:bg-slate-50 border border-slate-200 transition"
           >
             <Footprints size={14} className="text-[#f1b94c]" /> {t('nav.stairsGuide')}
           </button>

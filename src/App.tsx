@@ -363,7 +363,6 @@ function AppContent() {
         onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
         onOpenVisualizer={openRoomVisualizer}
         onOpenStairsGuide={() => setIsStairsGuideOpen(true)}
-        onOpenDatabaseSync={() => setIsGoogleSheetsOpen(true)}
       />
 
       {/* Hero Banner only when on all categories and no search */}
@@ -546,7 +545,7 @@ function AppContent() {
         />
       )}
 
-      {/* Stairs & Moldings Guide Modal */}
+      {/* Stairs & Moldings Guide Dedicated View */}
       {isStairsGuideOpen && (
         <StairsMoldingsGuide
           onClose={() => setIsStairsGuideOpen(false)}
@@ -554,6 +553,8 @@ function AppContent() {
             handleAddToOrder(prod, color, qty, unit, sqft, notes);
             setIsOrderDrawerOpen(true);
           }}
+          orderCount={orderCount + sampleCount}
+          onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
         />
       )}
 

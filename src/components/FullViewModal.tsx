@@ -41,12 +41,44 @@ export const FullViewModal: React.FC<Props> = ({
   );
 
   // For accessories
-  const baseboardData = product.category === 'baseboards' ? BASEBOARD_IMAGES[product.id] || BASEBOARD_IMAGES['BB1x6'] : null;
-  const moldingData = product.category === 'moldings' ? MOLDING_IMAGES[product.id] || MOLDING_IMAGES['CM-TMolding'] : null;
-  const stairData = product.category === 'stair-steps' ? STAIR_PROFILES[product.id] || STAIR_PROFILES['DoubleRounded'] : null;
+  const getAccessoryData = () => {
+    if (product.category === 'baseboards') {
+      const name = activeColor.name;
+      if (name.includes('BB1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
+      if (name.includes('BB1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
+      if (name.includes('BB1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
+      if (name.includes('BB5180')) return BASEBOARD_IMAGES['BB5180'];
+      if (name.includes('BB618')) return BASEBOARD_IMAGES['BB618'];
+      if (name.includes('BB620')) return BASEBOARD_IMAGES['BB620'];
+      if (name.includes('EPS')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
+      if (name.includes('Pine') && name.includes('Round')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
+      if (name.includes('Square')) return BASEBOARD_IMAGES['Square1x1-MDF'];
+      return BASEBOARD_IMAGES['BB1x6-14mm'];
+    }
+    if (product.category === 'moldings') {
+      const name = activeColor.name;
+      if (name.includes('CM T-Molding') || name.includes('CM-T')) return MOLDING_IMAGES['CM-TMolding'];
+      if (name.includes('CM Reducer') || name.includes('CM-R')) return MOLDING_IMAGES['CM-Reducer'];
+      if (name.includes('Standard T-Molding')) return MOLDING_IMAGES['Standard-TMolding'];
+      if (name.includes('Standard Reducer')) return MOLDING_IMAGES['Standard-Reducer'];
+      if (name.includes('End Cap')) return MOLDING_IMAGES['EndCap'];
+      return MOLDING_IMAGES['CM-TMolding'];
+    }
+    if (product.category === 'stair-steps') {
+      const name = activeColor.name;
+      if (name.includes('Double Rounded')) return STAIR_PROFILES['DoubleRounded'];
+      if (name.includes('Square Step')) return STAIR_PROFILES['SquareStep'];
+      if (name.includes('Full Step')) return STAIR_PROFILES['FullStep'];
+      if (name.includes('Regular Step')) return STAIR_PROFILES['RegularStep'];
+      return STAIR_PROFILES['DoubleRounded'];
+    }
+    return null;
+  };
+
+  const accessoryData = isAccessory ? getAccessoryData() : null;
 
   const currentDisplayImage = isAccessory
-    ? (baseboardData?.profileSvg || moldingData?.profileSvg || stairData?.profileSvg || plankSvg)
+    ? (viewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
     : (viewMode === 'room' ? roomSvg : plankSvg);
 
   const handleColorPick = (col: ProductColor) => {

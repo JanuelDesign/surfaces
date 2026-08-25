@@ -128,7 +128,7 @@ export const Navbar: React.FC<Props> = ({
         </div>
 
         {/* Center Desktop Navigation Tabs */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-6">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0">
           <button
             onClick={() => onSelectCategory('all')}
             className={`text-xs font-bold uppercase tracking-wider pb-0.5 transition-colors cursor-pointer ${
@@ -165,63 +165,41 @@ export const Navbar: React.FC<Props> = ({
           >
             {t('nav.stairsGuide')}
           </button>
-          <a
-            href="https://www.roomvo.com/my/flooringwaterproof/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-[#0a1680] hover:text-[#081268] bg-[#93b2f8]/25 hover:bg-[#fbedb0] px-3 py-1 rounded-full cursor-pointer transition border border-[#93b2f8]/40"
-            title="Open 3D Room Visualizer"
-          >
-            <Eye size={13} className="text-[#0a1680]" />
-            <span>3D Room</span>
-            <ExternalLink size={10} className="text-[#0a1680]/70" />
-          </a>
         </nav>
 
-        {/* Compact Search Input */}
-        <div className="hidden sm:flex flex-1 max-w-[220px] lg:max-w-[280px] relative mx-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+        {/* Prominent Search Input */}
+        <div className="hidden sm:flex flex-1 max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl relative mx-2">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={
               language === 'en'
-                ? 'Search color, code, specs...'
-                : 'Buscar color, código o espec...'
+                ? 'Search by color, product line, thickness, specs (e.g. Vital Oak, 20 Mil, XL)...'
+                : 'Buscar por color, línea, espesor o especificación (ej. Vital Oak, 20 Mil, XL)...'
             }
-            className="w-full pl-8 pr-7 py-1.5 bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-xs font-medium rounded-full border border-slate-200 focus:border-[#0a1680] text-[#0a1680] outline-none transition"
+            className="w-full pl-9 pr-8 py-2 bg-slate-100/90 hover:bg-slate-100 focus:bg-white text-xs font-medium rounded-full border border-slate-200 focus:border-[#0a1680] focus:ring-2 focus:ring-[#0a1680]/10 text-[#0a1680] placeholder-slate-400 outline-none transition-all shadow-xs"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0a1680]"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0a1680] p-0.5 rounded-full hover:bg-slate-200 transition"
+              title="Clear search"
             >
-              <X size={12} />
+              <X size={13} />
             </button>
           )}
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
-          {/* Main Language Switcher Toggle Pill */}
-          <button
-            onClick={toggleLanguage}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-[#0a1680] text-xs font-bold border border-slate-300 transition cursor-pointer"
-            title={language === 'en' ? 'Cambiar a Español' : 'Switch to English'}
-          >
-            <Globe size={12} className="text-[#0a1680]" />
-            <span className={language === 'en' ? 'text-[#0a1680] font-black' : 'text-slate-400'}>EN</span>
-            <span className="text-slate-300">/</span>
-            <span className={language === 'es' ? 'text-[#0a1680] font-black' : 'text-slate-400'}>ES</span>
-          </button>
-
           {/* Quote / Cart Pill Button */}
           <button
             onClick={onOpenOrderDrawer}
-            className="bg-[#0a1680] hover:bg-[#081268] text-white px-3 sm:px-4 py-1.5 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 shadow-sm border border-[#93b2f8]/40 shrink-0 cursor-pointer"
+            className="bg-[#0a1680] hover:bg-[#081268] text-white px-3.5 sm:px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 shadow-sm border border-[#93b2f8]/40 shrink-0 cursor-pointer"
           >
-            <ShoppingCart size={13} className="text-[#f1b94c]" />
+            <ShoppingCart size={14} className="text-[#f1b94c]" />
             <span className="uppercase tracking-wider">
               {totalItems > 0
                 ? `${language === 'en' ? 'Quote' : 'Cotizar'} (${totalItems})`

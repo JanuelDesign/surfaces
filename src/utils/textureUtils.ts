@@ -26,7 +26,7 @@ export function getSwatchBackground(color: ProductColor): { background: string; 
 
   if (color.patternType === 'solid') {
     return {
-      background: `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`,
+      background: `linear-gradient(135deg, ${c1} 0%, ${c2} 100%), repeating-linear-gradient(90deg, transparent, transparent 12px, rgba(10,22,128,0.04) 12px, rgba(10,22,128,0.04) 14px)`,
     };
   }
 

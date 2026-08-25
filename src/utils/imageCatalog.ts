@@ -504,17 +504,12 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'CM-TMolding': {
     dimensions: '1-3/4” x 3/8”',
     description: 'CM T-Molding - Flush level floor transition with expansion track',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <!-- Centerline -->
-      <line x1="170" y1="20" x2="170" y2="190" stroke="rgba(255,255,255,0.15)" stroke-dasharray="3 3"/>
-      <!-- Floor Substrates -->
-      <rect x="20" y="105" width="125" height="40" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-      <rect x="195" y="105" width="125" height="40" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-      <!-- T-Molding Top Cap & Stem -->
-      <polygon points="50,80 290,80 290,105 190,105 190,175 150,175 150,105 50,105" fill="#f1b94c" stroke="#ffffff" stroke-width="2"/>
-      <text x="45" y="45" fill="#ffffff" font-size="13" font-weight="bold">CM T-MOLDING (1-3/4" x 3/8")</text>
-      <text x="65" y="200" fill="#93b2f8" font-size="11">Same-Level Floor Expansion Joint</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="240" y="55" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">1-3/4" (44.5 mm)</text>
+      <!-- T-Molding Profile -->
+      <path d="M 120 75 L 360 75 Q 365 75 365 85 L 365 95 Q 365 102 355 102 L 255 102 L 255 160 L 225 160 L 225 102 L 125 102 Q 115 102 115 95 L 115 85 Q 115 75 120 75 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="380" y="93" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">3/8" (9.5mm)</text>
+      <text x="240" y="185" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Expansion Stem</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
       <defs>
@@ -522,21 +517,12 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
         <linearGradient id="tmFloorR" x1="0" y1="0" x2="1" y2="0.8"><stop offset="0%" stop-color="#b89368"/><stop offset="100%" stop-color="#8b5a2b"/></linearGradient>
         <linearGradient id="tmCap" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fbedb0"/><stop offset="50%" stop-color="#f1b94c"/><stop offset="100%" stop-color="#b8831f"/></linearGradient>
       </defs>
-      <!-- Background / Subfloor Base -->
       <rect width="340" height="220" fill="#0f172a"/>
-      <!-- Left Flooring Room -->
       <polygon points="0,0 155,0 155,220 0,220" fill="url(%23tmFloorL)"/>
       <line x1="40" y1="0" x2="30" y2="220" stroke="#785328" stroke-width="1.5" opacity="0.6"/>
-      <line x1="100" y1="0" x2="90" y2="220" stroke="#785328" stroke-width="1.5" opacity="0.6"/>
-      <!-- Right Flooring Room -->
       <polygon points="185,0 340,0 340,220 185,220" fill="url(%23tmFloorR)"/>
       <line x1="240" y1="0" x2="250" y2="220" stroke="#4a2c11" stroke-width="1.5" opacity="0.6"/>
-      <line x1="300" y1="0" x2="310" y2="220" stroke="#4a2c11" stroke-width="1.5" opacity="0.6"/>
-      <!-- CM T-Molding Top Strip Running Down Middle -->
       <polygon points="150,0 190,0 190,220 150,220" fill="url(%23tmCap)" stroke="#ffffff" stroke-width="1.5"/>
-      <line x1="150" y1="0" x2="150" y2="220" stroke="#0f172a" stroke-width="2"/>
-      <line x1="190" y1="0" x2="190" y2="220" stroke="#0f172a" stroke-width="2"/>
-      <!-- Badge -->
       <rect x="12" y="12" width="165" height="22" rx="4" fill="rgba(10,22,128,0.85)"/>
       <text x="18" y="27" fill="#fbedb0" font-size="10" font-weight="bold">3D INSTALLED TRANSITION</text>
     </svg>`,
@@ -544,25 +530,16 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'CM-Reducer': {
     dimensions: '1-3/4” x 3/8”',
     description: 'CM Reducer - Smooth bevel transition to lower tile, vinyl or concrete',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <rect x="20" y="105" width="125" height="40" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-      <rect x="195" y="145" width="125" height="25" fill="#334155" stroke="#64748b" stroke-width="1.5"/>
-      <polygon points="50,80 175,80 290,145 290,160 190,160 190,175 150,175 150,105 50,105" fill="#f1b94c" stroke="#ffffff" stroke-width="2"/>
-      <text x="55" y="45" fill="#ffffff" font-size="13" font-weight="bold">CM REDUCER (1-3/4" x 3/8")</text>
-      <text x="55" y="200" fill="#93b2f8" font-size="11">Sloping Transition to Lower Subfloor / Tile</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="240" y="55" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">1-3/4" (44.5 mm)</text>
+      <!-- Sloped Reducer Profile -->
+      <path d="M 120 75 L 240 75 L 360 120 L 360 135 L 255 135 L 255 160 L 225 160 L 225 102 L 125 102 Q 115 102 115 95 L 115 85 Q 115 75 120 75 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="380" y="110" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">3/8" (9.5mm)</text>
+      <text x="240" y="185" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Sloped Transition</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <defs>
-        <linearGradient id="redTile" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#cbd5e1"/><stop offset="100%" stop-color="#94a3b8"/></linearGradient>
-      </defs>
-      <!-- Wood floor high side -->
       <polygon points="0,0 155,0 155,220 0,220" fill="#c7a372"/>
-      <!-- Lower Ceramic Tile Floor -->
-      <polygon points="190,0 340,0 340,220 190,220" fill="url(%23redTile)"/>
-      <line x1="250" y1="0" x2="250" y2="220" stroke="#64748b" stroke-width="2"/>
-      <line x1="190" y1="100" x2="340" y2="100" stroke="#64748b" stroke-width="2"/>
-      <!-- CM Reducer Sloped Strip -->
+      <polygon points="190,0 340,0 340,220 190,220" fill="#94a3b8"/>
       <polygon points="150,0 190,0 190,220 150,220" fill="#f1b94c" stroke="#ffffff" stroke-width="1.5"/>
       <rect x="12" y="12" width="165" height="22" rx="4" fill="rgba(10,22,128,0.85)"/>
       <text x="18" y="27" fill="#fbedb0" font-size="10" font-weight="bold">3D STEP-DOWN TO TILE</text>
@@ -571,13 +548,11 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'Standard-TMolding': {
     dimensions: '1-3/4” x 1/4”',
     description: 'Standard T-Molding - Low profile expansion joiner for equal floors',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <rect x="20" y="110" width="125" height="35" fill="#475569"/>
-      <rect x="195" y="110" width="125" height="35" fill="#475569"/>
-      <polygon points="55,90 285,90 285,110 185,110 185,165 155,165 155,110 55,110" fill="#dfc39a" stroke="#ffffff" stroke-width="2"/>
-      <text x="35" y="45" fill="#ffffff" font-size="13" font-weight="bold">STANDARD T-MOLDING (1-3/4" x 1/4")</text>
-      <text x="70" y="200" fill="#93b2f8" font-size="11">Low-Profile Seam for Equal Floors</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="240" y="60" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">1-3/4" (44.5 mm)</text>
+      <path d="M 125 80 L 355 80 L 355 98 L 250 98 L 250 155 L 230 155 L 230 98 L 125 98 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="375" y="93" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">1/4"</text>
+      <text x="240" y="180" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Low Profile Floor Joiner</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
       <rect width="340" height="220" fill="#1e293b"/>
@@ -591,14 +566,13 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'Standard-Reducer': {
     dimensions: '1-3/4” x 3/8”',
     description: 'Standard Reducer - Versatile step-down transition profile',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <polygon points="50,85 180,85 285,140 285,155 185,155 185,170 155,170 155,105 50,105" fill="#dfc39a" stroke="#ffffff" stroke-width="2"/>
-      <text x="40" y="45" fill="#ffffff" font-size="13" font-weight="bold">STANDARD REDUCER (1-3/4" x 3/8")</text>
-      <text x="70" y="200" fill="#93b2f8" font-size="11">Versatile Sloping Height Reduction</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="240" y="55" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">1-3/4" (44.5 mm)</text>
+      <path d="M 125 78 L 230 78 L 355 125 L 355 140 L 250 140 L 250 160 L 230 160 L 230 100 L 125 100 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="375" y="112" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">3/8"</text>
+      <text x="240" y="185" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Step-Down Transition</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#1e293b"/>
       <polygon points="0,0 155,0 155,220 0,220" fill="#b89368"/>
       <polygon points="185,0 340,0 340,220 185,220" fill="#64748b"/>
       <polygon points="150,0 185,0 185,220 150,220" fill="#dfc39a" stroke="#ffffff" stroke-width="1.5"/>
@@ -609,22 +583,17 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'EndCap': {
     dimensions: '1-3/8” x 3/8”',
     description: 'End Cap / Square Nose - Clean vertical stop against sliding doors & carpet',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <polygon points="60,80 200,80 200,170 160,170 160,105 60,105" fill="#f1b94c" stroke="#ffffff" stroke-width="2"/>
-      <rect x="20" y="105" width="130" height="40" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
-      <line x1="200" y1="20" x2="200" y2="200" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4 4"/>
-      <text x="55" y="45" fill="#ffffff" font-size="13" font-weight="bold">END CAP / SQUARE NOSE (1-3/8" x 3/8")</text>
-      <text x="40" y="200" fill="#93b2f8" font-size="11">Perimeter Stop at Patio Sliders, Carpet & Fireplace</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="220" y="55" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">1-3/8" (35 mm)</text>
+      <!-- End Cap Profile -->
+      <path d="M 130 80 L 320 80 L 320 155 L 285 155 L 285 105 L 130 105 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="miter"/>
+      <text x="340" y="122" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">3/8"</text>
+      <text x="220" y="185" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Vertical Stop / Slider Edge</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <!-- High-traffic Patio Sliding Door frame -->
       <rect width="340" height="220" fill="#0f172a"/>
-      <!-- Floor running up to EndCap -->
       <polygon points="0,0 200,0 200,220 0,220" fill="#c7a372"/>
-      <!-- Sliding Door Glass and Metal Frame -->
       <rect x="230" y="0" width="110" height="220" fill="rgba(147,178,248,0.25)" stroke="#38bdf8" stroke-width="2"/>
-      <!-- EndCap Nose -->
       <polygon points="195,0 230,0 230,220 195,220" fill="#f1b94c" stroke="#ffffff" stroke-width="1.5"/>
       <rect x="12" y="12" width="165" height="22" rx="4" fill="rgba(10,22,128,0.85)"/>
       <text x="18" y="27" fill="#fbedb0" font-size="10" font-weight="bold">3D PATIO DOOR END CAP</text>
@@ -633,11 +602,12 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'QuarterRound-Trim': {
     dimensions: '3/4” x 3/4” x 12ft/16ft',
     description: 'Quarter Round Perimeter Shoe - Conceals baseboard expansion gap',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <path d="M120,70 L200,70 L200,150 A80,80 0 0,1 120,70 Z" fill="#f1b94c" stroke="#ffffff" stroke-width="2"/>
-      <text x="35" y="45" fill="#ffffff" font-size="13" font-weight="bold">QUARTER ROUND (3/4" x 3/4")</text>
-      <text x="55" y="200" fill="#93b2f8" font-size="11">Flexible Wall & Cabinet Perimeter Concealer</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="240" y="55" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">3/4" (19 mm)</text>
+      <!-- Quarter Round Arc Profile -->
+      <path d="M 190 75 L 290 75 L 290 155 A 80 80 0 0 1 190 75 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="310" y="120" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">3/4"</text>
+      <text x="240" y="185" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Perimeter Base Shoe</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
       <rect width="340" height="150" fill="#1e293b"/>
@@ -651,15 +621,14 @@ export const MOLDING_IMAGES: Record<string, { profileSvg: string; photoUrl: stri
   'Universal-Threshold': {
     dimensions: '2” x 3/8”',
     description: 'Universal Threshold - Entryway transition between different flooring heights',
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
-      <rect width="340" height="220" fill="#0a1680"/>
-      <polygon points="50,85 290,85 270,130 70,130" fill="#f1b94c" stroke="#ffffff" stroke-width="2"/>
-      <text x="55" y="45" fill="#ffffff" font-size="13" font-weight="bold">UNIVERSAL THRESHOLD (2" x 3/8")</text>
-      <text x="65" y="200" fill="#93b2f8" font-size="11">Entry Door & Multi-Level Bridge Profile</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="240" y="60" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">2" (50.8 mm)</text>
+      <polygon points="120,85 360,85 330,135 150,135" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="380" y="115" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif">3/8"</text>
+      <text x="240" y="175" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Universal Bridge Transition</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="340" height="220" viewBox="0 0 340 220">
       <rect width="340" height="220" fill="#0f172a"/>
-      <!-- Entry Door Jamb and Threshold Bridge -->
       <polygon points="0,0 140,0 140,220 0,220" fill="#c7a372"/>
       <polygon points="200,0 340,0 340,220 200,220" fill="#475569"/>
       <polygon points="135,0 205,0 205,220 135,220" fill="#f1b94c" stroke="#ffffff" stroke-width="1.5"/>
@@ -675,50 +644,12 @@ export const STAIR_PROFILES: Record<string, { profileSvg: string; photoUrl: stri
     dimensions: '1-3/4" Height x 1-1/2" Nose x 7/8" Thickness',
     description: 'Double Rounded Bullnose (SPC Flooring) - Smooth dual radius on top and bottom front edge for ergonomic touch, safety and traditional luxury.',
     features: ['Top & Bottom Dual Radius', 'Color-matched with SPC Collections', 'Anti-Slip Certified Texture', 'High Impact Core'],
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">
-      <defs>
-        <pattern id="cadGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(147,178,248,0.12)" stroke-width="1"/>
-        </pattern>
-        <linearGradient id="cadGrad1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#dfc39a"/>
-          <stop offset="100%" stop-color="#c7a372"/>
-        </linearGradient>
-      </defs>
-      <!-- CAD Blueprint Background -->
-      <rect width="480" height="300" fill="#060e36"/>
-      <rect width="480" height="300" fill="url(%23cadGrid)"/>
-      
-      <!-- Blueprint Technical Header -->
-      <text x="30" y="32" fill="#fbedb0" font-size="13" font-weight="bold" font-family="monospace">SURFACES ARCHITECTURAL BLUEPRINT • SPEC ST-DR01</text>
-      <text x="30" y="50" fill="#93b2f8" font-size="10" font-family="monospace">DOUBLE ROUNDED BULLNOSE • SPC RIGID CORE STAIR PROFILE</text>
-      <line x1="30" y1="58" x2="450" y2="58" stroke="#38bdf8" stroke-width="1.2" opacity="0.6"/>
-
-      <!-- Wooden Subfloor Substrate Tread -->
-      <polygon points="50,130 180,130 180,240 50,240" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
-      <text x="75" y="190" fill="#94a3b8" font-size="11" font-weight="bold">SUB-TREAD</text>
-      
-      <!-- Double Rounded Bullnose Shape -->
-      <path d="M50,85 L320,85 Q390,85 390,130 Q390,175 320,175 L250,175 L250,240 L190,240 L190,130 L50,130 Z" fill="url(%23cadGrad1)" stroke="#f1b94c" stroke-width="3"/>
-      <!-- Core Layer Lines -->
-      <path d="M50,92 L320,92 Q382,92 382,130 Q382,168 320,168 L242,168 L242,240" fill="none" stroke="#081268" stroke-width="2" stroke-dasharray="4 2"/>
-      
-      <!-- Radius Callouts & Dimension Lines -->
-      <line x1="320" y1="65" x2="390" y2="65" stroke="#38bdf8" stroke-width="1.5"/>
-      <line x1="320" y1="60" x2="320" y2="70" stroke="#38bdf8" stroke-width="1.5"/>
-      <line x1="390" y1="60" x2="390" y2="70" stroke="#38bdf8" stroke-width="1.5"/>
-      <text x="335" y="58" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">1-1/2" NOSE</text>
-
-      <line x1="415" y1="85" x2="415" y2="175" stroke="#fbedb0" stroke-width="1.5"/>
-      <line x1="410" y1="85" x2="420" y2="85" stroke="#fbedb0" stroke-width="1.5"/>
-      <line x1="410" y1="175" x2="420" y2="175" stroke="#fbedb0" stroke-width="1.5"/>
-      <text x="424" y="135" fill="#fbedb0" font-size="11" font-weight="bold" font-family="monospace">1-3/4" H</text>
-
-      <line x1="28" y1="85" x2="28" y2="130" stroke="#93b2f8" stroke-width="1.5"/>
-      <text x="14" y="112" fill="#93b2f8" font-size="10" font-family="monospace">7/8"</text>
-      
-      <!-- Blueprint Technical Footer -->
-      <text x="30" y="275" fill="#93b2f8" font-size="10" font-family="monospace">RADIUS: R=12.7mm • COMPATIBLE WITH: PULSESelect, PULSEShield XL, XLPULSE</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="210" y="70" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Custom Length</text>
+      <!-- Double rounded profile path -->
+      <path d="M 130 90 L 305 90 C 335 90 335 155 305 155 L 285 155 L 285 118 L 130 118 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="round"/>
+      <text x="355" y="128" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif">1-1/2"</text>
+      <text x="290" y="178" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif">7/8"</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">
       <defs>
@@ -727,19 +658,13 @@ export const STAIR_PROFILES: Record<string, { profileSvg: string; photoUrl: stri
         </linearGradient>
       </defs>
       <rect width="480" height="300" fill="#0f172a"/>
-      <!-- Double rounded steps in perspective -->
-      <!-- Step 3 -->
       <rect x="150" y="50" width="280" height="35" rx="8" fill="url(%23drStepWood)" stroke="#fbedb0" stroke-width="1.5"/>
       <rect x="150" y="85" width="280" height="40" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <!-- Step 2 -->
       <rect x="100" y="125" width="330" height="38" rx="10" fill="url(%23drStepWood)" stroke="#fbedb0" stroke-width="1.5"/>
       <rect x="100" y="163" width="330" height="42" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <!-- Step 1 (Foreground) -->
       <rect x="50" y="205" width="380" height="45" rx="12" fill="url(%23drStepWood)" stroke="#fbedb0" stroke-width="2"/>
       <rect x="50" y="250" width="380" height="45" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <!-- Edge Round Highlight -->
       <path d="M50,225 Q50,205 70,205 L410,205 Q430,205 430,225 Q430,250 410,250 L70,250 Q50,250 50,225 Z" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-      <!-- Badge -->
       <rect x="20" y="20" width="220" height="26" rx="6" fill="rgba(10,22,128,0.85)"/>
       <text x="30" y="37" fill="#fbedb0" font-size="11" font-weight="bold">3D INSTALLED DOUBLE ROUNDED</text>
     </svg>`,
@@ -748,44 +673,12 @@ export const STAIR_PROFILES: Record<string, { profileSvg: string; photoUrl: stri
     dimensions: '1-3/4" Height x 1-3/8" Nose x 7/8" Thickness',
     description: 'Square Step Modern 90° Edge (SPC & Laminate) - Crisp architectural squared profile with precision mitered joint for luxury modern design.',
     features: ['Crisp 90° Mitered Edge', 'Available for SPC & Laminate', 'Contemporary Sharp Line', 'Seamless Click Integration'],
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">
-      <defs>
-        <pattern id="cadGrid2" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(147,178,248,0.12)" stroke-width="1"/>
-        </pattern>
-        <linearGradient id="cadGrad2" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#c7b28e"/>
-          <stop offset="100%" stop-color="#a98f65"/>
-        </linearGradient>
-      </defs>
-      <rect width="480" height="300" fill="#060e36"/>
-      <rect width="480" height="300" fill="url(%23cadGrid2)"/>
-      
-      <text x="30" y="32" fill="#fbedb0" font-size="13" font-weight="bold" font-family="monospace">SURFACES ARCHITECTURAL BLUEPRINT • SPEC ST-SQ02</text>
-      <text x="30" y="50" fill="#93b2f8" font-size="10" font-family="monospace">SQUARE STEP 90° CONTEMPORARY • SPC & LAMINATE PROFILE</text>
-      <line x1="30" y1="58" x2="450" y2="58" stroke="#38bdf8" stroke-width="1.2" opacity="0.6"/>
-
-      <!-- Wooden Subfloor Substrate Tread -->
-      <polygon points="50,130 190,130 190,240 50,240" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
-      <text x="80" y="190" fill="#94a3b8" font-size="11" font-weight="bold">SUB-TREAD</text>
-      
-      <!-- Square Step Profile -->
-      <polygon points="50,85 380,85 380,175 260,175 260,240 200,240 200,130 50,130" fill="url(%23cadGrad2)" stroke="#f1b94c" stroke-width="3"/>
-      <!-- Miter Joint 45 Line -->
-      <line x1="380" y1="85" x2="360" y2="105" stroke="#ffffff" stroke-width="2"/>
-
-      <!-- Dimensions -->
-      <line x1="260" y1="65" x2="380" y2="65" stroke="#38bdf8" stroke-width="1.5"/>
-      <line x1="260" y1="60" x2="260" y2="70" stroke="#38bdf8" stroke-width="1.5"/>
-      <line x1="380" y1="60" x2="380" y2="70" stroke="#38bdf8" stroke-width="1.5"/>
-      <text x="290" y="58" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">1-3/8" NOSE</text>
-
-      <line x1="405" y1="85" x2="405" y2="175" stroke="#fbedb0" stroke-width="1.5"/>
-      <line x1="400" y1="85" x2="410" y2="85" stroke="#fbedb0" stroke-width="1.5"/>
-      <line x1="400" y1="175" x2="410" y2="175" stroke="#fbedb0" stroke-width="1.5"/>
-      <text x="414" y="135" fill="#fbedb0" font-size="11" font-weight="bold" font-family="monospace">1-3/4" H</text>
-
-      <text x="30" y="275" fill="#93b2f8" font-size="10" font-family="monospace">ANGLE: 90.0° MITERED • APPLICABLE FOR SPC & HIGH-DENSITY LAMINATE</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="210" y="70" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Custom Length</text>
+      <!-- Square 90 degree step profile path -->
+      <path d="M 130 90 L 330 90 L 330 155 L 305 155 L 305 118 L 130 118 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="miter"/>
+      <text x="345" y="128" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif">1-3/8"</text>
+      <text x="312" y="178" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif">7/8"</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="300" viewBox="0 0 480 300">
       <defs>
@@ -794,20 +687,14 @@ export const STAIR_PROFILES: Record<string, { profileSvg: string; photoUrl: stri
         </linearGradient>
       </defs>
       <rect width="480" height="300" fill="#0f172a"/>
-      <!-- Square 90-degree steps in perspective -->
-      <!-- Step 3 -->
       <polygon points="150,50 430,50 430,85 150,85" fill="url(%23sqStepWood)" stroke="#fbedb0" stroke-width="1"/>
       <polygon points="150,85 430,85 430,120 150,120" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <!-- Step 2 -->
       <polygon points="100,120 430,120 430,158 100,158" fill="url(%23sqStepWood)" stroke="#fbedb0" stroke-width="1.5"/>
       <polygon points="100,158 430,158 430,198 100,198" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <!-- Step 1 (Foreground) -->
       <polygon points="50,198 430,198 430,245 50,245" fill="url(%23sqStepWood)" stroke="#fbedb0" stroke-width="2"/>
       <polygon points="50,245 430,245 430,295 50,295" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-      <!-- 90 Degree Crisp Top Edge Line -->
       <line x1="50" y1="198" x2="430" y2="198" stroke="#ffffff" stroke-width="2.5"/>
       <line x1="50" y1="245" x2="430" y2="245" stroke="#ffffff" stroke-width="2"/>
-      <!-- Badge -->
       <rect x="20" y="20" width="220" height="26" rx="6" fill="rgba(10,22,128,0.85)"/>
       <text x="30" y="37" fill="#fbedb0" font-size="11" font-weight="bold">3D INSTALLED SQUARE 90° STEP</text>
     </svg>`,
@@ -816,28 +703,18 @@ export const STAIR_PROFILES: Record<string, { profileSvg: string; photoUrl: stri
     dimensions: 'Custom Lengths (48", 60", 72") x 12" Full Depth',
     description: 'Full Step Tread (One-Piece Seamless Monolithic) - A continuous unbroken 12" depth surface with integrated front nosing for cantilever, floating or premium staircases.',
     features: ['100% Monolithic Single Piece', 'No Seams Across Tread Depth', 'Available with Left/Right Miter Returns', 'Compatible with LED Channels'],
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280">
-      <defs>
-        <pattern id="cadGrid3" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(147,178,248,0.12)" stroke-width="1"/>
-        </pattern>
-      </defs>
-      <rect width="480" height="280" fill="#060e36"/>
-      <rect width="480" height="280" fill="url(%23cadGrid3)"/>
-      <text x="30" y="32" fill="#fbedb0" font-size="13" font-weight="bold" font-family="monospace">SURFACES ARCHITECTURAL BLUEPRINT • FULL STEP MONOLITHIC</text>
-      <line x1="30" y1="45" x2="450" y2="45" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-      <!-- Full monolithic tread -->
-      <polygon points="30,85 410,85 410,145 350,145 350,220 300,220 300,115 30,115" fill="#f1b94c" stroke="#ffffff" stroke-width="2.5"/>
-      <line x1="30" y1="65" x2="410" y2="65" stroke="#38bdf8" stroke-width="1.5"/>
-      <text x="180" y="58" fill="#38bdf8" font-size="11" font-weight="bold" font-family="monospace">12" FULL CONTINUOUS DEPTH</text>
-      <text x="30" y="255" fill="#93b2f8" font-size="10" font-family="monospace">SEAMLESS ONE-PIECE FABRICATION • HIGH STRENGTH ARCHITECTURAL RIGID CORE</text>
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="210" y="65" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">12" Full Depth Continuous Slab</text>
+      <!-- Full Monolithic Tread -->
+      <path d="M 60 85 L 360 85 L 360 150 L 330 150 L 330 115 L 60 115 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5" stroke-linejoin="miter"/>
+      <text x="375" y="125" fill="#64748b" font-size="13" font-family="system-ui, -apple-system, sans-serif">1-1/2"</text>
+      <text x="210" y="175" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Seamless One-Piece Fabrication</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280">
       <defs>
         <linearGradient id="fullWood" x1="0" y1="0" x2="1" y2="0.8"><stop offset="0%" stop-color="#dfc39a"/><stop offset="100%" stop-color="#a88251"/></linearGradient>
       </defs>
       <rect width="480" height="280" fill="#09132e"/>
-      <!-- Floating monolithic continuous tread slabs -->
       <rect x="180" y="50" width="260" height="32" rx="4" fill="url(%23fullWood)" stroke="#fbedb0" stroke-width="1.5"/>
       <rect x="120" y="115" width="300" height="35" rx="4" fill="url(%23fullWood)" stroke="#fbedb0" stroke-width="1.5"/>
       <rect x="60" y="180" width="340" height="38" rx="4" fill="url(%23fullWood)" stroke="#fbedb0" stroke-width="2"/>
@@ -848,37 +725,25 @@ export const STAIR_PROFILES: Record<string, { profileSvg: string; photoUrl: stri
   'RegularStep': {
     dimensions: 'Nosing Profile + Interlocking Planks + Matching/White Riser',
     description: 'Regular Step Assembly (Modular Field Build) - Standard precision front nose piece coupled with standard flooring plank and vertical riser for flexible on-site stairs.',
-    features: ['Field Flexible Installation', 'Interlocks Directly to Planks', 'Cost-Effective Custom Stairs', 'Supports High Risers'],
-    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280">
-      <defs>
-        <pattern id="cadGrid4" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(147,178,248,0.12)" stroke-width="1"/>
-        </pattern>
-      </defs>
-      <rect width="480" height="280" fill="#060e36"/>
-      <rect width="480" height="280" fill="url(%23cadGrid4)"/>
-      <text x="30" y="32" fill="#fbedb0" font-size="13" font-weight="bold" font-family="monospace">SURFACES ARCHITECTURAL BLUEPRINT • REGULAR MODULAR STEP</text>
-      <line x1="30" y1="45" x2="450" y2="45" stroke="#38bdf8" stroke-width="1" opacity="0.6"/>
-      <!-- Rear Floor Plank -->
-      <polygon points="30,85 240,85 240,115 30,115" fill="#93b2f8" stroke="#ffffff" stroke-width="1.5"/>
-      <text x="70" y="105" fill="#0a1680" font-size="10" font-weight="bold">FLOOR PLANK</text>
-      <!-- Front Nosing -->
-      <polygon points="240,85 410,85 410,145 350,145 350,220 300,220 300,115 240,115" fill="#f1b94c" stroke="#ffffff" stroke-width="2.5"/>
-      <text x="270" y="105" fill="#0a1680" font-size="10" font-weight="bold">FRONT NOSE</text>
-      <!-- Vertical Riser -->
-      <rect x="290" y="145" width="12" height="100" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
-      <text x="310" y="185" fill="#ffffff" font-size="10" font-family="monospace">RISER</text>
-      <text x="30" y="255" fill="#93b2f8" font-size="10" font-family="monospace">MODULAR CLICK-LOCK FIELD INTERLOCKING • QUICK ADJUSTMENT FOR VARYING RUNS</text>
+    features: ['Field Modular Assembly', 'Economical and Versatile', 'Matches Standard Flooring Boxes', 'Standard Riser Integration'],
+    profileSvg: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="220" viewBox="0 0 480 220" fill="none">
+      <text x="140" y="65" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Standard Plank</text>
+      <text x="320" y="65" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Step Nose</text>
+      <!-- Plank + Nosing Joint -->
+      <rect x="60" y="85" width="160" height="25" fill="#e2e8f7" stroke="#0a1680" stroke-width="2"/>
+      <path d="M 225 85 L 360 85 L 360 150 L 330 150 L 330 110 L 225 110 Z" fill="#e2e8f7" stroke="#0a1680" stroke-width="2.5"/>
+      <!-- Click Seam indicator -->
+      <line x1="222" y1="80" x2="222" y2="115" stroke="#f1b94c" stroke-width="2" stroke-dasharray="3 3"/>
+      <text x="210" y="175" fill="#64748b" font-size="12" font-family="system-ui, -apple-system, sans-serif" text-anchor="middle">Modular Plank + Bullnose Click Joint</text>
     </svg>`,
     photoUrl: `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="280" viewBox="0 0 480 280">
-      <rect width="480" height="280" fill="#1e293b"/>
-      <!-- Modular steps with wood nose + floor planks + white risers -->
-      <rect x="140" y="50" width="300" height="35" fill="#dfc39a" stroke="#ffffff" stroke-width="1.5"/>
-      <rect x="140" y="85" width="300" height="40" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
-      <rect x="80" y="125" width="360" height="38" fill="#dfc39a" stroke="#ffffff" stroke-width="1.5"/>
-      <rect x="80" y="163" width="360" height="45" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+      <rect width="480" height="280" fill="#09132e"/>
+      <polygon points="120,60 420,60 420,95 120,95" fill="#c7b28e"/>
+      <rect x="120" y="95" width="300" height="40" fill="#ffffff"/>
+      <polygon points="80,135 420,135 420,175 80,175" fill="#c7b28e"/>
+      <rect x="80" y="175" width="340" height="40" fill="#ffffff"/>
       <rect x="20" y="20" width="220" height="26" rx="6" fill="rgba(10,22,128,0.85)"/>
-      <text x="30" y="37" fill="#fbedb0" font-size="11" font-weight="bold">3D MODULAR TREAD + RISER</text>
+      <text x="30" y="37" fill="#fbedb0" font-size="11" font-weight="bold">3D MODULAR RISER + TREAD</text>
     </svg>`,
   },
 };

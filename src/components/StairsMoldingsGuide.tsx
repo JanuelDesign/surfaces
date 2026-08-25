@@ -213,80 +213,46 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
 
               {/* Step Technical CAD Blueprints: Double Rounded vs Square Step */}
               <div>
-                <div className="mb-3 flex items-center justify-between">
+                <div className="mb-4 flex items-center justify-between">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    {isEn ? '1. Technical Profile Blueprints & 3D Installed Renders' : '1. Planos Vectoriales de Perfiles & Vistas 3D'}
+                    {isEn ? '1. Technical Profiles & Dimension Diagrams' : '1. Perfiles Técnicos & Diagramas de Dimensiones'}
                   </h4>
-                  <span className="text-[11px] text-slate-500 font-mono">CAD Vectors & 3D Reality</span>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    {isEn ? 'Custom length fabrication' : 'Fabricación a medida'}
+                  </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Double Rounded */}
-                  <div className="bg-[#060e36] text-white border border-blue-900/60 rounded-2xl p-5 space-y-3 shadow-md">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase text-[#fbedb0]">
-                        {isEn ? 'Classic Profile' : 'Perfil Clásico'}
-                      </span>
-                      <div className="flex items-center gap-1 bg-blue-950/80 p-0.5 rounded-lg border border-blue-700/50">
-                        <button
-                          onClick={() => toggleCardView('dr-step', 'diagram')}
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
-                            getEffectiveView('dr-step') === 'diagram' ? 'bg-blue-600 text-white' : 'text-blue-300'
-                          }`}
-                        >
-                          {isEn ? 'Diagram' : 'Plano'}
-                        </button>
-                        <button
-                          onClick={() => toggleCardView('dr-step', 'photo')}
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
-                            getEffectiveView('dr-step') === 'photo' ? 'bg-blue-600 text-white' : 'text-blue-300'
-                          }`}
-                        >
-                          {isEn ? '3D Photo' : 'Foto 3D'}
-                        </button>
-                      </div>
-                    </div>
-                    <h4 className="text-base font-extrabold text-white">Double Rounded Bullnose</h4>
-                    <p className="text-xs text-blue-200/80">
-                      {isEn
-                        ? 'Smooth front edge with double soft bullnose radius (1-3/4" Height x 1-1/2" Nose x 7/8" Thick) for ergonomic comfort and family safety.'
-                        : 'Borde frontal con doble redondeo suave (1-3/4" Altura x 1-1/2" Nariz x 7/8" Grosor) para mayor ergonomía y seguridad familiar.'}
-                    </p>
 
-                    {/* Dual or Single Visual Rendering */}
-                    {getEffectiveView('dr-step') === 'both' ? (
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
-                          <img
-                            src={STAIR_PROFILES.DoubleRounded.profileSvg}
-                            alt="Double Rounded Blueprint"
-                            className="w-full h-36 object-contain"
-                          />
-                        </div>
-                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
-                          <img
-                            src={STAIR_PROFILES.DoubleRounded.photoUrl}
-                            alt="Double Rounded 3D Installed"
-                            className="w-full h-36 object-contain"
-                          />
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* Double Rounded */}
+                  <div className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-3xl p-6 space-y-4 shadow-xs transition flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#0a1680]">
+                          {isEn ? 'CLASSIC PROFILE' : 'PERFIL CLÁSICO'}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
+                          {isEn ? 'Available in SPC Flooring' : 'Disponible en Pisos SPC'}
+                        </span>
                       </div>
-                    ) : getEffectiveView('dr-step') === 'photo' ? (
-                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
-                        <img
-                          src={STAIR_PROFILES.DoubleRounded.photoUrl}
-                          alt="Double Rounded 3D Installed"
-                          className="w-full h-44 object-contain"
-                        />
+
+                      <div className="space-y-1">
+                        <h3 className="text-2xl font-black text-[#0a1680]">Double Rounded</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed">
+                          {isEn
+                            ? 'Smooth front edge with double soft bullnose radius for enhanced safety and comfort.'
+                            : 'Borde frontal con doble redondeo suave para máxima seguridad, ergonomía y confort.'}
+                        </p>
                       </div>
-                    ) : (
-                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
+
+                      {/* Clean White Diagram Container */}
+                      <div className="border border-slate-200 rounded-2xl p-4 bg-white flex items-center justify-center min-h-[160px]">
                         <img
                           src={STAIR_PROFILES.DoubleRounded.profileSvg}
-                          alt="Double Rounded Blueprint"
-                          className="w-full h-44 object-contain"
+                          alt="Double Rounded Profile Diagram"
+                          className="w-full max-h-36 object-contain"
                         />
                       </div>
-                    )}
+                    </div>
 
                     <button
                       onClick={() =>
@@ -298,84 +264,47 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                           isEn ? 'Double Rounded SPC Stair Treads' : 'Gradas perfil Double Rounded SPC'
                         )
                       }
-                      className="w-full py-2.5 bg-[#0a1680] hover:bg-[#1627b0] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border border-blue-500/40"
+                      className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer mt-2"
                     >
-                      <Plus size={14} className="text-[#f1b94c]" />
+                      <Plus size={16} className="text-white" />
                       <span>
                         {addedItem === 'Double Rounded SPC (All Colors)'
                           ? (isEn ? 'Added to Quote!' : '¡Agregado al Pedido!')
-                          : (isEn ? 'Quote Double Rounded Treads' : 'Cotizar Gradas Double Rounded')}
+                          : (isEn ? '+ Quote Double Rounded Treads' : '+ Cotizar Gradas Double Rounded')}
                       </span>
                     </button>
                   </div>
 
                   {/* Square Step */}
-                  <div className="bg-[#060e36] text-white border border-blue-900/60 rounded-2xl p-5 space-y-3 shadow-md">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase text-[#fbedb0]">
-                        {isEn ? 'Modern Profile' : 'Perfil Moderno'}
-                      </span>
-                      <div className="flex items-center gap-1 bg-blue-950/80 p-0.5 rounded-lg border border-blue-700/50">
-                        <button
-                          onClick={() => toggleCardView('sq-step', 'diagram')}
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
-                            getEffectiveView('sq-step') === 'diagram' ? 'bg-blue-600 text-white' : 'text-blue-300'
-                          }`}
-                        >
-                          {isEn ? 'Diagram' : 'Plano'}
-                        </button>
-                        <button
-                          onClick={() => toggleCardView('sq-step', 'photo')}
-                          className={`px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer ${
-                            getEffectiveView('sq-step') === 'photo' ? 'bg-blue-600 text-white' : 'text-blue-300'
-                          }`}
-                        >
-                          {isEn ? '3D Photo' : 'Foto 3D'}
-                        </button>
+                  <div className="bg-white border border-slate-200 hover:border-[#0a1680]/40 rounded-3xl p-6 space-y-4 shadow-xs transition flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#0a1680]">
+                          {isEn ? 'MODERN PROFILE' : 'PERFIL MODERNO'}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200/60">
+                          {isEn ? 'Available in SPC & Laminate' : 'Disponible en SPC & Laminado'}
+                        </span>
                       </div>
-                    </div>
-                    <h4 className="text-base font-extrabold text-white">Square Step 90° Edge</h4>
-                    <p className="text-xs text-blue-200/80">
-                      {isEn
-                        ? 'Crisp 90-degree squared nosing edge (1-3/4" Height x 1-3/8" Nose x 7/8" Thick) with precision mitered joint for luxury modern architecture.'
-                        : 'Borde en ángulo recto de 90 grados (1-3/4" Altura x 1-3/8" Nariz x 7/8" Grosor) con unión biselada para proyectos modernos de lujo.'}
-                    </p>
 
-                    {/* Dual or Single Visual Rendering */}
-                    {getEffectiveView('sq-step') === 'both' ? (
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
-                          <img
-                            src={STAIR_PROFILES.SquareStep.profileSvg}
-                            alt="Square Step Blueprint"
-                            className="w-full h-36 object-contain"
-                          />
-                        </div>
-                        <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
-                          <img
-                            src={STAIR_PROFILES.SquareStep.photoUrl}
-                            alt="Square Step 3D Installed"
-                            className="w-full h-36 object-contain"
-                          />
-                        </div>
+                      <div className="space-y-1">
+                        <h3 className="text-2xl font-black text-[#0a1680]">Square Step</h3>
+                        <p className="text-sm text-slate-600 leading-relaxed">
+                          {isEn
+                            ? 'Crisp 90-degree squared nosing edge for contemporary minimalist architecture.'
+                            : 'Borde en ángulo recto de 90 grados para proyectos contemporáneos y minimalistas.'}
+                        </p>
                       </div>
-                    ) : getEffectiveView('sq-step') === 'photo' ? (
-                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#0f172a]">
-                        <img
-                          src={STAIR_PROFILES.SquareStep.photoUrl}
-                          alt="Square Step 3D Installed"
-                          className="w-full h-44 object-contain"
-                        />
-                      </div>
-                    ) : (
-                      <div className="rounded-xl overflow-hidden border border-blue-800/80 bg-[#060e36]">
+
+                      {/* Clean White Diagram Container */}
+                      <div className="border border-slate-200 rounded-2xl p-4 bg-white flex items-center justify-center min-h-[160px]">
                         <img
                           src={STAIR_PROFILES.SquareStep.profileSvg}
-                          alt="Square Step Blueprint"
-                          className="w-full h-44 object-contain"
+                          alt="Square Step Profile Diagram"
+                          className="w-full max-h-36 object-contain"
                         />
                       </div>
-                    )}
+                    </div>
 
                     <button
                       onClick={() =>
@@ -387,13 +316,13 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
                           isEn ? 'Square Step SPC Stair Treads' : 'Gradas perfil Square Step SPC'
                         )
                       }
-                      className="w-full py-2.5 bg-[#0a1680] hover:bg-[#1627b0] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border border-blue-500/40"
+                      className="w-full py-3.5 bg-[#0a1680] hover:bg-[#081268] text-white text-sm font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md shadow-[#0a1680]/20 cursor-pointer mt-2"
                     >
-                      <Plus size={14} className="text-[#f1b94c]" />
+                      <Plus size={16} className="text-white" />
                       <span>
                         {addedItem === 'Square Step SPC (All Colors)'
                           ? (isEn ? 'Added to Quote!' : '¡Agregado al Pedido!')
-                          : (isEn ? 'Quote Square Step Treads' : 'Cotizar Gradas Square Step')}
+                          : (isEn ? '+ Quote Square Step Treads' : '+ Cotizar Gradas Square Step')}
                       </span>
                     </button>
                   </div>
@@ -681,22 +610,22 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
 
                         {/* Visual Display: Dual or Single */}
                         {cardView === 'both' ? (
-                          <div className="grid grid-cols-2 gap-1.5">
-                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0a1680] relative group">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-white p-2 flex items-center justify-center relative group">
                               <img src={molding.profileSvg} alt={`${key} Diagram`} className="w-full h-28 object-contain" />
-                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-blue-200 px-1 py-0.2 rounded font-mono">CAD PLAN</span>
+                              <span className="absolute bottom-1 left-1 bg-slate-100 text-[8px] text-[#0a1680] font-bold px-1.5 py-0.5 rounded border border-slate-200">CAD PLAN</span>
                             </div>
-                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a] relative group">
+                            <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 relative group">
                               <img src={molding.photoUrl} alt={`${key} 3D Photo`} className="w-full h-28 object-contain" />
-                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-[#fbedb0] px-1 py-0.2 rounded font-mono">3D PHOTO</span>
+                              <span className="absolute bottom-1 left-1 bg-black/70 text-[8px] text-[#fbedb0] px-1.5 py-0.5 rounded font-mono">3D PHOTO</span>
                             </div>
                           </div>
                         ) : cardView === 'photo' ? (
-                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0f172a]">
+                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-900 p-2 flex items-center justify-center">
                             <img src={molding.photoUrl} alt={`${key} 3D Installed Photo`} className="w-full h-36 object-contain" />
                           </div>
                         ) : (
-                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-[#0a1680]">
+                          <div className="rounded-xl overflow-hidden border border-slate-200 bg-white p-3 flex items-center justify-center">
                             <img src={molding.profileSvg} alt={`${key} Technical Blueprint`} className="w-full h-36 object-contain" />
                           </div>
                         )}
@@ -704,10 +633,10 @@ export const StairsMoldingsGuide: React.FC<Props> = ({ onClose, onAddToOrder }) 
 
                       <button
                         onClick={() => handleQuickAdd(moldingsProduct, `${key} (${molding.dimensions})`, 5, 'pieces', molding.description)}
-                        className="w-full py-2 bg-slate-100 hover:bg-[#0a1680] hover:text-white text-slate-800 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2"
+                        className="w-full py-2.5 bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer mt-2 shadow-xs"
                       >
-                        <Plus size={14} />
-                        <span>{isEn ? `Add ${key.replace('-', ' ')}` : `Agregar ${key.replace('-', ' ')}`}</span>
+                        <Plus size={14} className="text-white" />
+                        <span>{isEn ? `+ Quote ${key.replace('-', ' ')}` : `+ Cotizar ${key.replace('-', ' ')}`}</span>
                       </button>
                     </div>
                   );

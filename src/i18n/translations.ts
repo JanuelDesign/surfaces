@@ -101,6 +101,7 @@ export interface Translations {
     abrasionClass: string;
     boxSqft: string;
     piecesBox: string;
+    wearLayer: string;
   };
   visualizer: {
     title: string;
@@ -140,6 +141,57 @@ export interface Translations {
     moldingDesc: string;
     baseboardTitle: string;
     baseboardDesc: string;
+  };
+  drawer: {
+    title: string;
+    subtitle: string;
+    tabItems: string;
+    tabClient: string;
+    emptyTitle: string;
+    emptyDesc: string;
+    exploreBtn: string;
+    productsList: string;
+    samplesList: string;
+    boxes: string;
+    sqft: string;
+    linearFt: string;
+    pieces: string;
+    sampleUnits: string;
+    totalBoxes: string;
+    totalSqft: string;
+    totalSamples: string;
+    totalItems: string;
+    clearCart: string;
+    continueBtn: string;
+    fullName: string;
+    phone: string;
+    email: string;
+    companyRole: string;
+    city: string;
+    address: string;
+    projectType: string;
+    projectTypes: {
+      residential: string;
+      commercial: string;
+      contractor: string;
+      design: string;
+      other: string;
+    };
+    deliveryTime: string;
+    timeframes: {
+      immediate: string;
+      oneTwoWeeks: string;
+      oneMonth: string;
+      quoteOnly: string;
+    };
+    includeInstallation: string;
+    installationDesc: string;
+    notes: string;
+    notesPlaceholder: string;
+    submitWhatsApp: string;
+    printPDF: string;
+    copySummary: string;
+    summaryCopied: string;
   };
   orderDrawer: {
     title: string;
@@ -337,6 +389,7 @@ export const translations: Record<Language, Translations> = {
       abrasionClass: 'Abrasion Class',
       boxSqft: 'Sq.Ft. per Box',
       piecesBox: 'Pieces / Box',
+      wearLayer: 'Wear Layer',
     },
     visualizer: {
       title: '3D Floor & Room Visualizer',
@@ -389,6 +442,58 @@ export const translations: Record<Language, Translations> = {
       moldingDesc: 'T-Molding, Reducer, and End Cap for smooth level and subfloor transitions.',
       baseboardTitle: 'Solid Pine & Waterproof Baseboards',
       baseboardDesc: 'Primed Finger-Joint Pine and EPS Waterproof Quarter Round profiles.',
+    },
+    drawer: {
+      title: 'Quote & Sample Request',
+      subtitle: 'Review your selected materials, requested hand samples, and project specifications.',
+      tabItems: '1. Selected Materials & Samples',
+      tabClient: '2. Project & Contact Information',
+      emptyTitle: 'Your quote list is empty',
+      emptyDesc: 'Explore our catalog and add flooring materials, accessories, or free hand samples.',
+      exploreBtn: 'Explore Catalog',
+      productsList: 'Products & Flooring Materials',
+      samplesList: 'Hand Samples (Free Samples)',
+      boxes: 'Boxes',
+      sqft: 'Sq. Ft.',
+      linearFt: 'Linear Ft.',
+      pieces: 'Pieces',
+      sampleUnits: 'Samples',
+      totalBoxes: 'Total Boxes',
+      totalSqft: 'Estimated Total Sq. Ft.',
+      totalSamples: 'Hand Samples',
+      totalItems: 'Total Items',
+      clearCart: 'Clear List',
+      continueBtn: 'Continue to Contact Details',
+      fullName: 'Full Name / Contact Person',
+      phone: 'Phone / WhatsApp Number',
+      email: 'Email Address',
+      companyRole: 'Company / Role (Architect, Contractor, Homeowner)',
+      city: 'City / Region',
+      address: 'Delivery / Jobsite Address',
+      projectType: 'Project Type',
+      projectTypes: {
+        residential: 'Residential',
+        commercial: 'Commercial',
+        contractor: 'Contractor / Builder',
+        design: 'Interior Design / Architecture',
+        other: 'Other',
+      },
+      deliveryTime: 'Delivery Timeframe',
+      timeframes: {
+        immediate: 'Immediate (In Stock)',
+        oneTwoWeeks: '1 - 2 Weeks',
+        oneMonth: '1 Month',
+        quoteOnly: 'Budget Quote Only',
+      },
+      includeInstallation: 'I would like to include SURFACES Professional Installation',
+      installationDesc:
+        'Our certified installation teams handle moisture barrier testing, leveling, precision layout, and final trims.',
+      notes: 'Additional Instructions / Floor Prep Notes',
+      notesPlaceholder: 'e.g., Deliver to 3rd floor with elevator, moisture barrier needed...',
+      submitWhatsApp: 'Submit Request via WhatsApp',
+      printPDF: 'Print / Export PDF Quote',
+      copySummary: 'Copy Order Summary',
+      summaryCopied: 'Order summary copied to clipboard!',
     },
     orderDrawer: {
       title: 'Quote & Sample Request',
@@ -586,6 +691,7 @@ export const translations: Record<Language, Translations> = {
       abrasionClass: 'Clase de Abrasión',
       boxSqft: 'Sq.Ft. por Caja',
       piecesBox: 'Piezas / Caja',
+      wearLayer: 'Capa de Uso',
     },
     visualizer: {
       title: 'Visualizador 3D de Ambientes',
@@ -638,6 +744,58 @@ export const translations: Record<Language, Translations> = {
       moldingDesc: 'T-Molding, Reducer y End Cap para transiciones suaves de nivel y piso.',
       baseboardTitle: 'Zócalos en Pino y Quarter Round Impermeable',
       baseboardDesc: 'Perfiles de pino finger-joint con imprimación blanca y Quarter Round EPS 100% impermeable.',
+    },
+    drawer: {
+      title: 'Cotización y Pedido',
+      subtitle: 'Revisa tus productos seleccionados, muestras de mano y datos del proyecto.',
+      tabItems: '1. Materiales Seleccionados & Muestras',
+      tabClient: '2. Datos del Proyecto y Contacto',
+      emptyTitle: 'Tu lista de cotización está vacía',
+      emptyDesc: 'Explora nuestro catálogo y agrega materiales, accesorios o muestras gratuitas.',
+      exploreBtn: 'Explorar Catálogo',
+      productsList: 'Pisos y Materiales',
+      samplesList: 'Muestras de Mano Físicas',
+      boxes: 'Cajas',
+      sqft: 'Sq. Ft.',
+      linearFt: 'Pies Lineales',
+      pieces: 'Piezas',
+      sampleUnits: 'Muestras',
+      totalBoxes: 'Total Cajas',
+      totalSqft: 'Metraje Estimado Total',
+      totalSamples: 'Muestras Físicas',
+      totalItems: 'Total Ítems',
+      clearCart: 'Vaciar Lista',
+      continueBtn: 'Continuar a Datos de Contacto',
+      fullName: 'Nombre Completo / Contacto',
+      phone: 'Teléfono / WhatsApp',
+      email: 'Correo Electrónico',
+      companyRole: 'Empresa o Rol (Arquitecto, Contratista, Propietario)',
+      city: 'Ciudad / Región',
+      address: 'Dirección del Proyecto / Envío',
+      projectType: 'Tipo de Proyecto',
+      projectTypes: {
+        residential: 'Residencial',
+        commercial: 'Comercial',
+        contractor: 'Contratista / Constructor',
+        design: 'Diseño / Arquitectura',
+        other: 'Otro',
+      },
+      deliveryTime: 'Tiempo Estimado de Entrega',
+      timeframes: {
+        immediate: 'Inmediato (En Stock)',
+        oneTwoWeeks: '1 - 2 Semanas',
+        oneMonth: '1 Mes',
+        quoteOnly: 'Solo Cotización Presupuestaria',
+      },
+      includeInstallation: 'Deseo incluir el servicio de instalación SURFACES',
+      installationDesc:
+        'Nuestros técnicos certificados realizarán la nivelación, colocación, barrera de humedad y terminaciones.',
+      notes: 'Instrucciones Adicionales / Notas de Obra',
+      notesPlaceholder: 'ej., Entrega en piso 4 con elevador, requiere barrera acústica...',
+      submitWhatsApp: 'Enviar Solicitud por WhatsApp',
+      printPDF: 'Imprimir / Guardar en PDF',
+      copySummary: 'Copiar Resumen del Pedido',
+      summaryCopied: '¡Resumen copiado al portapapeles!',
     },
     orderDrawer: {
       title: 'Cotización y Pedido',

@@ -1,260 +1,180 @@
 import React from 'react';
-import { Phone, Mail, Globe, MapPin, ShieldCheck, Sparkles, Footprints, Layers, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Sparkles, Footprints, Layers, ExternalLink } from 'lucide-react';
 import { CategoryId } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 
 interface Props {
   onSelectCategory: (id: CategoryId) => void;
-  onOpenVisualizer?: () => void;
   onOpenStairsGuide: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
   onSelectCategory,
-  onOpenVisualizer,
   onOpenStairsGuide,
 }) => {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const isEn = language === 'en';
 
   return (
-    <footer className="bg-[#0a1680] text-white/70 border-t border-[#93b2f8]/20 text-xs no-print mt-12">
-      {/* Brand values Bento banner */}
-      <div className="border-b border-[#93b2f8]/20 bg-[#081268] py-6">
+    <footer className="bg-[#0B0B0B] text-[#BCBAB4] border-t border-[#262626] text-xs no-print mt-12">
+      {/* Brand values banner */}
+      <div className="border-b border-[#262626] bg-[#141414] py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-            <div className="w-9 h-9 rounded-sm bg-[#f1b94c] flex items-center justify-center text-[#0a1680] shrink-0 font-bold">
+            <div className="w-9 h-9 rounded-sm bg-white flex items-center justify-center text-[#0B0B0B] shrink-0 font-bold">
               <ShieldCheck size={18} />
             </div>
             <div>
               <div className="text-white font-bold text-xs">
                 {isEn ? 'Up to 30-Year Warranty' : 'Garantía hasta 30 Años'}
               </div>
-              <div className="text-[11px] text-[#93b2f8]">
+              <div className="text-[11px] text-[#BCBAB4]">
                 {isEn ? 'Residential & Commercial' : 'Residencial & Comercial'}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-            <div className="w-9 h-9 rounded-sm bg-[#f1b94c] flex items-center justify-center text-[#0a1680] shrink-0 font-bold">
+            <div className="w-9 h-9 rounded-sm bg-white flex items-center justify-center text-[#0B0B0B] shrink-0 font-bold">
               <Sparkles size={18} />
             </div>
             <div>
               <div className="text-white font-bold text-xs">
                 {isEn ? 'Hand Samples' : 'Muestras de Mano'}
               </div>
-              <div className="text-[11px] text-[#93b2f8]">
+              <div className="text-[11px] text-[#BCBAB4]">
                 {isEn ? 'Hand Samples Available' : 'Disponibles para Envío'}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-            <div className="w-9 h-9 rounded-sm bg-[#f1b94c] flex items-center justify-center text-[#0a1680] shrink-0 font-bold">
+            <div className="w-9 h-9 rounded-sm bg-white flex items-center justify-center text-[#0B0B0B] shrink-0 font-bold">
               <Layers size={18} />
             </div>
             <div>
               <div className="text-white font-bold text-xs">100% Waterproof</div>
-              <div className="text-[11px] text-[#93b2f8]">SPC & Ultra Mineral Core</div>
+              <div className="text-[11px] text-[#BCBAB4]">SPC Rigid Core</div>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
-            <div className="w-9 h-9 rounded-sm bg-[#f1b94c] flex items-center justify-center text-[#0a1680] shrink-0 font-bold">
+            <div className="w-9 h-9 rounded-sm bg-white flex items-center justify-center text-[#0B0B0B] shrink-0 font-bold">
               <Footprints size={18} />
             </div>
             <div>
               <div className="text-white font-bold text-xs">
                 {isEn ? 'Custom Matching Stairs' : 'Gradas a Medida'}
               </div>
-              <div className="text-[11px] text-[#93b2f8]">Double Round & Square</div>
+              <div className="text-[11px] text-[#BCBAB4]">Double Round &amp; Square</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Bento Footer Links */}
+      {/* Main Footer Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Monogram & Description */}
           <div className="space-y-3 md:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-sm bg-[#f1b94c] flex items-center justify-center text-[#0a1680] font-black text-xs">
+              <div className="w-7 h-7 rounded-sm bg-white flex items-center justify-center text-[#0B0B0B] font-black text-xs">
                 S
               </div>
               <div className="text-white font-black text-lg tracking-wider">
                 SURFACES
               </div>
             </div>
-            <p className="text-white/70 text-xs leading-relaxed">
+            <p className="text-[#BCBAB4] text-xs leading-relaxed max-w-sm">
               {isEn
-                ? 'Official 2026 catalog of high-engineered architectural flooring and surfaces.'
-                : 'Catálogo oficial 2026 de pisos y superficies arquitectónicas de alta ingeniería.'}
+                ? 'Official 2026 manufacturer catalog of architectural SPC rigid core flooring, precision stair treads, transition moldings, and baseboards.'
+                : 'Catálogo oficial de fabricante 2026 de pisos SPC rigid core, gradas de precisión, molduras de transición y zócalos.'}
             </p>
-            
-            {/* Direct Contact Details */}
-            <div className="pt-2 space-y-2 text-xs">
-              <a
-                href="tel:+17866583677"
-                className="flex items-center gap-2 text-[#f1b94c] hover:text-[#fbedb0] font-bold"
-              >
-                <Phone size={13} />
-                <span>(786) 658-3677</span>
-              </a>
-              <a
-                href="mailto:marketingquicksurfaces@gmail.com"
-                className="flex items-center gap-2 text-[#93b2f8] hover:text-white transition"
-              >
-                <Mail size={13} />
-                <span>marketingquicksurfaces@gmail.com</span>
-              </a>
-              <div className="flex items-center gap-2 text-white/60">
-                <Globe size={13} />
-                <span>surfaces.com</span>
-              </div>
-            </div>
           </div>
 
           {/* Categorías de Pisos */}
           <div className="space-y-2">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider">
-              {isEn ? 'Flooring Lines' : 'Líneas de Pisos'}
+              {isEn ? 'Product Lines' : 'Líneas de Productos'}
             </h4>
-            <ul className="space-y-1.5 text-white/70">
+            <ul className="space-y-1.5 text-[#BCBAB4]">
               <li>
                 <button
                   onClick={() => onSelectCategory('spc-vinyl')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
+                  className="hover:text-white transition text-left cursor-pointer"
                 >
-                  PULSESelect (5.5 mm / 20 Mil)
+                  PULSESelect SPC (5.5 mm / 20 Mil)
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onSelectCategory('spc-vinyl')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
+                  className="hover:text-white transition text-left cursor-pointer"
                 >
-                  PULSEShield XL (6 mm / 9"x60")
+                  PULSEShield XL SPC (6 mm / 9"x60")
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onSelectCategory('spc-vinyl')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
+                  className="hover:text-white transition text-left cursor-pointer"
                 >
                   XLPULSE Premium (8 mm / 22 Mil)
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => onSelectCategory('ultra-mineral')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
+                  onClick={() => onSelectCategory('stair-steps')}
+                  className="hover:text-white transition text-left cursor-pointer"
                 >
-                  UltraPULSE Mineral Core (10 mm)
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory('wood-herringbone')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
-                >
-                  PULSEWood {isEn ? 'Herringbone' : 'Espiga (Herringbone)'}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory('laminate')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
-                >
-                  Finsa España (AC6 {isEn ? 'Class 33' : 'Clase 33'})
-                </button>
-              </li>
-            </ul>
-          </div>
-
-          {/* Revestimientos & Terminaciones */}
-          <div className="space-y-2">
-            <h4 className="text-white font-bold text-xs uppercase tracking-wider">
-              {isEn ? 'Wall & Trims' : 'Revestimientos & Perfiles'}
-            </h4>
-            <ul className="space-y-1.5 text-white/70">
-              <li>
-                <button
-                  onClick={() => onSelectCategory('porcelain-tiles')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
-                >
-                  TilePULSE {isEn ? 'Porcelain 24"x48"' : 'Porcelanatos 24"x48"'}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory('wall-panels')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
-                >
-                  {isEn ? 'Indoor Fluted WPC Panels' : 'Paneles WPC Fluted Indoor'}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectCategory('wall-panels')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
-                >
-                  {isEn ? 'Exterior WPC 26 mm Panels' : 'Paneles WPC Exterior 26 mm'}
-                </button>
-              </li>
-              <li>
-                <button onClick={onOpenStairsGuide} className="hover:text-[#f1b94c] transition text-left cursor-pointer">
-                  {isEn ? 'Double Rounded & Square Stairs' : 'Gradas Double Rounded & Square'}
+                  {isEn ? 'Double Rounded & Square Stair Steps' : 'Gradas Double Rounded & Square 90°'}
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onSelectCategory('moldings')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
+                  className="hover:text-white transition text-left cursor-pointer"
                 >
-                  {isEn ? 'CM T-Molding & Reducer' : 'Molduras CM T-Molding & Reducer'}
+                  {isEn ? 'Architectural T-Moldings & Reducers' : 'Molduras T-Molding, Reducers & End Caps'}
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onSelectCategory('baseboards')}
-                  className="hover:text-[#f1b94c] transition text-left cursor-pointer"
+                  className="hover:text-white transition text-left cursor-pointer"
                 >
-                  {isEn ? 'BB1x6, BB1x4, BB1x3 Pine Baseboards' : 'Zócalos BB1x6, BB1x4, BB1x3 Pine'}
+                  {isEn ? 'Primed Pine & EPS Baseboards (Rodapiés)' : 'Zócalos Primed Pine & EPS (Rodapiés)'}
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Contacto & Herramientas */}
+          {/* Herramientas Interactivas */}
           <div className="space-y-3">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider">
-              {isEn ? 'Contact & Tools' : 'Contacto y Herramientas'}
+              {isEn ? 'Interactive Tools' : 'Herramientas Interactivas'}
             </h4>
             <a
               href={ROOMVO_VISUALIZER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 px-4 rounded-full bg-white/10 hover:bg-[#f1b94c] hover:text-[#0a1680] text-white text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 border border-white/15 cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-full bg-white/10 hover:bg-white hover:text-[#0B0B0B] text-white text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 border border-white/15 cursor-pointer"
             >
-              <Sparkles size={14} className="text-[#f1b94c]" />
-              <span>{isEn ? '3D Room Visualizer' : 'Visualizador 3D'}</span>
+              <Sparkles size={14} className="text-white" />
+              <span>{isEn ? '3D Room Visualizer' : 'Visualizador 3D Roomvo'}</span>
               <ExternalLink size={12} className="opacity-70" />
             </a>
 
-            <a
-              href="https://wa.me/17866583677?text=Hello%20SURFACES,%20I%20would%20like%20information%20on%20your%20flooring%20products"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full py-2.5 px-4 rounded-full bg-[#f1b94c] hover:bg-[#e4ac3f] text-[#0a1680] text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+            <button
+              onClick={onOpenStairsGuide}
+              className="w-full py-2.5 px-4 rounded-full bg-white text-[#0B0B0B] hover:bg-[#F5F5F5] text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
             >
-              <Phone size={14} />
-              <span>{isEn ? 'WhatsApp (786) 658-3677' : 'WhatsApp (786) 658-3677'}</span>
-            </a>
+              <Footprints size={14} />
+              <span>{isEn ? 'Stairs & Moldings Guide' : 'Guía de Gradas & Molduras'}</span>
+            </button>
 
-            <div className="pt-2 text-[11px] text-white/50">
+            <div className="pt-2 text-[11px] text-[#6B6762]">
               © 2026 SURFACES. {isEn ? 'Interactive Architectural Catalog.' : 'Catálogo Arquitectónico Interactivo.'}
             </div>
           </div>
@@ -263,3 +183,4 @@ export const Footer: React.FC<Props> = ({
     </footer>
   );
 };
+

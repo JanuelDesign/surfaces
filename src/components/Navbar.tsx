@@ -2,84 +2,65 @@ import React from 'react';
 import {
   Search,
   ShoppingCart,
-  Eye,
-  Sliders,
-  Sparkles,
-  Phone,
-  Layers,
   Menu,
   X,
   Footprints,
-  FileText,
-  Globe,
-  Database,
-  ExternalLink,
+  Layers,
 } from 'lucide-react';
 import { CategoryId } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
   searchQuery: string;
-  onSearchChange: (q: string) => void;
+  onOpenSearch: () => void;
+  onClearSearch: () => void;
   selectedCategory: CategoryId | 'all';
   onSelectCategory: (cat: CategoryId | 'all') => void;
   orderItemCount: number;
   sampleItemCount: number;
   onOpenOrderDrawer: () => void;
-  onOpenVisualizer: () => void;
   onOpenStairsGuide: () => void;
-  onOpenDatabaseSync?: () => void;
 }
 
 export const Navbar: React.FC<Props> = ({
   searchQuery,
-  onSearchChange,
+  onOpenSearch,
+  onClearSearch,
   selectedCategory,
   onSelectCategory,
   orderItemCount,
   sampleItemCount,
   onOpenOrderDrawer,
-  onOpenVisualizer,
   onOpenStairsGuide,
-  onOpenDatabaseSync,
 }) => {
-  const { language, setLanguage, toggleLanguage, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const totalItems = orderItemCount + sampleItemCount;
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-[#93b2f8]/30 shadow-xs">
-      {/* Top micro bar for phone contact & language switcher */}
-      <div className="bg-[#0a1680] text-[#93b2f8] text-[11px] font-medium py-1 px-3 sm:px-6 flex justify-between items-center border-b border-white/10">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <span className="flex items-center gap-1.5 text-[#fbedb0] font-bold uppercase tracking-wider text-[10px]">
-            <span className="w-2 h-2 rounded-full bg-[#f1b94c] animate-pulse"></span>
-            {language === 'en' ? 'SURFACES 2026' : 'SURFACES 2026'}
+    <header className="sticky top-0 z-40 bg-white border-b border-[#D9D9D9] shadow-xs">
+      {/* Micro top utility bar: Language switch & catalog badge */}
+      <div className="bg-[#0B0B0B] text-[#BCBAB4] text-[11px] font-medium py-1 px-4 sm:px-8 flex justify-between items-center border-b border-[#262626]">
+        <div className="flex items-center gap-2">
+          <span className="flex items-center gap-1.5 text-white font-bold uppercase tracking-wider text-[10px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+            SURFACES 2026
           </span>
-          <span className="hidden md:inline text-white/20">|</span>
-          <span className="hidden md:inline text-white/90 text-[10px]">
-            PULSE SPC • Ultra Mineral Core • Finsa Laminates • Stairs & Moldings
+          <span className="hidden md:inline text-[#6B6762]">|</span>
+          <span className="hidden md:inline text-[#BCBAB4] text-[10px]">
+            {language === 'en' ? 'SPC Flooring (5.5mm • 6.0mm • 8.0mm) • Steps • Moldings • Baseboards' : 'Pisos SPC (5.5mm • 6.0mm • 8.0mm) • Gradas • Molduras • Zócalos'}
           </span>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-4 text-[11px]">
-          {/* Phone Contact */}
-          <a
-            href="tel:+17866583677"
-            className="flex items-center gap-1 text-[#f1b94c] hover:text-[#fbedb0] transition font-bold"
-          >
-            <Phone size={11} />
-            <span>(786) 658-3677</span>
-          </a>
-
-          {/* Top Bar Language Selector */}
-          <div className="flex items-center bg-white/10 rounded-full p-0.5 border border-white/20">
+        <div className="flex items-center gap-2">
+          {/* Subtle Top Bar Language Selector */}
+          <div className="flex items-center bg-[#262626] rounded-full p-0.5 border border-[#383838]">
             <button
               onClick={() => setLanguage('en')}
-              className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
                 language === 'en'
-                  ? 'bg-[#f1b94c] text-[#0a1680] shadow-xs'
-                  : 'text-white/80 hover:text-white'
+                  ? 'bg-white text-[#0B0B0B] shadow-xs'
+                  : 'text-[#BCBAB4] hover:text-white'
               }`}
               title="Switch to English"
             >
@@ -87,10 +68,10 @@ export const Navbar: React.FC<Props> = ({
             </button>
             <button
               onClick={() => setLanguage('es')}
-              className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
+              className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
                 language === 'es'
-                  ? 'bg-[#f1b94c] text-[#0a1680] shadow-xs'
-                  : 'text-white/80 hover:text-white'
+                  ? 'bg-white text-[#0B0B0B] shadow-xs'
+                  : 'text-[#BCBAB4] hover:text-white'
               }`}
               title="Cambiar a Español"
             >
@@ -100,94 +81,116 @@ export const Navbar: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Main Compact Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-[58px] flex items-center justify-between gap-3">
-        {/* Brand Logo */}
+      {/* Main Navigation Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[60px] flex items-center justify-between gap-4">
+        {/* Brand Monogram */}
         <div
           onClick={() => onSelectCategory('all')}
-          className="flex items-center gap-2 cursor-pointer group shrink-0"
+          className="flex items-center gap-2.5 cursor-pointer group shrink-0"
         >
-          <div className="w-7 h-7 bg-[#0a1680] rounded-md flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-            <span className="font-black text-xs tracking-wider text-[#f1b94c]">S</span>
+          <div className="w-8 h-8 bg-[#0B0B0B] rounded-lg flex items-center justify-center text-white shadow-xs group-hover:bg-[#262626] transition-colors">
+            <span className="font-black text-sm tracking-wider text-white">S</span>
           </div>
-          <span className="font-black tracking-wider text-lg sm:text-xl text-[#0a1680]">
+          <span className="font-black tracking-wider text-lg sm:text-xl text-[#0B0B0B]">
             SURFACES
           </span>
         </div>
 
-        {/* Center Desktop Navigation Tabs */}
+        {/* Center Desktop Category Navigation Tabs */}
         <nav className="hidden md:flex items-center gap-4 lg:gap-6 shrink-0">
           <button
             onClick={() => onSelectCategory('all')}
-            className={`text-xs font-bold uppercase tracking-wider pb-0.5 transition-colors cursor-pointer ${
+            className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
               selectedCategory === 'all'
-                ? 'text-[#0a1680] border-b-2 border-[#0a1680]'
-                : 'text-slate-600 hover:text-[#0a1680]'
+                ? 'text-[#0B0B0B] border-b-2 border-[#0B0B0B]'
+                : 'text-[#6B6762] hover:text-[#0B0B0B]'
             }`}
           >
             {language === 'en' ? 'All Products' : 'Todos'}
           </button>
           <button
             onClick={() => onSelectCategory('spc-vinyl')}
-            className={`text-xs font-bold uppercase tracking-wider pb-0.5 transition-colors cursor-pointer ${
+            className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
               selectedCategory === 'spc-vinyl'
-                ? 'text-[#0a1680] border-b-2 border-[#0a1680]'
-                : 'text-slate-600 hover:text-[#0a1680]'
+                ? 'text-[#0B0B0B] border-b-2 border-[#0B0B0B]'
+                : 'text-[#6B6762] hover:text-[#0B0B0B]'
             }`}
           >
-            SPC Vinyl
+            SPC Flooring
           </button>
           <button
-            onClick={() => onSelectCategory('ultra-mineral')}
-            className={`text-xs font-bold uppercase tracking-wider pb-0.5 transition-colors cursor-pointer ${
-              selectedCategory === 'ultra-mineral'
-                ? 'text-[#0a1680] border-b-2 border-[#0a1680]'
-                : 'text-slate-600 hover:text-[#0a1680]'
+            onClick={() => onSelectCategory('stair-steps')}
+            className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
+              selectedCategory === 'stair-steps'
+                ? 'text-[#0B0B0B] border-b-2 border-[#0B0B0B]'
+                : 'text-[#6B6762] hover:text-[#0B0B0B]'
             }`}
           >
-            Ultra Mineral
+            {language === 'en' ? 'Stairs' : 'Gradas'}
+          </button>
+          <button
+            onClick={() => onSelectCategory('moldings')}
+            className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
+              selectedCategory === 'moldings'
+                ? 'text-[#0B0B0B] border-b-2 border-[#0B0B0B]'
+                : 'text-[#6B6762] hover:text-[#0B0B0B]'
+            }`}
+          >
+            {language === 'en' ? 'Moldings' : 'Molduras'}
+          </button>
+          <button
+            onClick={() => onSelectCategory('baseboards')}
+            className={`text-xs font-bold uppercase tracking-wider pb-1 transition-colors cursor-pointer ${
+              selectedCategory === 'baseboards'
+                ? 'text-[#0B0B0B] border-b-2 border-[#0B0B0B]'
+                : 'text-[#6B6762] hover:text-[#0B0B0B]'
+            }`}
+          >
+            {language === 'en' ? 'Baseboards' : 'Zócalos'}
           </button>
           <button
             onClick={onOpenStairsGuide}
-            className="text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-[#0a1680] pb-0.5 transition-colors cursor-pointer"
+            className="text-xs font-bold uppercase tracking-wider text-[#0B0B0B] bg-[#F5F5F5] hover:bg-[#D9D9D9] px-3 py-1 rounded-full border border-[#D9D9D9] transition-colors cursor-pointer flex items-center gap-1.5"
           >
-            {t('nav.stairsGuide')}
+            <Footprints size={13} />
+            <span>{t('nav.stairsGuide')}</span>
           </button>
         </nav>
 
-        {/* Prominent Search Input */}
-        <div className="hidden sm:flex flex-1 max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl relative mx-2">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={
-              language === 'en'
-                ? 'Search by color, product line, thickness, specs (e.g. Vital Oak, 20 Mil, XL)...'
-                : 'Buscar por color, línea, espesor o especificación (ej. Vital Oak, 20 Mil, XL)...'
-            }
-            className="w-full pl-9 pr-8 py-2 bg-slate-100/90 hover:bg-slate-100 focus:bg-white text-xs font-medium rounded-full border border-slate-200 focus:border-[#0a1680] focus:ring-2 focus:ring-[#0a1680]/10 text-[#0a1680] placeholder-slate-400 outline-none transition-all shadow-xs"
-          />
+        {/* Right Action Controls: Search Button & Quote Drawer */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {/* Search Trigger Button (Opens Modal) */}
+          <button
+            onClick={onOpenSearch}
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#F5F5F5] hover:bg-[#EBEBEB] text-[#0B0B0B] rounded-full border border-[#D9D9D9] hover:border-[#0B0B0B] transition-all text-xs font-medium cursor-pointer shadow-2xs"
+            title={language === 'en' ? 'Search catalog (Ctrl+K)' : 'Buscar en catálogo (Ctrl+K)'}
+          >
+            <Search size={15} className="text-[#0B0B0B]" />
+            <span className="hidden sm:inline text-[#6B6762]">
+              {searchQuery ? `"${searchQuery}"` : language === 'en' ? 'Search catalog...' : 'Buscar catálogo...'}
+            </span>
+            <kbd className="hidden lg:inline-block px-1.5 py-0.2 text-[10px] font-mono bg-white border border-[#D9D9D9] rounded text-[#6B6762]">
+              ⌘K
+            </kbd>
+          </button>
+
+          {/* Active Search Filter Badge with Clear button if active */}
           {searchQuery && (
             <button
-              onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0a1680] p-0.5 rounded-full hover:bg-slate-200 transition"
+              onClick={onClearSearch}
+              className="p-1.5 rounded-full bg-[#0B0B0B] text-white hover:bg-[#262626] transition cursor-pointer"
               title="Clear search"
             >
               <X size={13} />
             </button>
           )}
-        </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2">
-          {/* Quote / Cart Pill Button */}
+          {/* Quote Drawer Button */}
           <button
             onClick={onOpenOrderDrawer}
-            className="bg-[#0a1680] hover:bg-[#081268] text-white px-3.5 sm:px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 shadow-sm border border-[#93b2f8]/40 shrink-0 cursor-pointer"
+            className="bg-[#0B0B0B] hover:bg-[#262626] text-white px-4 py-2 text-xs font-bold rounded-full transition-all flex items-center gap-2 shadow-xs border border-[#0B0B0B] cursor-pointer"
           >
-            <ShoppingCart size={14} className="text-[#f1b94c]" />
+            <ShoppingCart size={14} className="text-white" />
             <span className="uppercase tracking-wider">
               {totalItems > 0
                 ? `${language === 'en' ? 'Quote' : 'Cotizar'} (${totalItems})`
@@ -197,80 +200,95 @@ export const Navbar: React.FC<Props> = ({
             </span>
           </button>
 
-          {/* Mobile menu trigger */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-1.5 text-[#0a1680] hover:bg-slate-100 rounded-lg md:hidden cursor-pointer"
+            className="p-2 text-[#0B0B0B] hover:bg-[#F5F5F5] rounded-lg md:hidden cursor-pointer"
             aria-label="Toggle navigation menu"
           >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile search bar */}
-      <div className="sm:hidden px-3 pb-2 pt-0.5">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={language === 'en' ? 'Search color, code or specs...' : 'Buscar color, código o espec...'}
-            className="w-full pl-8 pr-7 py-1.5 bg-slate-100 text-xs rounded-full border border-slate-200 focus:outline-none focus:border-[#0a1680]"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"
-            >
-              <X size={12} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Mobile expanded drawer */}
+      {/* Mobile Expanded Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#93b2f8]/30 bg-white px-4 py-3 space-y-2 animate-in fade-in duration-150">
+        <div className="md:hidden border-t border-[#D9D9D9] bg-white px-4 py-4 space-y-2 animate-in fade-in duration-150">
+          <button
+            onClick={() => {
+              onOpenSearch();
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center gap-2 p-2.5 rounded-xl bg-[#F5F5F5] hover:bg-[#D9D9D9] text-left text-xs font-bold text-[#0B0B0B] border border-[#D9D9D9] transition"
+          >
+            <Search size={16} />
+            <span>{language === 'en' ? 'Search Catalog...' : 'Buscar en el Catálogo...'}</span>
+          </button>
+
           <button
             onClick={() => {
               onSelectCategory('all');
               setMobileMenuOpen(false);
             }}
-            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-left text-xs font-bold text-[#0a1680] transition"
+            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F5F5F5] hover:bg-[#D9D9D9] text-left text-xs font-bold text-[#0B0B0B] transition"
           >
-            <span>{language === 'en' ? 'View All Products' : 'Ver Todos los Productos'}</span>
-            <span className="text-[10px] bg-[#0a1680] text-white px-2 py-0.5 rounded-full font-bold">Catalog</span>
+            <span>{language === 'en' ? 'All Products' : 'Todos los Productos'}</span>
+            <span className="text-[10px] bg-[#0B0B0B] text-white px-2 py-0.5 rounded-full font-bold">Catalog</span>
           </button>
 
-          <a
-            href="https://www.roomvo.com/my/flooringwaterproof/"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#93b2f8]/20 border border-[#93b2f8]/40 text-[#0a1680] font-bold text-xs transition hover:bg-[#93b2f8]/30"
+          <button
+            onClick={() => {
+              onSelectCategory('spc-vinyl');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F5F5F5] text-left text-xs font-bold text-[#0B0B0B] border border-[#D9D9D9] transition"
           >
-            <span className="flex items-center gap-2">
-              <Eye size={14} className="text-[#0a1680]" /> 3D Room Visualizer
-            </span>
-            <span className="flex items-center gap-1 text-[10px] font-bold bg-[#f1b94c] text-[#0a1680] px-2 py-0.5 rounded">
-              <span>3D</span>
-              <ExternalLink size={10} />
-            </span>
-          </a>
+            <span>SPC Flooring (5.5mm • 6.0mm • 8.0mm)</span>
+          </button>
+
+          <button
+            onClick={() => {
+              onSelectCategory('stair-steps');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F5F5F5] text-left text-xs font-bold text-[#0B0B0B] border border-[#D9D9D9] transition"
+          >
+            <span>{language === 'en' ? 'Stair Steps & Treads' : 'Gradas y Peldaños'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              onSelectCategory('moldings');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F5F5F5] text-left text-xs font-bold text-[#0B0B0B] border border-[#D9D9D9] transition"
+          >
+            <span>{language === 'en' ? 'Moldings & Transitions' : 'Molduras y Perfiles'}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              onSelectCategory('baseboards');
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-[#F5F5F5] text-left text-xs font-bold text-[#0B0B0B] border border-[#D9D9D9] transition"
+          >
+            <span>{language === 'en' ? 'Baseboards (Rodapiés)' : 'Zócalos y Rodapiés'}</span>
+          </button>
 
           <button
             onClick={() => {
               onOpenStairsGuide();
               setMobileMenuOpen(false);
             }}
-            className="w-full flex items-center gap-2 p-2.5 rounded-xl text-[#0a1680] font-bold text-xs hover:bg-slate-50 border border-slate-200 transition"
+            className="w-full flex items-center gap-2 p-2.5 rounded-xl bg-[#0B0B0B] text-white font-bold text-xs transition"
           >
-            <Footprints size={14} className="text-[#f1b94c]" /> {t('nav.stairsGuide')}
+            <Footprints size={15} className="text-white" />
+            <span>{t('nav.stairsGuide')}</span>
           </button>
         </div>
       )}
     </header>
   );
 };
+

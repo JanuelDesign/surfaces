@@ -1,16 +1,10 @@
 import React from 'react';
 import {
   Layers,
-  ShieldCheck,
-  Maximize2,
-  Grid,
-  Sparkles,
-  Columns,
   Footprints,
   Sliders,
   Square,
   LayoutGrid,
-  ChevronDown,
 } from 'lucide-react';
 import { CategoryId } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -29,16 +23,6 @@ const getCategoryIcon = (id: CategoryId | 'all') => {
       return <LayoutGrid size={13} />;
     case 'spc-vinyl':
       return <Layers size={13} />;
-    case 'ultra-mineral':
-      return <ShieldCheck size={13} />;
-    case 'laminate':
-      return <Maximize2 size={13} />;
-    case 'wood-herringbone':
-      return <Grid size={13} />;
-    case 'porcelain-tiles':
-      return <Sparkles size={13} />;
-    case 'wall-panels':
-      return <Columns size={13} />;
     case 'stair-steps':
       return <Footprints size={13} />;
     case 'moldings':
@@ -60,24 +44,24 @@ export const CategoryFilter: React.FC<Props> = ({
   const categories = getLocalizedCategories(language);
 
   return (
-    <div className="w-full bg-white border-b border-[#93b2f8]/30 sticky top-[58px] sm:top-[58px] z-30 shadow-2xs">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2">
+    <div className="w-full bg-white border-b border-[#D9D9D9] sticky top-[60px] z-30 shadow-2xs">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         {/* Horizontal Smooth Scroll Bar */}
-        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {/* All Categories button */}
           <button
             onClick={() => onSelectCategory('all')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
               selectedCategory === 'all'
-                ? 'bg-[#0a1680] text-white shadow-xs'
-                : 'bg-slate-100/70 text-slate-700 hover:text-[#0a1680] hover:bg-slate-100 border border-slate-200'
+                ? 'bg-[#0B0B0B] text-white shadow-xs'
+                : 'bg-[#F5F5F5] text-[#6B6762] hover:text-[#0B0B0B] hover:bg-[#E5E5E5] border border-[#D9D9D9]'
             }`}
           >
             {getCategoryIcon('all')}
             <span>{t('filters.allCategories')}</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                selectedCategory === 'all' ? 'bg-[#f1b94c] text-[#0a1680]' : 'bg-slate-200 text-slate-700'
+              className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                selectedCategory === 'all' ? 'bg-white text-[#0B0B0B]' : 'bg-[#D9D9D9] text-[#0B0B0B]'
               }`}
             >
               {totalCount}
@@ -93,17 +77,17 @@ export const CategoryFilter: React.FC<Props> = ({
               <button
                 key={cat.id}
                 onClick={() => onSelectCategory(cat.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                   isSelected
-                    ? 'bg-[#0a1680] text-white shadow-xs'
-                    : 'bg-white text-slate-700 hover:text-[#0a1680] hover:bg-slate-50 border border-slate-200'
+                    ? 'bg-[#0B0B0B] text-white shadow-xs'
+                    : 'bg-white text-[#6B6762] hover:text-[#0B0B0B] hover:bg-[#F5F5F5] border border-[#D9D9D9]'
                 }`}
               >
                 {getCategoryIcon(cat.id)}
                 <span>{cat.shortName}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                    isSelected ? 'bg-[#93b2f8]/30 text-[#fbedb0]' : 'bg-slate-100 text-slate-500'
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-[#F5F5F5] text-[#6B6762]'
                   }`}
                 >
                   {count}
@@ -116,3 +100,4 @@ export const CategoryFilter: React.FC<Props> = ({
     </div>
   );
 };
+

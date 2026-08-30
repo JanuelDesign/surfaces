@@ -12,6 +12,8 @@ import {
   ExternalLink,
   Layers,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { Product, ProductColor } from '../types';
 import { formatSqftBoxes } from '../utils/textureUtils';
@@ -61,6 +63,7 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   // View Mode: 'plank' vs 'room'
   const [viewMode, setViewMode] = useState<'plank' | 'room'>('plank');
+  const [moldingSlideIndex, setMoldingSlideIndex] = useState<number>(0);
   const [showFullViewModal, setShowFullViewModal] = useState(false);
 
   // Calculator State
@@ -104,15 +107,15 @@ export const ProductDetailModal: React.FC<Props> = ({
     setTimeout(() => setSampleSuccess(false), 1500);
   };
 
-  // Image assets
-  const plankSvg = generatePlankSVG(
+  // Image assets: prioritize real photo URL if available from Sheets/GitHub, fallback to SVG generator
+  const plankSvg = selectedColor.image || generatePlankSVG(
     selectedColor.hexColor || '#c7b28e',
     selectedColor.secondaryHex || '#8c7355',
     'rgba(0,0,0,0.22)',
     selectedColor.patternType || 'wood'
   );
 
-  const roomSvg = generateRoomSceneSVG(
+  const roomSvg = selectedColor.roomImage || generateRoomSceneSVG(
     selectedColor.hexColor || '#c7b28e',
     selectedColor.secondaryHex || '#8c7355',
     'living'
@@ -154,7 +157,25 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
 
-  const currentDisplayImage = product.category === 'baseboards'
+  // For moldings: 3-slide gallery images
+  const moldingSlides = [
+    {
+      title: language === 'en' ? 'Profile Blueprint' : 'Corte de Perfil',
+      src: accessoryData?.profileSvg || plankSvg,
+    },
+    {
+      title: language === 'en' ? '3D In-Situ View' : 'Aplicación 3D en Piso',
+      src: accessoryData?.photoUrl || plankSvg,
+    },
+    {
+      title: language === 'en' ? 'Texture & Color' : 'Textura y Color',
+      src: plankSvg,
+    },
+  ];
+
+  const currentDisplayImage = product.category === 'moldings'
+    ? moldingSlides[moldingSlideIndex].src
+    : product.category === 'baseboards'
     ? (accessoryData?.photoUrl || plankSvg)
     : isAccessory
     ? (viewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
@@ -162,27 +183,27 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6">
         <div
-          className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
+          className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-[#D9D9D9] overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-[#fcfdff]">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#D9D9D9] bg-[#F5F5F5]">
             <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#0a1680]"></span>
+              <span className="w-3 h-3 rounded-full bg-[#0B0B0B]"></span>
               <div>
-                <span className="text-[11px] font-bold uppercase text-[#0a1680] tracking-wider">
+                <span className="text-[11px] font-bold uppercase text-[#6B6762] tracking-wider">
                   {product.collection}
                 </span>
-                <h2 className="text-lg sm:text-xl font-extrabold text-[#0a1680] leading-tight">
+                <h2 className="text-lg sm:text-xl font-extrabold text-[#0B0B0B] leading-tight">
                   {product.name}
                 </h2>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition cursor-pointer"
+              className="w-9 h-9 rounded-full bg-white hover:bg-[#D9D9D9] border border-[#D9D9D9] flex items-center justify-center text-[#0B0B0B] transition cursor-pointer"
               aria-label="Close modal"
             >
               <X size={18} />
@@ -195,21 +216,39 @@ export const ProductDetailModal: React.FC<Props> = ({
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
               {/* Visual Display Card */}
               <div className="md:col-span-6 space-y-2">
-                <div className="relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-300 shadow-md bg-slate-950 group">
+                <div className="relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-[#D9D9D9] shadow-sm bg-[#0B0B0B] group">
                   <img
                     src={currentDisplayImage}
                     alt={`${product.name} - ${selectedColor.name}`}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
 
-                  {/* Top Switcher: Plank View vs Room Scene - Hidden for Baseboards */}
-                  {product.category !== 'baseboards' && (
-                    <div className="absolute top-3 left-3 flex bg-black/60 backdrop-blur-md p-1 rounded-xl border border-white/20 z-10">
+                  {/* Top Switcher: Carousel for Moldings / Switcher for SPC & Steps / Hidden for Baseboards */}
+                  {product.category === 'moldings' ? (
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-2 py-1 rounded-xl border border-white/20 z-10 text-white text-[11px] font-bold">
+                      <button
+                        onClick={() => setMoldingSlideIndex((prev) => (prev === 0 ? moldingSlides.length - 1 : prev - 1))}
+                        className="p-1 hover:bg-white/20 rounded-md transition cursor-pointer"
+                        title="Anterior"
+                      >
+                        <ChevronLeft size={14} />
+                      </button>
+                      <span className="px-1 text-[#F5F5F5] font-semibold">{moldingSlides[moldingSlideIndex].title} ({moldingSlideIndex + 1}/3)</span>
+                      <button
+                        onClick={() => setMoldingSlideIndex((prev) => (prev === moldingSlides.length - 1 ? 0 : prev + 1))}
+                        className="p-1 hover:bg-white/20 rounded-md transition cursor-pointer"
+                        title="Siguiente"
+                      >
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
+                  ) : product.category !== 'baseboards' ? (
+                    <div className="absolute top-3 left-3 flex bg-black/70 backdrop-blur-md p-1 rounded-xl border border-white/20 z-10">
                       <button
                         onClick={() => setViewMode('plank')}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           viewMode === 'plank'
-                            ? 'bg-[#0a1680] text-white shadow-sm'
+                            ? 'bg-[#0B0B0B] text-white shadow-xs'
                             : 'text-white/80 hover:text-white'
                         }`}
                       >
@@ -220,7 +259,7 @@ export const ProductDetailModal: React.FC<Props> = ({
                         onClick={() => setViewMode('room')}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           viewMode === 'room'
-                            ? 'bg-[#0a1680] text-white shadow-sm'
+                            ? 'bg-[#0B0B0B] text-white shadow-xs'
                             : 'text-white/80 hover:text-white'
                         }`}
                       >
@@ -228,12 +267,27 @@ export const ProductDetailModal: React.FC<Props> = ({
                         <span>{isAccessory ? (language === 'en' ? 'Photo' : 'Foto') : (language === 'en' ? 'Room' : 'Ambiente')}</span>
                       </button>
                     </div>
+                  ) : null}
+
+                  {/* Molding Carousel Indicator Dots */}
+                  {product.category === 'moldings' && (
+                    <div className="absolute bottom-12 left-3 flex gap-1.5 z-10">
+                      {moldingSlides.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setMoldingSlideIndex(idx)}
+                          className={`h-1.5 rounded-full transition-all cursor-pointer ${
+                            moldingSlideIndex === idx ? 'w-6 bg-white' : 'w-2 bg-white/40'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   )}
 
                   {/* Full View Lightbox Expand Button */}
                   <button
                     onClick={() => setShowFullViewModal(true)}
-                    className="absolute top-3 right-3 p-2 rounded-xl bg-black/60 hover:bg-[#f1b94c] hover:text-[#0a1680] text-white backdrop-blur-md border border-white/20 transition cursor-pointer shadow-md"
+                    className="absolute top-3 right-3 p-2 rounded-xl bg-black/70 hover:bg-white hover:text-[#0B0B0B] text-white backdrop-blur-md border border-white/20 transition cursor-pointer shadow-md"
                     title={language === 'en' ? 'Full Screen High-Res View' : 'Ver en Alta Resolución / Pantalla Completa'}
                   >
                     <Maximize2 size={15} />
@@ -242,47 +296,57 @@ export const ProductDetailModal: React.FC<Props> = ({
                   {/* Active Color Name Tag */}
                   <div className="absolute bottom-3 left-3 text-white">
                     <div className="text-sm font-extrabold flex items-center gap-2 drop-shadow-md">
-                      {selectedColor.name}
-                      {selectedColor.code && (
-                        <span className="text-[10px] bg-black/50 text-[#fbedb0] px-2 py-0.5 rounded font-mono border border-white/20">
-                          CODE: {selectedColor.code}
-                        </span>
+                      {product.category === 'spc-vinyl' ? (
+                        <span>{language === 'en' ? 'Color Code:' : 'Código de Color:'} {selectedColor.code || selectedColor.name}</span>
+                      ) : (
+                        <>
+                          <span>{selectedColor.name}</span>
+                          {selectedColor.code && selectedColor.code !== selectedColor.name && (
+                            <span className="text-[10px] bg-black/60 text-[#F5F5F5] px-2 py-0.5 rounded font-mono border border-white/20">
+                              {selectedColor.code}
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
-                    <div className="text-xs text-slate-200 drop-shadow-xs">
+                    <div className="text-xs text-[#BCBAB4] drop-shadow-xs">
                       {selectedColor.finish || product.specs.finished || 'Satin'}
                     </div>
                   </div>
                 </div>
 
-                {/* Direct Roomvo Official AR Launch link */}
-                <div className="flex items-center justify-between px-3 py-2 bg-[#93b2f8]/15 border border-[#93b2f8]/30 rounded-xl text-xs">
-                  <span className="font-semibold text-[#0a1680] flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-[#0a1680]" />
-                    {language === 'en' ? 'Official Roomvo AR Live Camera Visualizer:' : 'Visualizador AR Roomvo con Cámara en Vivo:'}
-                  </span>
-                  <a
-                    href="https://www.roomvo.com/my/flooringwaterproof/"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-bold text-[#0a1680] hover:text-[#081268] flex items-center gap-1 underline"
-                  >
-                    <span>Roomvo</span>
-                    <ExternalLink size={12} />
-                  </a>
-                </div>
+                {/* Direct Roomvo Official AR Launch link - ONLY FOR SPC VINYL */}
+                {product.category === 'spc-vinyl' && (
+                  <div className="flex items-center justify-between px-3 py-2 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl text-xs">
+                    <span className="font-semibold text-[#0B0B0B] flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-[#0B0B0B]" />
+                      {language === 'en' ? 'Official Roomvo AR Live Camera Visualizer:' : 'Visualizador AR Roomvo con Cámara en Vivo:'}
+                    </span>
+                    <a
+                      href={ROOMVO_VISUALIZER_URL}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-bold text-[#0B0B0B] hover:text-[#6B6762] flex items-center gap-1 underline"
+                    >
+                      <span>Roomvo</span>
+                      <ExternalLink size={12} />
+                    </a>
+                  </div>
+                )}
               </div>
 
               {/* Colors Picker & Sample Actions */}
               <div className="md:col-span-6 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    {language === 'en'
-                      ? `Select Color / Variety (${product.colors.length}):`
-                      : `Seleccionar Tono / Variedad (${product.colors.length}):`}
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#0B0B0B]">
+                    {product.category === 'spc-vinyl'
+                      ? (language === 'en' ? `Color Codes (${product.colors.length}):` : `Códigos de Color (${product.colors.length}):`)
+                      : (language === 'en' ? `Select Color / Variety (${product.colors.length}):` : `Seleccionar Tono / Variedad (${product.colors.length}):`)}
                   </h3>
-                  <span className="text-xs text-[#0a1680] font-bold">
-                    {selectedColor.name} {selectedColor.code ? `(${selectedColor.code})` : ''}
+                  <span className="text-xs text-[#0B0B0B] font-bold">
+                    {product.category === 'spc-vinyl'
+                      ? `${selectedColor.code || selectedColor.name}`
+                      : `${selectedColor.name} ${selectedColor.code && selectedColor.code !== selectedColor.name ? `(${selectedColor.code})` : ''}`}
                   </span>
                 </div>
 
@@ -295,17 +359,21 @@ export const ProductDetailModal: React.FC<Props> = ({
                         onClick={() => setSelectedColor(c)}
                         className={`flex items-center gap-2 p-2 rounded-xl text-left border transition cursor-pointer ${
                           isSelected
-                            ? 'border-[#0a1680] bg-[#93b2f8]/20 shadow-xs ring-2 ring-[#93b2f8]'
-                            : 'border-slate-200 hover:border-slate-300 bg-white'
+                            ? 'border-[#0B0B0B] bg-[#F5F5F5] shadow-xs ring-2 ring-[#0B0B0B]'
+                            : 'border-[#D9D9D9] hover:border-[#6B6762] bg-white'
                         }`}
                       >
                         <span
-                          className="w-5 h-5 rounded-full border border-slate-300 shrink-0 shadow-xs"
+                          className="w-5 h-5 rounded-full border border-[#D9D9D9] shrink-0 shadow-xs"
                           style={{ backgroundColor: c.hexColor }}
                         ></span>
                         <div className="truncate">
-                          <div className="text-xs font-semibold text-slate-800 truncate">{c.name}</div>
-                          {c.code && <div className="text-[10px] text-slate-400 font-mono">{c.code}</div>}
+                          <div className="text-xs font-semibold text-[#0B0B0B] truncate">
+                            {product.category === 'spc-vinyl' ? `Cod. ${c.code || c.name}` : c.name}
+                          </div>
+                          {product.category !== 'spc-vinyl' && c.code && c.code !== c.name && (
+                            <div className="text-[10px] text-[#6B6762] font-mono">{c.code}</div>
+                          )}
                         </div>
                       </button>
                     );
@@ -319,10 +387,10 @@ export const ProductDetailModal: React.FC<Props> = ({
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold border transition cursor-pointer ${
                       sampleSuccess
                         ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                        : 'bg-[#93b2f8]/20 hover:bg-[#93b2f8]/40 text-[#0a1680] border-[#93b2f8]/40'
+                        : 'bg-[#F5F5F5] hover:bg-[#D9D9D9] text-[#0B0B0B] border-[#D9D9D9]'
                     }`}
                   >
-                    {sampleSuccess ? <Check size={16} /> : <Plus size={16} className="text-[#0a1680]" />}
+                    {sampleSuccess ? <Check size={16} /> : <Plus size={16} className="text-[#0B0B0B]" />}
                     <span>
                       {sampleSuccess
                         ? t('detailModal.sampleSuccess')
@@ -335,78 +403,78 @@ export const ProductDetailModal: React.FC<Props> = ({
 
             {/* Technical Specifications Grid */}
             <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#0a1680]"></span>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0B0B0B] flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#0B0B0B]"></span>
                 {t('detailModal.specifications')}
               </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 text-xs">
                 {product.specs.wearLayer && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.wearLayer')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.wearLayer}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.wearLayer')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.wearLayer}</div>
                   </div>
                 )}
                 {product.specs.totalThickness && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('productCard.thickness')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.totalThickness}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('productCard.thickness')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.totalThickness}</div>
                   </div>
                 )}
                 {product.specs.rigidCore && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.coreMaterial')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.rigidCore}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.coreMaterial')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.rigidCore}</div>
                   </div>
                 )}
                 {product.specs.padding && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.integratedPadding')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.padding}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.integratedPadding')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.padding}</div>
                   </div>
                 )}
                 {product.specs.plankSize && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.plankDimensions')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.plankSize}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.plankDimensions')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.plankSize}</div>
                   </div>
                 )}
                 {product.specs.planksPerBox && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.piecesBox')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.piecesBox')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">
                       {product.specs.planksPerBox} {language === 'en' ? 'planks' : 'tablas'}
                     </div>
                   </div>
                 )}
                 {product.specs.sqftPerBox && (
-                  <div className="p-2.5 bg-[#93b2f8]/20 border border-[#93b2f8]/40 rounded-xl">
-                    <div className="text-[10px] text-[#0a1680] font-bold">{t('detailModal.boxSqft')}</div>
-                    <div className="font-bold text-[#0a1680] mt-0.5">{product.specs.sqftPerBox} sqft</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#0B0B0B] font-bold">{t('detailModal.boxSqft')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.sqftPerBox} sqft</div>
                   </div>
                 )}
                 {product.specs.installation && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.installationSystem')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.installation}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.installationSystem')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.installation}</div>
                   </div>
                 )}
                 {product.specs.finished && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{language === 'en' ? 'Surface Finish' : 'Acabado Superficial'}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.finished}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{language === 'en' ? 'Surface Finish' : 'Acabado Superficial'}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.finished}</div>
                   </div>
                 )}
                 {product.specs.warrantyResidential && (
-                  <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    <div className="text-[10px] text-slate-500 font-medium">{t('detailModal.warrantyResidential')}</div>
-                    <div className="font-bold text-slate-900 mt-0.5">{product.specs.warrantyResidential}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.warrantyResidential')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.warrantyResidential}</div>
                   </div>
                 )}
                 {product.specs.origin && (
-                  <div className="p-2.5 bg-[#fbedb0]/50 border border-[#f1b94c]/40 rounded-xl">
-                    <div className="text-[10px] text-[#0a1680] font-bold">{t('productCard.origin')}</div>
-                    <div className="font-bold text-[#0a1680] mt-0.5">{product.specs.origin}</div>
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#0B0B0B] font-bold">{t('productCard.origin')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.origin}</div>
                   </div>
                 )}
               </div>
@@ -415,19 +483,19 @@ export const ProductDetailModal: React.FC<Props> = ({
             {/* Technical Multilayer Cross-Section Diagram */}
             <TechnicalLayerDiagram type={product.technicalDiagram || 'spc-layers'} />
 
-            {/* Interactive Calculator: Area to Boxes (Cleaned up: Waste Buttons Removed as requested) */}
+            {/* Interactive Calculator: Area to Boxes */}
             {product.specs.sqftPerBox && (
-              <div className="bg-[#0a1680] text-white rounded-2xl p-5 space-y-4 shadow-md">
+              <div className="bg-[#0B0B0B] text-white rounded-2xl p-5 space-y-4 shadow-md border border-[#262626]">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
-                    <Calculator size={18} className="text-[#f1b94c]" />
+                    <Calculator size={18} className="text-white" />
                     <h3 className="text-sm font-bold text-white">{t('detailModal.calculatorTitle')}</h3>
                   </div>
-                  <div className="flex items-center bg-[#081268] rounded-lg p-0.5 text-xs font-semibold">
+                  <div className="flex items-center bg-[#1A1A1A] rounded-lg p-0.5 text-xs font-semibold border border-[#333333]">
                     <button
                       onClick={() => setUnitMode('sqft')}
                       className={`px-3 py-1 rounded-md transition cursor-pointer ${
-                        unitMode === 'sqft' ? 'bg-[#f1b94c] text-[#0a1680] font-bold' : 'text-white/70 hover:text-white'
+                        unitMode === 'sqft' ? 'bg-white text-[#0B0B0B] font-bold' : 'text-[#BCBAB4] hover:text-white'
                       }`}
                     >
                       Sq. Ft (ft²)
@@ -435,7 +503,7 @@ export const ProductDetailModal: React.FC<Props> = ({
                     <button
                       onClick={() => setUnitMode('m2')}
                       className={`px-3 py-1 rounded-md transition cursor-pointer ${
-                        unitMode === 'm2' ? 'bg-[#f1b94c] text-[#0a1680] font-bold' : 'text-white/70 hover:text-white'
+                        unitMode === 'm2' ? 'bg-white text-[#0B0B0B] font-bold' : 'text-[#BCBAB4] hover:text-white'
                       }`}
                     >
                       Meters² (m²)
@@ -446,7 +514,7 @@ export const ProductDetailModal: React.FC<Props> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                   {/* Area Input */}
                   <div className="sm:col-span-7 space-y-1">
-                    <label htmlFor={unitMode === 'sqft' ? sqftInputId : m2InputId} className="text-xs text-[#93b2f8]">
+                    <label htmlFor={unitMode === 'sqft' ? sqftInputId : m2InputId} className="text-xs text-[#BCBAB4]">
                       {language === 'en' ? `Area to cover (${unitMode === 'sqft' ? 'sqft' : 'm²'}):` : `Área a cubrir (${unitMode === 'sqft' ? 'sqft' : 'm²'}):`}
                     </label>
                     <input
@@ -455,18 +523,18 @@ export const ProductDetailModal: React.FC<Props> = ({
                       min="1"
                       value={calculatorArea}
                       onChange={(e) => setCalculatorArea(e.target.value)}
-                      className="w-full bg-[#081268] border border-[#93b2f8]/40 rounded-xl px-4 py-2.5 text-white font-bold text-base focus:border-[#f1b94c] outline-none"
+                      className="w-full bg-[#1A1A1A] border border-[#333333] rounded-xl px-4 py-2.5 text-white font-bold text-base focus:border-white outline-none"
                       placeholder="e.g. 250"
                     />
                   </div>
 
                   {/* Calculated Result Box */}
-                  <div className="sm:col-span-5 bg-[#081268] border border-[#93b2f8]/30 rounded-xl p-3 text-center">
-                    <div className="text-[11px] text-[#93b2f8]">{t('detailModal.calculatedBoxes')}:</div>
-                    <div className="text-2xl font-extrabold text-[#f1b94c]">
+                  <div className="sm:col-span-5 bg-[#1A1A1A] border border-[#333333] rounded-xl p-3 text-center">
+                    <div className="text-[11px] text-[#BCBAB4]">{t('detailModal.calculatedBoxes')}:</div>
+                    <div className="text-2xl font-extrabold text-white">
                       {calculatedBoxes} {language === 'en' ? 'Boxes' : 'Cajas'}
                     </div>
-                    <div className="text-[11px] text-[#fbedb0]">
+                    <div className="text-[11px] text-[#BCBAB4]">
                       {calculatedExactSqft} sqft ({product.specs.sqftPerBox} sqft/{language === 'en' ? 'box' : 'caja'})
                     </div>
                   </div>
@@ -483,10 +551,10 @@ export const ProductDetailModal: React.FC<Props> = ({
               </div>
             )}
 
-            {/* Add to Order / Cotización Form (Aligned with precision as marked in red) */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                <ShoppingCart size={16} className="text-[#0a1680]" />
+            {/* Add to Order / Cotización Form */}
+            <div className="bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl p-5 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#0B0B0B] flex items-center gap-2">
+                <ShoppingCart size={16} className="text-[#0B0B0B]" />
                 {t('detailModal.addToQuoteBtn')}
               </h3>
 
@@ -494,10 +562,10 @@ export const ProductDetailModal: React.FC<Props> = ({
                 {/* Quantity selector */}
                 <div className="sm:col-span-5 space-y-1.5">
                   <div className="flex items-center justify-between h-4">
-                    <label className="text-xs font-semibold text-slate-700 leading-none">
+                    <label className="text-xs font-semibold text-[#0B0B0B] leading-none">
                       {t('detailModal.orderQuantity')}:
                     </label>
-                    <span className="text-[11px] text-slate-500 font-mono leading-none">
+                    <span className="text-[11px] text-[#6B6762] font-mono leading-none">
                       ≈ {(orderQuantityBoxes * numericSqftPerBox).toFixed(1)} sqft
                     </span>
                   </div>
@@ -505,7 +573,7 @@ export const ProductDetailModal: React.FC<Props> = ({
                   <div className="flex items-center h-10">
                     <button
                       onClick={() => setOrderQuantityBoxes(Math.max(1, orderQuantityBoxes - 1))}
-                      className="w-10 h-10 rounded-l-xl bg-white border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 cursor-pointer"
+                      className="w-10 h-10 rounded-l-xl bg-white border border-[#D9D9D9] flex items-center justify-center text-[#0B0B0B] hover:bg-[#F5F5F5] cursor-pointer"
                       aria-label="Decrease quantity"
                     >
                       <Minus size={14} />
@@ -515,11 +583,11 @@ export const ProductDetailModal: React.FC<Props> = ({
                       min="1"
                       value={orderQuantityBoxes}
                       onChange={(e) => setOrderQuantityBoxes(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-full h-10 text-center font-bold text-slate-900 bg-white border-y border-slate-300 focus:outline-none"
+                      className="w-full h-10 text-center font-bold text-[#0B0B0B] bg-white border-y border-[#D9D9D9] focus:outline-none"
                     />
                     <button
                       onClick={() => setOrderQuantityBoxes(orderQuantityBoxes + 1)}
-                      className="w-10 h-10 rounded-r-xl bg-white border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100 cursor-pointer"
+                      className="w-10 h-10 rounded-r-xl bg-white border border-[#D9D9D9] flex items-center justify-center text-[#0B0B0B] hover:bg-[#F5F5F5] cursor-pointer"
                       aria-label="Increase quantity"
                     >
                       <Plus size={14} />
@@ -527,10 +595,10 @@ export const ProductDetailModal: React.FC<Props> = ({
                   </div>
                 </div>
 
-                {/* Note / Area room details (Aligned on the exact same baseline) */}
+                {/* Note / Area room details */}
                 <div className="sm:col-span-7 space-y-1.5">
                   <div className="flex items-center justify-between h-4">
-                    <label htmlFor={notesInputId} className="text-xs font-semibold text-slate-700 leading-none">
+                    <label htmlFor={notesInputId} className="text-xs font-semibold text-[#0B0B0B] leading-none">
                       {t('detailModal.orderNotes')}
                     </label>
                   </div>
@@ -542,7 +610,7 @@ export const ProductDetailModal: React.FC<Props> = ({
                       value={orderNotes}
                       onChange={(e) => setOrderNotes(e.target.value)}
                       placeholder={t('detailModal.notesPlaceholder')}
-                      className="w-full h-10 bg-white border border-slate-300 rounded-xl px-3 text-xs text-slate-800 focus:border-[#0a1680] outline-none"
+                      className="w-full h-10 bg-white border border-[#D9D9D9] rounded-xl px-3 text-xs text-[#0B0B0B] focus:border-[#0B0B0B] outline-none"
                     />
                   </div>
                 </div>
@@ -555,10 +623,10 @@ export const ProductDetailModal: React.FC<Props> = ({
                   className={`flex-1 py-3 px-6 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${
                     addedSuccess
                       ? 'bg-emerald-600 text-white'
-                      : 'bg-[#0a1680] hover:bg-[#081268] text-white shadow-[#0a1680]/25'
+                      : 'bg-[#0B0B0B] hover:bg-[#262626] text-white shadow-xs'
                   }`}
                 >
-                  {addedSuccess ? <Check size={18} /> : <ShoppingCart size={18} className="text-[#f1b94c]" />}
+                  {addedSuccess ? <Check size={18} /> : <ShoppingCart size={18} className="text-white" />}
                   <span>
                     {addedSuccess
                       ? t('detailModal.addedToQuoteSuccess')

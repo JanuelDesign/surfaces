@@ -13,46 +13,6 @@ export const LOCALIZED_CATEGORIES: Record<Language, Category[]> = {
       description: '100% waterproof rigid core flooring with integrated HD EVA acoustic pad and Satin finish.',
     },
     {
-      id: 'ultra-mineral',
-      name: 'UltraPULSE Mineral Core',
-      shortName: 'Ultra Mineral',
-      tagline: 'High-Density Ultra-Mineral Core Flooring',
-      iconName: 'ShieldCheck',
-      description: 'Maximum 10mm thickness with dense mineral core for heavy residential and commercial traffic.',
-    },
-    {
-      id: 'laminate',
-      name: 'Waterproof Laminate Flooring',
-      shortName: 'Laminate',
-      tagline: 'High Density Laminate & Finsa Made in Spain',
-      iconName: 'Maximize2',
-      description: 'PULSEHD and Finsa Waterproof collections with AC5/AC6 wear rating for intense commercial use.',
-    },
-    {
-      id: 'wood-herringbone',
-      name: 'PULSEWood & Herringbone',
-      shortName: 'Herringbone',
-      tagline: 'Herringbone Flooring & Random Width',
-      iconName: 'Grid',
-      description: 'Elegant herringbone patterns (5"x27") and random width planks (Random x 48") with 22 Mil wear layer.',
-    },
-    {
-      id: 'porcelain-tiles',
-      name: 'TilePULSE Porcelain Tiles',
-      shortName: 'Porcelain Tiles',
-      tagline: 'Porcelain Floor Tiles & Unique Ceramics',
-      iconName: 'Sparkles',
-      description: '24"x48" rectified formats in Satin, Glossy, and Matte finishes with Makrana marble dust and pure quartz.',
-    },
-    {
-      id: 'wall-panels',
-      name: 'Wall Panels (Indoor & Outdoor)',
-      shortName: 'Wall Panels',
-      tagline: 'Wood Plastic Composite & Acoustic Panels',
-      iconName: 'Columns',
-      description: 'Interior fluted acoustic slat panels and weather-resistant exterior composite cladding.',
-    },
-    {
       id: 'stair-steps',
       name: 'Stair Steps & Treads',
       shortName: 'Stair Steps',
@@ -90,10 +50,10 @@ interface ProductTranslation {
 
 const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
   'spc-pulse-select': {
-    name: 'PULSESelect Collection',
-    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (5.5 mm)',
+    name: 'SPC 5.5 mm',
+    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (5.5 mm - 20 Mil)',
     description:
-      'High-performance waterproof rigid core vinyl flooring with 20 Mil wear layer and rapid Angle-Angle click lock system.',
+      'High-performance waterproof rigid core vinyl flooring with 20 Mil wear layer and rapid Click Angle-Angle locking system.',
     specs: {
       warrantyResidential: '30 Years Heavy Residential',
       warrantyCommercial: '10 Years Heavy Commercial',
@@ -104,10 +64,10 @@ const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
     recommendedUse: ['Living Rooms', 'Dining Rooms', 'Kitchens', 'Offices', 'Bedrooms', 'Commercial Spaces'],
   },
   'spc-pulse-shield-xl': {
-    name: 'PULSEShield XL Collection',
-    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (6 mm - Extra Large 9"x60")',
+    name: 'SPC 6.0 mm',
+    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (6.0 mm - Extra Large 9"x60")',
     description:
-      'Extra wide and long 9"x60" format with 6 mm thickness and 20 Mil protective wear layer to create visually spacious and sophisticated interiors.',
+      'Extra wide and long 9"x60" format with 6.0 mm thickness and 20 Mil protective wear layer to create visually spacious interiors.',
     specs: {
       warrantyResidential: '30 Years Heavy Residential',
       warrantyCommercial: '10 Years Heavy Commercial',
@@ -117,10 +77,10 @@ const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
     recommendedUse: ['Hospitality', 'Luxury Residences', 'Open Concept Living', 'Commercial Boutiques'],
   },
   'spc-xl-pulse': {
-    name: 'XLPULSE Collection (8 mm)',
-    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (8 mm - 22 Mil Premium)',
+    name: 'SPC 8.0 mm',
+    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (8.0 mm - 22 Mil Premium)',
     description:
-      'The pinnacle of vinyl robustness: 8 mm total thickness with 2 mm HD EVA acoustic pad and 22 Mil wear layer for the most demanding applications.',
+      'The pinnacle of vinyl robustness: 8.0 mm total thickness with 2 mm HD EVA acoustic pad and 22 Mil wear layer for demanding applications.',
     specs: {
       wearLayer: '22 Mil (Ultra Heavy Commercial)',
       warrantyResidential: '30 Years Heavy Residential',

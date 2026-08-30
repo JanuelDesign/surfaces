@@ -1,10 +1,5 @@
 export type CategoryId =
   | 'spc-vinyl'
-  | 'ultra-mineral'
-  | 'laminate'
-  | 'wood-herringbone'
-  | 'porcelain-tiles'
-  | 'wall-panels'
   | 'stair-steps'
   | 'moldings'
   | 'baseboards';

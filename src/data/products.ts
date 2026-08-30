@@ -10,49 +10,9 @@ export const CATEGORIES: Category[] = [
     description: 'Pisos de núcleo rígido 100% resistentes al agua con pad acústico HD EVA integrado y acabado Satin.',
   },
   {
-    id: 'ultra-mineral',
-    name: 'UltraPULSE Mineral Core',
-    shortName: 'Ultra Mineral',
-    tagline: 'High-Density Ultra-Mineral Core Flooring',
-    iconName: 'ShieldCheck',
-    description: 'Máxima resistencia de 10 mm con núcleo mineral denso para tráfico pesado residencial y comercial.',
-  },
-  {
-    id: 'laminate',
-    name: 'Pisos Laminados Waterproof',
-    shortName: 'Laminados',
-    tagline: 'High Density Laminate & Finsa Made in Spain',
-    iconName: 'Maximize2',
-    description: 'Colecciones PULSEHD y Finsa Waterproof con resistencia AC5/AC6 para uso comercial intenso.',
-  },
-  {
-    id: 'wood-herringbone',
-    name: 'PULSEWood & Herringbone',
-    shortName: 'Herringbone',
-    tagline: 'Herringbone Flooring & Random Width',
-    iconName: 'Grid',
-    description: 'Elegantes patrones en espiga (5"x27") y anchos variables (Random x 48") de 6 mm con 22 Mil de capa de uso.',
-  },
-  {
-    id: 'porcelain-tiles',
-    name: 'TilePULSE Porcelanatos',
-    shortName: 'Porcelanatos',
-    tagline: 'Porcelain Floor Tiles & Unique Ceramics',
-    iconName: 'Sparkles',
-    description: 'Formatos 24"x48" rectificados en acabados Satin, Glossy y Matte con arcilla de Rajasthan y polvo de mármol Makrana.',
-  },
-  {
-    id: 'wall-panels',
-    name: 'Paneles de Pared (Indoor & Outdoor)',
-    shortName: 'Paneles WPC',
-    tagline: 'Wood Plastic Composite & Acoustic Panels',
-    iconName: 'Columns',
-    description: 'Revestimientos decorativos ranurados para interiores y paneles de exterior resistentes a la intemperie.',
-  },
-  {
     id: 'stair-steps',
     name: 'Gradas & Treads para Escaleras',
-    shortName: 'Gradas',
+    shortName: 'Gradas (Steps)',
     tagline: 'Double Rounded & Square Step Stair Treads',
     iconName: 'Footprints',
     description: 'Peldaños continuos Full Steps y Regular Steps con acabados Square Step y Double Rounded para SPC y Laminado.',
@@ -60,7 +20,7 @@ export const CATEGORIES: Category[] = [
   {
     id: 'moldings',
     name: 'Molduras & Transiciones',
-    shortName: 'Molduras',
+    shortName: 'Molduras (Moldings)',
     tagline: 'Infinite Design Possibilities with Moldings',
     iconName: 'Sliders',
     description: 'T-Molding, Reducer, End Cap y perfiles CM para transiciones suaves y acabados profesionales.',
@@ -68,7 +28,7 @@ export const CATEGORIES: Category[] = [
   {
     id: 'baseboards',
     name: 'Zócalos & Rodapiés (Baseboards)',
-    shortName: 'Zócalos',
+    shortName: 'Zócalos (Baseboards)',
     tagline: 'Elegance in Every Detail Baseboards',
     iconName: 'Square',
     description: 'Modelos BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620 en Pino, Quarter Round EPS y MDF impermeable.',
@@ -76,15 +36,15 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const PRODUCTS: Product[] = [
-  // 1. SPC VINYL: PULSESelect
+  // 1. SPC VINYL: SPC 5.5 mm
   {
     id: 'spc-pulse-select',
-    name: 'PULSESelect Collection',
+    name: 'SPC 5.5 mm',
     category: 'spc-vinyl',
-    collection: 'PULSESelect',
-    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (5.5 mm)',
+    collection: 'SPC 5.5 mm',
+    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (5.5 mm - 20 Mil)',
     description:
-      'Piso vinílico de núcleo rígido impermeable de alto rendimiento con capa de desgaste de 20 Mil y sistema de ensamble Angle-Angle rápido y seguro.',
+      'Piso vinílico de núcleo rígido impermeable de alto rendimiento con capa de desgaste de 20 Mil y sistema de ensamble Click Angle-Angle.',
     specs: {
       wearLayer: '20 Mil',
       totalThickness: '5.5 mm',
@@ -100,16 +60,16 @@ export const PRODUCTS: Product[] = [
       features: ['100% Waterproof', 'Pet Friendly', 'Scratch Resistant', 'FloorScore Certified', 'High Density Core'],
     },
     colors: [
-      { name: 'Vital Oak', code: '05', hexColor: '#d6c09b', secondaryHex: '#c2a87d', patternType: 'wood' },
-      { name: 'Grateful Pine', code: '04', hexColor: '#c7b28e', secondaryHex: '#a98f65', patternType: 'wood' },
-      { name: 'Moody Gray', code: '01', hexColor: '#5c6368', secondaryHex: '#3e4448', patternType: 'wood' },
-      { name: 'Polar Pearl', code: '09', hexColor: '#e4e3df', secondaryHex: '#cbc9c3', patternType: 'wood' },
-      { name: 'Serenity Oak', code: '10', hexColor: '#d8c7b0', secondaryHex: '#bfab90', patternType: 'wood' },
-      { name: 'Classic Walnut', code: '11', hexColor: '#7b6348', secondaryHex: '#5e4832', patternType: 'wood' },
-      { name: 'Fearless Gray', code: '02', hexColor: '#96999a', secondaryHex: '#73777a', patternType: 'wood' },
-      { name: 'Trustable Oak', code: '03', hexColor: '#cfbea0', secondaryHex: '#ad9b7d', patternType: 'wood' },
-      { name: 'Euphoric Cherry', code: '07', hexColor: '#9c5a35', secondaryHex: '#7a3e1e', patternType: 'wood' },
-      { name: 'Oregon Vintage', code: '13', hexColor: '#a7957b', secondaryHex: '#806e57', patternType: 'wood' },
+      { name: '05', code: '05', hexColor: '#d6c09b', secondaryHex: '#c2a87d', patternType: 'wood' },
+      { name: '04', code: '04', hexColor: '#c7b28e', secondaryHex: '#a98f65', patternType: 'wood' },
+      { name: '01', code: '01', hexColor: '#5c6368', secondaryHex: '#3e4448', patternType: 'wood' },
+      { name: '09', code: '09', hexColor: '#e4e3df', secondaryHex: '#cbc9c3', patternType: 'wood' },
+      { name: '10', code: '10', hexColor: '#d8c7b0', secondaryHex: '#bfab90', patternType: 'wood' },
+      { name: '11', code: '11', hexColor: '#7b6348', secondaryHex: '#5e4832', patternType: 'wood' },
+      { name: '02', code: '02', hexColor: '#96999a', secondaryHex: '#73777a', patternType: 'wood' },
+      { name: '03', code: '03', hexColor: '#cfbea0', secondaryHex: '#ad9b7d', patternType: 'wood' },
+      { name: '07', code: '07', hexColor: '#9c5a35', secondaryHex: '#7a3e1e', patternType: 'wood' },
+      { name: '13', code: '13', hexColor: '#a7957b', secondaryHex: '#806e57', patternType: 'wood' },
     ],
     handSamplesAvailable: true,
     featured: true,
@@ -118,18 +78,18 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Salas', 'Comedores', 'Cocinas', 'Oficinas', 'Dormitorios', 'Espacios Comerciales'],
   },
 
-  // 2. SPC VINYL: PULSEShield XL
+  // 2. SPC VINYL: SPC 6.0 mm XL
   {
     id: 'spc-pulse-shield-xl',
-    name: 'PULSEShield XL Collection',
+    name: 'SPC 6.0 mm',
     category: 'spc-vinyl',
-    collection: 'PULSEShield XL',
-    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (6 mm - Extra Large 9"x60")',
+    collection: 'SPC 6.0 mm',
+    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (6.0 mm - Extra Large 9"x60")',
     description:
-      'Formato extra ancho y largo de 9”x60” con grosor de 6 mm y 20 Mil de capa protectora para crear ambientes visualmente más amplios y sofisticados.',
+      'Formato extra ancho y largo de 9”x60” con grosor de 6.0 mm y 20 Mil de capa protectora para crear ambientes visualmente más amplios.',
     specs: {
       wearLayer: '20 Mil',
-      totalThickness: '6 mm',
+      totalThickness: '6.0 mm',
       rigidCore: '4.5 mm SPC',
       padding: '1.5 mm HD EVA Integrado',
       planksPerBox: 7,
@@ -142,11 +102,11 @@ export const PRODUCTS: Product[] = [
       features: ['Formato XL Gran Amplitud', '100% Impermeable', 'Pet Friendly', 'Resistente a Rayones'],
     },
     colors: [
-      { name: 'Golden Honey', code: '02', hexColor: '#dfc39a', secondaryHex: '#c7a372', patternType: 'wood' },
-      { name: 'N Gray', code: '04', hexColor: '#bcc1c7', secondaryHex: '#9da3ab', patternType: 'wood' },
-      { name: 'Oak Blossom', code: '06', hexColor: '#bfa780', secondaryHex: '#99815c', patternType: 'wood' },
-      { name: 'Maple', code: '07', hexColor: '#ccb186', secondaryHex: '#a98c5f', patternType: 'wood' },
-      { name: 'Variation Gray', code: '08', hexColor: '#8a8d8e', secondaryHex: '#6d7072', patternType: 'wood' },
+      { name: '02', code: '02', hexColor: '#dfc39a', secondaryHex: '#c7a372', patternType: 'wood' },
+      { name: '04', code: '04', hexColor: '#bcc1c7', secondaryHex: '#9da3ab', patternType: 'wood' },
+      { name: '06', code: '06', hexColor: '#bfa780', secondaryHex: '#99815c', patternType: 'wood' },
+      { name: '07', code: '07', hexColor: '#ccb186', secondaryHex: '#a98c5f', patternType: 'wood' },
+      { name: '08', code: '08', hexColor: '#8a8d8e', secondaryHex: '#6d7072', patternType: 'wood' },
     ],
     handSamplesAvailable: true,
     featured: true,
@@ -155,19 +115,19 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Hotelería', 'Residencias de Lujo', 'Open Concept Living', 'Locales Comerciales'],
   },
 
-  // 3. SPC VINYL: XLPULSE
+  // 3. SPC VINYL: SPC 8.0 mm
   {
     id: 'spc-xl-pulse',
-    name: 'XLPULSE Collection (8 mm)',
+    name: 'SPC 8.0 mm',
     category: 'spc-vinyl',
-    collection: 'XLPULSE',
-    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (8 mm - 22 Mil Premium)',
+    collection: 'SPC 8.0 mm',
+    subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (8.0 mm - 22 Mil Premium)',
     description:
-      'La máxima expresión de robustez en vinílico: 8 mm de espesor total con 2 mm de pad HD EVA y 22 Mil de capa de desgaste para el rendimiento más exigente.',
+      'Espesor de 8.0 mm con 2 mm de pad HD EVA y 22 Mil de capa de desgaste para el rendimiento más exigente.',
     specs: {
       wearLayer: '22 Mil (Ultra Resistente)',
-      totalThickness: '8 mm',
-      rigidCore: '6 mm SPC',
+      totalThickness: '8.0 mm',
+      rigidCore: '6.0 mm SPC',
       padding: '2 mm HD EVA Acústico',
       planksPerBox: 5,
       plankSize: '9” x 60”',
@@ -179,16 +139,16 @@ export const PRODUCTS: Product[] = [
       features: ['22 Mil Wear Layer', 'Aislamiento Acústico Superior 2mm EVA', 'Anti-Manchas', 'Textura Real Wood'],
     },
     colors: [
-      { name: 'Liv Oak', code: '01', hexColor: '#d3c2a3', secondaryHex: '#b4a07d', patternType: 'wood' },
-      { name: 'Kirsche Oak', code: '02', hexColor: '#b9957d', secondaryHex: '#99745b', patternType: 'wood' },
-      { name: 'Hygge Gray', code: '03', hexColor: '#e3dfd7', secondaryHex: '#cac4ba', patternType: 'wood' },
-      { name: 'Serenity Oak', code: '05', hexColor: '#d6c4a8', secondaryHex: '#b9a485', patternType: 'wood' },
-      { name: 'Japandi Oak', code: '06', hexColor: '#ded2bc', secondaryHex: '#c2b399', patternType: 'wood' },
-      { name: 'Chic Dark', code: '08', hexColor: '#4f5052', secondaryHex: '#353637', patternType: 'wood' },
-      { name: 'Silver Oak', code: '09', hexColor: '#c8cbd0', secondaryHex: '#aab0b8', patternType: 'wood' },
-      { name: 'Toupe Oak', code: '10', hexColor: '#8a765d', secondaryHex: '#6d5a42', patternType: 'wood' },
-      { name: 'Jewel Oak', code: '11', hexColor: '#eeebe5', secondaryHex: '#ded8cf', patternType: 'wood' },
-      { name: 'Cherry XL', code: '12', hexColor: '#a15d38', secondaryHex: '#7f411f', patternType: 'wood' },
+      { name: '01', code: '01', hexColor: '#d3c2a3', secondaryHex: '#b4a07d', patternType: 'wood' },
+      { name: '02', code: '02', hexColor: '#b9957d', secondaryHex: '#99745b', patternType: 'wood' },
+      { name: '03', code: '03', hexColor: '#e3dfd7', secondaryHex: '#cac4ba', patternType: 'wood' },
+      { name: '05', code: '05', hexColor: '#d6c4a8', secondaryHex: '#b9a485', patternType: 'wood' },
+      { name: '06', code: '06', hexColor: '#ded2bc', secondaryHex: '#c2b399', patternType: 'wood' },
+      { name: '08', code: '08', hexColor: '#4f5052', secondaryHex: '#353637', patternType: 'wood' },
+      { name: '09', code: '09', hexColor: '#c8cbd0', secondaryHex: '#aab0b8', patternType: 'wood' },
+      { name: '10', code: '10', hexColor: '#8a765d', secondaryHex: '#6d5a42', patternType: 'wood' },
+      { name: '11', code: '11', hexColor: '#eeebe5', secondaryHex: '#ded8cf', patternType: 'wood' },
+      { name: '12', code: '12', hexColor: '#a15d38', secondaryHex: '#7f411f', patternType: 'wood' },
     ],
     handSamplesAvailable: true,
     featured: true,
@@ -197,260 +157,7 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Zonas de Alto Tráfico', 'Edificios Multifamiliares', 'Residencias Premium', 'Boutiques'],
   },
 
-  // 4. ULTRA MINERAL CORE: UltraPULSE
-  {
-    id: 'ultra-pulse',
-    name: 'UltraPULSE Collection (10 mm)',
-    category: 'ultra-mineral',
-    collection: 'UltraPULSE',
-    subtitle: 'High-Density Ultra-Mineral Core Flooring (AC5 / 22 Mil - 10 mm)',
-    description:
-      'Redefine la robustez y el estilo con núcleo ultra-mineral de alta densidad (8 mm UMC + 2 mm pad EVA). Diseñado para resistir los entornos residenciales y comerciales más demandantes con 10 mm de espesor.',
-    specs: {
-      wearLayer: 'AC5 / 22 Mils',
-      totalThickness: '10 mm',
-      rigidCore: '8 mm Ultra Mineral Core (UMC)',
-      padding: '2 mm HD EVA',
-      planksPerBox: 5,
-      plankSize: '9” x 48”',
-      installation: 'Click Angle-Angle',
-      sqftPerBox: 18.29,
-      finished: 'Satin',
-      warrantyResidential: '30 Años Heavy Residential',
-      warrantyCommercial: '10 Años Heavy Commercial',
-      features: [
-        'Ultra Mineral Core 8mm',
-        'Capa AC5 Comercial',
-        'Pet Friendly',
-        'Resistencia Extrema al Rayado',
-        'Estabilidad Dimensional Superior',
-      ],
-    },
-    colors: [
-      { name: 'Caliza', code: 'SI-20', hexColor: '#e0d5c1', secondaryHex: '#c7b9a1', patternType: 'stone' },
-      { name: 'Volcanica', code: 'SI-10', hexColor: '#cdc8c0', secondaryHex: '#b1aaa1', patternType: 'stone' },
-      { name: 'Grabo', code: 'SI-40', hexColor: '#5a625e', secondaryHex: '#424945', patternType: 'stone' },
-      { name: 'Castaño', code: 'SI-30', hexColor: '#3a271c', secondaryHex: '#251710', patternType: 'wood' },
-    ],
-    handSamplesAvailable: true,
-    featured: true,
-    technicalDiagram: 'ultra-layers',
-    certifications: ['CARB Phase 2', 'FloorScore', 'AC5 Commercial Intense', '30Y Residential'],
-    recommendedUse: ['Hoteles', 'Restaurantes', 'Vestíbulos', 'Residencias de Lujo', 'Centros Médicos'],
-  },
-
-  // 5. WOOD & HERRINGBONE: PULSEWood
-  {
-    id: 'pulse-wood',
-    name: 'PULSEWood Collection',
-    category: 'wood-herringbone',
-    collection: 'PULSEWood',
-    subtitle: 'Herringbone Flooring & Random Width Planks (22 Mil / 6 mm)',
-    description:
-      'Colección artística de pisos en espiga (Herringbone 5"x27") y tablas de ancho aleatorio (Random Width x 48") para crear patrones geométricos clásicos y contemporáneos.',
-    specs: {
-      wearLayer: '22 Mil',
-      totalThickness: '6 mm (incluye 2mm Pad)',
-      rigidCore: '6 mm Rigid Core',
-      padding: '2 mm HD EVA',
-      planksPerBox: '12 pzas (Herringbone) / 15 pzas (Random)',
-      plankSize: '5” x 27” (Herringbone) | Random Width x 48”',
-      installation: 'Click Angle-Angle especializado',
-      sqftPerBox: '11.75 sqft (Herringbone) / 35.46 sqft (Random)',
-      finished: 'Satin Real Wood Touch',
-      warrantyResidential: '30 Años Heavy Residential',
-      warrantyCommercial: '10 Años Commercial',
-      features: ['Patrón Herringbone en Espiga', 'Ancho Aleatorio', '22 Mil Wear Layer', 'Capas UV & Anti-rayado'],
-    },
-    colors: [
-      { name: 'Vintage', code: 'B-04', hexColor: '#9f9889', secondaryHex: '#7b7466', patternType: 'wood' },
-      { name: 'Japandi H', code: 'B-03', hexColor: '#dfcca8', secondaryHex: '#c7b28b', patternType: 'wood' },
-      { name: 'Natural H', code: 'B-05', hexColor: '#bfa072', secondaryHex: '#9d8054', patternType: 'wood' },
-    ],
-    handSamplesAvailable: true,
-    featured: true,
-    technicalDiagram: 'spc-layers',
-    certifications: ['CARB Phase 2', 'FloorScore', '30Y Residential'],
-    recommendedUse: ['Salas Principales', 'Galerías', 'Comedores', 'Suites', 'Estudios de Diseño'],
-  },
-
-  // 6. LAMINATE: PULSEHD
-  {
-    id: 'pulse-hd-laminate',
-    name: 'PULSEHD Collection',
-    category: 'laminate',
-    collection: 'PULSEHD',
-    subtitle: 'Waterproof High Density Laminate (AC5 - 7 mm)',
-    description:
-      'Laminado de alta densidad 100% resistente al agua con certificación de uso rudo AC5 y pad acústico de 1 mm HD EVA integrado.',
-    specs: {
-      wearLayer: 'AC5 Commercial Resistance',
-      totalThickness: '7 mm',
-      rigidCore: '6 mm Free PVC Black HD Core',
-      padding: '1 mm HD EVA Integrado',
-      planksPerBox: 14,
-      plankSize: '8” x 48”',
-      installation: 'Click Angle-Angle',
-      sqftPerBox: 36.43,
-      finished: 'Satin',
-      warrantyResidential: '30 Años Heavy Residential',
-      warrantyCommercial: '10 Años Commercial',
-      features: ['Free PVC Black HD Core', 'AC5 Wear Layer', 'Kraft Decor Paper', 'EVA Padding'],
-    },
-    colors: [
-      { name: 'Hera Beige', code: 'HD6', hexColor: '#ded8cb', secondaryHex: '#c2bbad', patternType: 'wood' },
-      { name: 'Gala Oak', code: 'HD2', hexColor: '#cca983', secondaryHex: '#ae8c67', patternType: 'wood' },
-      { name: 'Zlato Oak', code: 'HD4', hexColor: '#c59d5d', secondaryHex: '#9f783c', patternType: 'wood' },
-      { name: 'Koppar Oak', code: 'HD1', hexColor: '#965a31', secondaryHex: '#733f1c', patternType: 'wood' },
-      { name: 'Argenta Grey', code: 'HD3', hexColor: '#9aa5ab', secondaryHex: '#7c868c', patternType: 'wood' },
-      { name: 'Kern Oak', code: 'HD5', hexColor: '#7b7a77', secondaryHex: '#5e5d5a', patternType: 'wood' },
-    ],
-    handSamplesAvailable: true,
-    technicalDiagram: 'laminate-layers',
-    certifications: ['CARB Phase 2', 'FloorScore', 'AC5 European Standard', '30Y Residential'],
-    recommendedUse: ['Hogares con Mascotas', 'Oficinas', 'Restaurantes', 'Áreas de Paso'],
-  },
-
-  // 7. LAMINATE: Finsa Evolve & Supreme (Made in Spain)
-  {
-    id: 'finsa-laminate-spain',
-    name: 'Finsa Waterproof Laminate',
-    category: 'laminate',
-    collection: 'Finsa (Made In Spain)',
-    subtitle: 'Commercial Intense AC6 / Class 33 (Evolve & Supreme Collections)',
-    description:
-      'Fabricado en España con la más alta tecnología europea. Certificación AC6 Clase 33 para uso comercial intenso (colegios, tiendas, oficinas de planta abierta).',
-    specs: {
-      wearLayer: 'AC6 (Máxima Resistencia Europea)',
-      classGrade: 'Clase 33 Comercial Intenso',
-      rigidCore: '8 mm Laminate Core',
-      totalThickness: '8 mm',
-      planksPerBox: 8,
-      plankSize: 'Evolve: 7” x 52” | Supreme: 9” x 51”',
-      installation: 'Angle-Angle Click',
-      sqftPerBox: 'Evolve: 22.24 sqft | Supreme: 20.30 sqft',
-      origin: 'Made in Spain (España)',
-      finished: 'Madera Texturizada Natural',
-      features: ['AC6 Commercial Intense', 'Fabricado en España', 'Apto Escuelas & Tiendas', 'Class 33'],
-    },
-    colors: [
-      { name: 'Bruno', code: 'Evolve', hexColor: '#3c3a39', secondaryHex: '#272625', patternType: 'wood' },
-      { name: 'Noz', code: 'Evolve', hexColor: '#5c3f30', secondaryHex: '#40291e', patternType: 'wood' },
-      { name: 'Blanco', code: 'Evolve', hexColor: '#dfdfdc', secondaryHex: '#c7c7c3', patternType: 'wood' },
-      { name: 'Esencia', code: 'Evolve', hexColor: '#dac3a2', secondaryHex: '#bd9d74', patternType: 'wood' },
-      { name: 'Crepúsculo', code: 'Evolve', hexColor: '#a89487', secondaryHex: '#887366', patternType: 'wood' },
-      { name: 'Crudo', code: 'Supreme', hexColor: '#d6c8b3', secondaryHex: '#b9ab94', patternType: 'wood' },
-      { name: 'Santorini', code: 'Supreme', hexColor: '#d0d1cc', secondaryHex: '#b4b5af', patternType: 'wood' },
-      { name: 'Victoria', code: 'Supreme', hexColor: '#8a8b89', secondaryHex: '#6d6e6c', patternType: 'wood' },
-    ],
-    handSamplesAvailable: true,
-    featured: true,
-    technicalDiagram: 'laminate-layers',
-    certifications: ['European AC6 Standard', 'Class 33 Intense', 'PEFC Forest Certified'],
-    recommendedUse: ['Colegios', 'Tiendas', 'Open Office', 'Comercios de Alto Flujo', 'Residencias'],
-  },
-
-  // 8. PORCELAIN TILES: TilePULSE
-  {
-    id: 'tile-pulse-porcelain',
-    name: 'TilePULSE Porcelain Floor Tiles',
-    category: 'porcelain-tiles',
-    collection: 'TilePULSE',
-    subtitle: 'Porcelain Floor Tiles Coloured (24" x 48" Rectified - PEI 3)',
-    description:
-      'Cerámicas de gran formato 24”x48” elaboradas con arcilla roja de Rajasthan enriquecida con polvo de mármol Makrana y cuarzo puro. Disponibles en acabados Satin, Glossy y Matte.',
-    specs: {
-      plankSize: '24” x 48” (Gran Formato)',
-      sqftPerBox: 15.5,
-      planksPerBox: 2,
-      edge: 'Rectified (Rectificado)',
-      abrasionResistance: 'PEI 3',
-      finished: 'Satin, Glossy & Matte',
-      material: 'Porcelanato / Cerámica con Polvo de Mármol Makrana y Cuarzo',
-      features: ['Borde Rectificado', 'Resistencia a Químicos', '3 Acabados (Satin/Glossy/Matte)', 'Eco-friendly'],
-    },
-    colors: [
-      { name: 'Stellar Statuario', code: 'L-1', hexColor: '#f5f5f5', secondaryHex: '#d8d8d8', patternType: 'marble', finish: 'Satin & Glossy' },
-      { name: 'Celestial Crema', code: 'L-2', hexColor: '#faebd7', secondaryHex: '#e8cbab', patternType: 'marble', finish: 'Satin & Glossy' },
-      { name: 'Titanium Grey', code: 'L-3', hexColor: '#c5c9cd', secondaryHex: '#9ca1a7', patternType: 'marble', finish: 'Glossy & Matte' },
-      { name: 'Obsidian Noir', code: 'L-4', hexColor: '#5c6063', secondaryHex: '#3b3e40', patternType: 'marble', finish: 'Glossy & Matte' },
-      { name: 'Luminous Pearl', code: 'L-5', hexColor: '#e9ecef', secondaryHex: '#cbd0d6', patternType: 'marble', finish: 'Glossy & Matte' },
-      { name: 'Florence White', code: 'L-6', hexColor: '#f8f6f0', secondaryHex: '#e4d6c4', patternType: 'marble', finish: 'Glossy & Matte' },
-      { name: 'Divine Statuario', code: 'L-7', hexColor: '#fcfcfc', secondaryHex: '#caa266', patternType: 'marble', finish: 'Satin & Glossy' },
-      { name: 'Lunar Onix', code: 'L-8', hexColor: '#f0f3f6', secondaryHex: '#d3dde4', patternType: 'marble', finish: 'Satin & Glossy' },
-      { name: 'Arbascato Blanco', code: 'L-9', hexColor: '#f7f8f9', secondaryHex: '#dcdfe3', patternType: 'marble', finish: 'Satin & Glossy' },
-      { name: 'Sahara Pulido', code: 'L-10', hexColor: '#e2cfb7', secondaryHex: '#c7b093', patternType: 'marble', finish: 'Satin' },
-      { name: 'Avant-Garde White', code: 'L-11', hexColor: '#f1f1ed', secondaryHex: '#e1a69a', patternType: 'marble', finish: 'Glossy & Matte' },
-    ],
-    handSamplesAvailable: true,
-    featured: true,
-    technicalDiagram: 'spc-layers',
-    certifications: ['PEI 3 Abrasion', 'Rectified Precision Cut', 'ISO Ceramic'],
-    recommendedUse: ['Pisos de Baño', 'Muros de Acento', 'Lobbies', 'Cocinas de Lujo', 'Centros Comerciales'],
-  },
-
-  // 9. WALL PANELS: Indoor WPC & Acoustic Panels
-  {
-    id: 'wall-panels-indoor',
-    name: 'Paneles de Pared Indoor (WPC & Acústico)',
-    category: 'wall-panels',
-    collection: 'Indoor Wall Panels',
-    subtitle: 'Wood Plastic Composite (WPC) & Wooden Slat Acoustic Panels',
-    description:
-      'Paneles decorativos ranurados para paredes interiores. Transforman salas, cabeceros y oficinas con textura, calidez y absorción acústica.',
-    specs: {
-      material: 'Wood Plastic Composite (WPC) & Slat Acústico',
-      plankSize: '1" x 6 5/8" x 9\'5" | 1" x 7" x 16" | 1" x 2\'4" x 7\'8"',
-      installation: 'Machihembrado oculto con clips / Adhesivo',
-      finished: 'Texturizado WPC Mate / Madera Natural',
-      features: ['Aislamiento Acústico', 'Fácil Instalación', 'Resistente a la Humedad', 'Elegancia y Diseño'],
-    },
-    colors: [
-      { name: 'Desert (WPC)', code: '1" x 6 5/8" x 9\'5"', hexColor: '#cfbe9e', secondaryHex: '#b29f7f', patternType: 'slat' },
-      { name: 'Gray (WPC)', code: '1" x 6 5/8" x 9\'5"', hexColor: '#96999c', secondaryHex: '#797c7f', patternType: 'slat' },
-      { name: 'Dark (WPC)', code: '1" x 6 5/8" x 9\'5"', hexColor: '#303031', secondaryHex: '#1b1b1c', patternType: 'slat' },
-      { name: 'Matte (WPC)', code: '1" x 6 5/8" x 9\'5"', hexColor: '#5c4538', secondaryHex: '#422f25', patternType: 'slat' },
-      { name: 'Mocha (WPC)', code: '1" x 6 5/8" x 9\'5"', hexColor: '#453229', secondaryHex: '#2d1f19', patternType: 'slat' },
-      { name: 'Sandalwood (Acoustic)', code: '1" x 2\'4" x 7\'8"', hexColor: '#c77839', secondaryHex: '#222222', patternType: 'slat' },
-      { name: 'Ochre (WPC)', code: '1" x 7" x 16"', hexColor: '#b48a56', secondaryHex: '#936d3c', patternType: 'slat' },
-      { name: 'Cocoa (WPC)', code: '1" x 7" x 16"', hexColor: '#7a5a41', secondaryHex: '#5e422c', patternType: 'slat' },
-      { name: 'Ashwood (WPC)', code: '1" x 7" x 16"', hexColor: '#4d4f47', secondaryHex: '#353731', patternType: 'slat' },
-      { name: 'EchoWood (Acoustic)', code: '1" x 7" x 16"', hexColor: '#8a623f', secondaryHex: '#1e1e1e', patternType: 'slat' },
-    ],
-    handSamplesAvailable: true,
-    technicalDiagram: 'wpc-slat',
-    certifications: ['Fire Retardant Class B', 'Acoustic NRC Rating', 'Zero VOC'],
-    recommendedUse: ['Paredes de TV', 'Cabeceros', 'Estudios de Grabación / Oficinas', 'Restaurantes'],
-  },
-
-  // 10. WALL PANELS: Outdoor WPC Composite
-  {
-    id: 'wall-panels-outdoor',
-    name: 'Paneles de Pared Outdoor (WPC Exterior)',
-    category: 'wall-panels',
-    collection: 'Outdoor Composite',
-    subtitle: 'WPC Exterior Composite Panels (8-1/2" x 114" x 26 mm)',
-    description:
-      'Paneles para fachadas y muros exteriores de alta resistencia ante rayos UV, lluvia e intemperie. No se pudren ni requieren pintura.',
-    specs: {
-      material: 'Exterior Wood Plastic Composite de Alto Grosor (26 mm)',
-      plankSize: '8-1/2" x 114" x 26 mm',
-      installation: 'Sistema de Ensamble Exterior Ranurado con Clips Inoxidables',
-      finished: 'Anti-UV Woodgrain',
-      features: ['Resistencia UV Intemperie', 'No Requiere Mantenimiento', 'Grosor 26 mm', 'Impermeable'],
-    },
-    colors: [
-      { name: 'Onyx', code: 'Exterior', hexColor: '#2b2c2d', secondaryHex: '#19191a', patternType: 'slat' },
-      { name: 'Chestnut', code: 'Exterior', hexColor: '#8c5936', secondaryHex: '#6b3e21', patternType: 'slat' },
-      { name: 'Sienna', code: 'Exterior', hexColor: '#ba6e37', secondaryHex: '#935122', patternType: 'slat' },
-    ],
-    handSamplesAvailable: true,
-    technicalDiagram: 'wpc-slat',
-    certifications: ['UV Resistant Grade 5', 'Waterproof IPX8 Exterior', '15Y Outdoor Warranty'],
-    recommendedUse: ['Fachadas Exteriores', 'Patios & Terrazas', 'Muros Perimetrales', 'Entradas Principales'],
-  },
-
-  // 11. STAIR STEPS & TREADS
+  // 4. STAIR STEPS & TREADS
   {
     id: 'stair-steps-treads',
     name: 'Gradas & Treads para Escaleras',
@@ -484,13 +191,13 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Escaleras Interiores', 'Gradas Voladas', 'Escaleras con Iluminación LED Integrada'],
   },
 
-  // 12. MOLDINGS & TRANSITIONS
+  // 5. MOLDINGS & TRANSITIONS
   {
     id: 'moldings-transitions',
     name: 'Molduras & Perfiles de Transición',
     category: 'moldings',
     collection: 'Infinite Design Moldings',
-    subtitle: 'CM T-Molding, Reducer & End Cap Profiles',
+    subtitle: 'CM T-Molding, CM Reducer, T-Molding, Reducer & End Cap Profiles',
     description:
       'Perfiles de transición para unir pisos de diferentes alturas o materiales, rematar bordes contra puertas y ventanas con acabado profesional.',
     specs: {
@@ -516,7 +223,7 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Puertas', 'Unión Piso Flotante a Porcelanato', 'Ventanas Balcón', 'Terminaciones Perimetrales'],
   },
 
-  // 13. BASEBOARDS (ZÓCALOS)
+  // 6. BASEBOARDS (ZÓCALOS)
   {
     id: 'baseboards-collection',
     name: 'Zócalos & Rodapiés (Baseboards)',
@@ -558,3 +265,4 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Todo Tipo de Pisos', 'Remates de Pared Perimetrales', 'Cocinas y Baños (EPS Waterproof)'],
   },
 ];
+

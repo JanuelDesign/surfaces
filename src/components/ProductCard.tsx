@@ -50,15 +50,15 @@ export const ProductCard: React.FC<Props> = ({
 
   const isAccessory = ['baseboards', 'moldings', 'stair-steps'].includes(product.category);
 
-  // High-fidelity image assets
-  const plankSvg = generatePlankSVG(
+  // High-fidelity image assets: prioritize real photo URL if available from Sheets/GitHub, fallback to SVG generator
+  const plankSvg = selectedColor.image || generatePlankSVG(
     selectedColor.hexColor || '#c7b28e',
     selectedColor.secondaryHex || '#8c7355',
     'rgba(0,0,0,0.22)',
     selectedColor.patternType || 'wood'
   );
 
-  const roomSvg = generateRoomSceneSVG(
+  const roomSvg = selectedColor.roomImage || generateRoomSceneSVG(
     selectedColor.hexColor || '#c7b28e',
     selectedColor.secondaryHex || '#8c7355',
     'living'
@@ -100,6 +100,7 @@ export const ProductCard: React.FC<Props> = ({
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
 
+  // Baseboards only show the photo, never a diagram
   const currentDisplayImage = product.category === 'baseboards'
     ? (accessoryData?.photoUrl || plankSvg)
     : isAccessory
@@ -108,10 +109,10 @@ export const ProductCard: React.FC<Props> = ({
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-[#93b2f8]/30 hover:border-[#0a1680] shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between group">
-        {/* Visualizer & Plank Swatch Area - Bento Tile Top */}
+      <div className="bg-white rounded-2xl border border-[#D9D9D9] hover:border-[#0B0B0B] shadow-xs hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col justify-between group">
+        {/* Visualizer & Plank Swatch Area */}
         <div
-          className="relative h-48 bg-slate-950 overflow-hidden cursor-pointer"
+          className="relative h-48 bg-[#0B0B0B] overflow-hidden cursor-pointer"
           onClick={() => onOpenDetail(product, selectedColor)}
         >
           {/* Main High-Res Image Display */}
@@ -124,14 +125,14 @@ export const ProductCard: React.FC<Props> = ({
           {/* Top Left: View Switcher (Plank vs Room) - Hidden for Baseboards */}
           {product.category !== 'baseboards' && (
             <div
-              className="absolute top-2.5 left-2.5 flex bg-black/60 backdrop-blur-md p-0.5 rounded-lg border border-white/20 z-10"
+              className="absolute top-2.5 left-2.5 flex bg-black/70 backdrop-blur-md p-0.5 rounded-lg border border-white/20 z-10"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={() => setCardViewMode('plank')}
                 className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
                   cardViewMode === 'plank'
-                    ? 'bg-[#0a1680] text-white shadow-xs'
+                    ? 'bg-[#0B0B0B] text-white shadow-xs'
                     : 'text-white/70 hover:text-white'
                 }`}
               >
@@ -141,7 +142,7 @@ export const ProductCard: React.FC<Props> = ({
                 onClick={() => setCardViewMode('room')}
                 className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
                   cardViewMode === 'room'
-                    ? 'bg-[#0a1680] text-white shadow-xs'
+                    ? 'bg-[#0B0B0B] text-white shadow-xs'
                     : 'text-white/70 hover:text-white'
                 }`}
               >
@@ -156,35 +157,26 @@ export const ProductCard: React.FC<Props> = ({
               e.stopPropagation();
               setShowFullView(true);
             }}
-            className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-black/60 hover:bg-[#f1b94c] hover:text-[#0a1680] text-white backdrop-blur-md border border-white/20 transition cursor-pointer shadow-sm z-10"
+            className="absolute top-2.5 right-2.5 p-1.5 rounded-lg bg-black/70 hover:bg-white hover:text-[#0B0B0B] text-white backdrop-blur-md border border-white/20 transition cursor-pointer shadow-sm z-10"
             title={language === 'en' ? 'Open High-Res Full View' : 'Ver en Pantalla Completa'}
           >
             <Maximize2 size={13} />
           </button>
 
-          {/* Quick 3D View Floating Button */}
-          <a
-            href={ROOMVO_VISUALIZER_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="absolute bottom-2.5 right-2.5 flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 hover:bg-[#f1b94c] text-[#0a1680] text-[11px] font-bold shadow-md backdrop-blur-xs transition transform hover:scale-105 cursor-pointer z-10"
-            title={language === 'en' ? 'Launch 3D Room Visualizer' : 'Abrir en Visualizador 3D'}
-          >
-            <Eye size={12} className="text-[#0a1680]" />
-            <span>{t('productCard.view3D')}</span>
-          </a>
-
           {/* Current Active Color overlay info */}
           <div className="absolute bottom-2.5 left-2.5 text-white z-10 pointer-events-none">
             <div className="text-xs font-bold drop-shadow-md flex items-center gap-1.5">
-              <span>{selectedColor.name}</span>
-              {selectedColor.code && (
-                <span className="text-[9px] bg-black/50 text-[#fbedb0] px-1.5 py-0.5 rounded font-mono font-medium border border-white/20">
-                  {selectedColor.code}
-                </span>
+              {product.category === 'spc-vinyl' ? (
+                <span>{language === 'en' ? 'Code:' : 'Código:'} {selectedColor.code || selectedColor.name}</span>
+              ) : (
+                <>
+                  <span>{selectedColor.name}</span>
+                  {selectedColor.code && selectedColor.code !== selectedColor.name && (
+                    <span className="text-[9px] bg-black/60 text-[#F5F5F5] px-1.5 py-0.5 rounded font-mono font-medium border border-white/20">
+                      {selectedColor.code}
+                    </span>
+                  )}
+                </>
               )}
             </div>
             {selectedColor.finish && (
@@ -193,68 +185,68 @@ export const ProductCard: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Bento Content Body */}
-        <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+        {/* Content Body */}
+        <div className="p-5 flex-1 flex flex-col justify-between space-y-4 bg-white">
           <div>
             {/* Header */}
             <div className="flex items-start justify-between gap-2">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#0a1680]">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#6B6762]">
                   {product.collection}
                 </span>
                 <h3
                   onClick={() => onOpenDetail(product, selectedColor)}
-                  className="text-base font-bold text-[#0a1680] hover:text-[#081268] cursor-pointer transition mt-0.5"
+                  className="text-base font-bold text-[#0B0B0B] hover:text-[#6B6762] cursor-pointer transition mt-0.5"
                 >
                   {product.name}
                 </h3>
               </div>
               {product.specs.warrantyResidential && (
-                <span className="text-[10px] font-bold text-slate-700 bg-[#93b2f8]/20 px-2 py-0.5 rounded-sm border border-[#93b2f8]/30 shrink-0 uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#0B0B0B] bg-[#F5F5F5] px-2 py-0.5 rounded-sm border border-[#D9D9D9] shrink-0 uppercase tracking-wider">
                   {product.specs.warrantyResidential.split(' ')[0]} {product.specs.warrantyResidential.split(' ')[1]}
                 </span>
               )}
             </div>
 
-            <p className="text-xs text-slate-600 mt-1 line-clamp-2">{product.subtitle}</p>
+            <p className="text-xs text-[#6B6762] mt-1 line-clamp-2">{product.subtitle}</p>
 
-            {/* Quick Specifications Bento Pill Grid */}
+            {/* Quick Specifications Pill Grid */}
             <div className="grid grid-cols-2 gap-2 my-3 text-[11px]">
               {product.specs.wearLayer && (
-                <div className="bg-slate-50 border border-slate-200 p-2 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase text-slate-500">{t('productCard.wearLayer')}:</span>
-                  <span className="font-bold text-[#0a1680]">{product.specs.wearLayer}</span>
+                <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.wearLayer')}:</span>
+                  <span className="font-bold text-[#0B0B0B]">{product.specs.wearLayer}</span>
                 </div>
               )}
               {product.specs.totalThickness && (
-                <div className="bg-slate-50 border border-slate-200 p-2 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase text-slate-500">{t('productCard.thickness')}:</span>
-                  <span className="font-bold text-[#0a1680]">{product.specs.totalThickness}</span>
+                <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.thickness')}:</span>
+                  <span className="font-bold text-[#0B0B0B]">{product.specs.totalThickness}</span>
                 </div>
               )}
               {product.specs.plankSize && (
-                <div className="bg-slate-50 border border-slate-200 p-2 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase text-slate-500">{language === 'en' ? 'SIZE:' : 'MEDIDA:'}</span>
-                  <span className="font-bold text-[#0a1680] truncate max-w-[90px]" title={product.specs.plankSize}>
+                <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{language === 'en' ? 'SIZE:' : 'MEDIDA:'}</span>
+                  <span className="font-bold text-[#0B0B0B] truncate max-w-[90px]" title={product.specs.plankSize}>
                     {product.specs.plankSize.split('|')[0]}
                   </span>
                 </div>
               )}
               {product.specs.sqftPerBox && (
-                <div className="bg-slate-50 border border-slate-200 p-2 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase text-slate-500">{t('productCard.sqftBox')}:</span>
-                  <span className="font-bold text-[#0a1680]">{product.specs.sqftPerBox}</span>
+                <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.sqftBox')}:</span>
+                  <span className="font-bold text-[#0B0B0B]">{product.specs.sqftPerBox}</span>
                 </div>
               )}
             </div>
 
             {/* Color Palettes Swatch Strip */}
             <div>
-              <div className="flex items-center justify-between text-[11px] font-medium text-slate-600 mb-2">
-                <span className="font-bold text-[#0a1680]">
+              <div className="flex items-center justify-between text-[11px] font-medium text-[#6B6762] mb-2">
+                <span className="font-bold text-[#0B0B0B]">
                   {language === 'en' ? `Colors (${product.colors.length}):` : `Tonos (${product.colors.length}):`}
                 </span>
-                <span className="text-slate-400 text-[10px]">
+                <span className="text-[#BCBAB4] text-[10px]">
                   {language === 'en' ? 'Click to select' : 'Toca para cambiar'}
                 </span>
               </div>
@@ -268,13 +260,13 @@ export const ProductCard: React.FC<Props> = ({
                       title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
                       className={`w-6 h-6 rounded-full border-2 transition-all relative cursor-pointer ${
                         isCurrent
-                          ? 'border-[#0a1680] scale-110 shadow-xs ring-2 ring-[#93b2f8]'
-                          : 'border-slate-200 hover:border-slate-400'
+                          ? 'border-[#0B0B0B] scale-110 shadow-xs ring-2 ring-[#BCBAB4]'
+                          : 'border-[#D9D9D9] hover:border-[#6B6762]'
                       }`}
                       style={{ backgroundColor: col.hexColor }}
                     >
                       {isCurrent && (
-                        <span className="absolute inset-0 flex items-center justify-center text-[#0a1680] text-[9px] font-black">
+                        <span className="absolute inset-0 flex items-center justify-center text-[#0B0B0B] text-[9px] font-black">
                           ✓
                         </span>
                       )}
@@ -285,8 +277,8 @@ export const ProductCard: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Bento Card Footer Actions */}
-          <div className="pt-3 border-t border-slate-100 space-y-2">
+          {/* Card Footer Actions */}
+          <div className="pt-3 border-t border-[#D9D9D9] space-y-2">
             <div className="grid grid-cols-2 gap-2">
               {/* Hand sample button */}
               <button
@@ -294,31 +286,35 @@ export const ProductCard: React.FC<Props> = ({
                 className={`flex items-center justify-center gap-1 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${
                   sampleAddedFeedback
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                    : 'bg-[#93b2f8]/20 hover:bg-[#93b2f8]/40 text-[#0a1680] border-[#93b2f8]/40'
+                    : 'bg-[#F5F5F5] hover:bg-[#D9D9D9] text-[#0B0B0B] border-[#D9D9D9]'
                 }`}
               >
-                {sampleAddedFeedback ? <Check size={14} /> : <Plus size={14} className="text-[#0a1680]" />}
+                {sampleAddedFeedback ? <Check size={14} /> : <Plus size={14} className="text-[#0B0B0B]" />}
                 <span>{sampleAddedFeedback ? (language === 'en' ? 'Added' : 'Lista') : t('productCard.orderSample')}</span>
               </button>
 
               {/* Add to order / quote */}
               <button
                 onClick={() => onAddToOrder(product, selectedColor)}
-                className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-[#0a1680] hover:bg-[#081268] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer"
+                className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer"
               >
-                <Plus size={14} className="text-[#f1b94c]" />
+                <Plus size={14} className="text-white" />
                 <span>{t('productCard.addToQuote')}</span>
               </button>
             </div>
 
-            {/* Full specs technical sheet link */}
-            <button
-              onClick={() => onOpenDetail(product, selectedColor)}
-              className="w-full flex items-center justify-center gap-1.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-600 hover:text-[#0a1680] transition cursor-pointer"
-            >
-              <FileText size={12} />
-              <span>{language === 'en' ? 'Technical Specs & Calculator' : 'Ficha Técnica y Calculadora'}</span>
-            </button>
+            {/* Roomvo 3D Visualizer Link - Only for SPC Vinyl Flooring */}
+            {product.category === 'spc-vinyl' && (
+              <a
+                href={ROOMVO_VISUALIZER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-[#D9D9D9] hover:border-[#0B0B0B] hover:bg-[#F5F5F5] text-[11px] font-bold uppercase tracking-wider text-[#0B0B0B] transition cursor-pointer"
+              >
+                <Eye size={13} className="text-[#0B0B0B]" />
+                <span>{t('productCard.view3D')} Roomvo</span>
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -339,3 +335,4 @@ export const ProductCard: React.FC<Props> = ({
     </>
   );
 };
+

@@ -21,7 +21,6 @@ import { HeroSection } from './components/HeroSection';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ProductCard } from './components/ProductCard';
 import { ProductDetailModal } from './components/ProductDetailModal';
-import { StairsMoldingsGuide } from './components/StairsMoldingsGuide';
 import { GoogleSheetsModal } from './components/GoogleSheetsModal';
 import { OrderDrawer } from './components/OrderDrawer';
 import { PrintQuoteSheet } from './components/PrintQuoteSheet';
@@ -29,7 +28,7 @@ import { SearchModal } from './components/SearchModal';
 import { Footer } from './components/Footer';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { getLocalizedProducts, getLocalizedCategories } from './i18n/localizedData';
-import { getStoredProducts } from './utils/googleSheetsSync';
+import { getStoredProducts, syncFromGoogleSheets } from './utils/googleSheetsSync';
 import { openRoomVisualizer } from './utils/constants';
 
 const LOCAL_STORAGE_ORDER_KEY = 'surfaces_order_items_v2';
@@ -41,12 +40,29 @@ function AppContent() {
 
   const [catalogVersion, setCatalogVersion] = useState(0);
 
+  // Auto background synchronization with linked Google Sheet on app load
+  useEffect(() => {
+    syncFromGoogleSheets().then((res) => {
+      if (res.success) {
+        setCatalogVersion((v) => v + 1);
+      }
+    }).catch(() => {
+      // silent background fallback
+    });
+  }, []);
+
   const baseProducts = useMemo(() => {
-    // If user has custom products synced from Google Sheets, use them; otherwise use localized catalog
-    const custom = getStoredProducts();
+    // If user has custom products synced from Google Sheets, check and use them; otherwise use localized catalog
     const isCustomStored = localStorage.getItem('surfaces_custom_synced_products_v1');
     if (isCustomStored) {
-      return custom;
+      try {
+        const custom = getStoredProducts();
+        if (custom && custom.length > 0) {
+          return custom;
+        }
+      } catch (e) {
+        console.error('Error loading custom products', e);
+      }
     }
     return getLocalizedProducts(language);
   }, [language, catalogVersion]);
@@ -62,7 +78,6 @@ function AppContent() {
   // Modals & Drawers State
   const [activeDetailProduct, setActiveDetailProduct] = useState<Product | null>(null);
   const [activeDetailColor, setActiveDetailColor] = useState<ProductColor | undefined>(undefined);
-  const [isStairsGuideOpen, setIsStairsGuideOpen] = useState<boolean>(false);
   const [isGoogleSheetsOpen, setIsGoogleSheetsOpen] = useState<boolean>(false);
   const [isOrderDrawerOpen, setIsOrderDrawerOpen] = useState<boolean>(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
@@ -376,7 +391,7 @@ function AppContent() {
         orderItemCount={orderCount}
         sampleItemCount={sampleCount}
         onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
-        onOpenStairsGuide={() => setIsStairsGuideOpen(true)}
+        onOpenDatabaseSync={() => setIsGoogleSheetsOpen(true)}
       />
 
       {/* Hero Banner only when on all categories and no search */}
@@ -501,31 +516,6 @@ function AppContent() {
             </button>
           </div>
         )}
-
-        {/* Visual Callout for Stair Treads & Moldings */}
-        <div className="bg-[#0B0B0B] text-white rounded-2xl p-6 sm:p-8 border border-[#262626] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm relative overflow-hidden">
-          <div className="space-y-2 relative z-10">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-[#0B0B0B] text-[10px] font-bold uppercase tracking-wider">
-              <Footprints size={13} />
-              <span>{isEn ? 'FINISHES & TRIMS' : 'TERMINACIONES & ACABADOS'}</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-              {isEn ? 'Color-Matched Stair Treads & Transition Moldings' : 'Gradas a Juego Exacto & Molduras de Transición'}
-            </h3>
-            <p className="text-[#BCBAB4] text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
-              {isEn
-                ? 'Complete your project with custom Double Rounded or Square Step treads, primed pine baseboards, and CM Reducer / T-Moldings precision-matched to your floor color.'
-                : 'Complete su proyecto con gradas personalizadas Double Rounded o Square Step, zócalos de pino y molduras CM Reducer / T-Molding diseñadas al mismo tono de sus pisos.'}
-            </p>
-          </div>
-
-          <button
-            onClick={() => setIsStairsGuideOpen(true)}
-            className="shrink-0 px-6 py-3 rounded-full bg-white hover:bg-[#F5F5F5] text-[#0B0B0B] text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-sm transition transform hover:scale-102 relative z-10 cursor-pointer"
-          >
-            {isEn ? 'Explore Stairs & Moldings Guide' : 'Ver Guía de Gradas & Molduras'}
-          </button>
-        </div>
       </main>
 
       {/* Floating Bottom Action Bar */}
@@ -553,19 +543,6 @@ function AppContent() {
           onAddToOrder={(prod, color, qty, unit, sqft, notes) => {
             handleAddToOrder(prod, color, qty, unit, sqft, notes);
           }}
-        />
-      )}
-
-      {/* Stairs & Moldings Guide Dedicated View */}
-      {isStairsGuideOpen && (
-        <StairsMoldingsGuide
-          onClose={() => setIsStairsGuideOpen(false)}
-          onAddToOrder={(prod, color, qty, unit, sqft, notes) => {
-            handleAddToOrder(prod, color, qty, unit, sqft, notes);
-            setIsOrderDrawerOpen(true);
-          }}
-          orderCount={orderCount + sampleCount}
-          onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
         />
       )}
 
@@ -613,7 +590,6 @@ function AppContent() {
       <Footer
         onSelectCategory={setSelectedCategory}
         onOpenVisualizer={openRoomVisualizer}
-        onOpenStairsGuide={() => setIsStairsGuideOpen(true)}
       />
     </div>
   );

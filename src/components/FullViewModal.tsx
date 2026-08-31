@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { X, ZoomIn, ZoomOut, RotateCcw, Eye, Layers, Maximize, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ZoomIn, ZoomOut, RotateCcw, Eye, Layers } from 'lucide-react';
 import { Product, ProductColor } from '../types';
 import { generatePlankSVG, generateRoomSceneSVG, BASEBOARD_IMAGES, MOLDING_IMAGES, STAIR_PROFILES } from '../utils/imageCatalog';
+import { formatImageUrl } from '../utils/imageUrlFormatter';
 import { useLanguage } from '../i18n/LanguageContext';
 
 interface Props {
@@ -19,22 +20,26 @@ export const FullViewModal: React.FC<Props> = ({
   onClose,
   onSelectColor,
 }) => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [viewMode, setViewMode] = useState<'plank' | 'room'>(initialMode);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [activeColor, setActiveColor] = useState<ProductColor>(selectedColor);
+  const [imgLoadError, setImgLoadError] = useState(false);
 
   const isAccessory = ['baseboards', 'moldings', 'stair-steps'].includes(product.category);
 
   // Generate or get image sources (prioritize real photo URL if available)
-  const plankSvg = activeColor.image || generatePlankSVG(
+  const customPlankPhoto = formatImageUrl(activeColor.image);
+  const customRoomPhoto = formatImageUrl(activeColor.roomImage);
+
+  const fallbackPlankSvg = generatePlankSVG(
     activeColor.hexColor || '#c7b28e',
     activeColor.secondaryHex || '#8c7355',
     'rgba(0,0,0,0.22)',
     activeColor.patternType || 'wood'
   );
 
-  const roomSvg = activeColor.roomImage || generateRoomSceneSVG(
+  const fallbackRoomSvg = generateRoomSceneSVG(
     activeColor.hexColor || '#c7b28e',
     activeColor.secondaryHex || '#8c7355',
     'living'
@@ -42,48 +47,75 @@ export const FullViewModal: React.FC<Props> = ({
 
   // For accessories
   const getAccessoryData = () => {
+    const searchStr = `${product.id} ${product.name} ${activeColor.name} ${activeColor.code || ''} ${product.subtitle || ''}`.toLowerCase();
+
     if (product.category === 'baseboards') {
-      const name = activeColor.name;
-      if (name.includes('BB1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
-      if (name.includes('BB1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
-      if (name.includes('BB1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
-      if (name.includes('BB5180')) return BASEBOARD_IMAGES['BB5180'];
-      if (name.includes('BB618')) return BASEBOARD_IMAGES['BB618'];
-      if (name.includes('BB620')) return BASEBOARD_IMAGES['BB620'];
-      if (name.includes('EPS')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
-      if (name.includes('Pine') && name.includes('Round')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
-      if (name.includes('Square')) return BASEBOARD_IMAGES['Square1x1-MDF'];
+      if (searchStr.includes('bb1x6') && (searchStr.includes('18mm') || searchStr.includes('heavy') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x6-18mm'];
+      if (searchStr.includes('bb1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
+      if (searchStr.includes('bb1x4') && (searchStr.includes('18mm') || searchStr.includes('thick') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x4-18mm'];
+      if (searchStr.includes('bb1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
+      if (searchStr.includes('bb1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
+      if (searchStr.includes('5180')) return BASEBOARD_IMAGES['BB5180'];
+      if (searchStr.includes('618')) return BASEBOARD_IMAGES['BB618'];
+      if (searchStr.includes('620')) return BASEBOARD_IMAGES['BB620'];
+      if (searchStr.includes('eps')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
+      if (searchStr.includes('round') || searchStr.includes('quarter') || searchStr.includes('bocel')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
+      if (searchStr.includes('square') || searchStr.includes('1x1') || searchStr.includes('mdf')) return BASEBOARD_IMAGES['Square1x1-MDF'];
       return BASEBOARD_IMAGES['BB1x6-14mm'];
     }
     if (product.category === 'moldings') {
-      const name = activeColor.name;
-      if (name.includes('CM T-Molding') || name.includes('CM-T')) return MOLDING_IMAGES['CM-TMolding'];
-      if (name.includes('CM Reducer') || name.includes('CM-R')) return MOLDING_IMAGES['CM-Reducer'];
-      if (name.includes('Standard T-Molding')) return MOLDING_IMAGES['Standard-TMolding'];
-      if (name.includes('Standard Reducer')) return MOLDING_IMAGES['Standard-Reducer'];
-      if (name.includes('End Cap')) return MOLDING_IMAGES['EndCap'];
+      if (searchStr.includes('cm') && (searchStr.includes('reducer') || searchStr.includes('desnivel') || searchStr.includes('reductor'))) return MOLDING_IMAGES['CM-Reducer'];
+      if (searchStr.includes('cm') && (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding'))) return MOLDING_IMAGES['CM-TMolding'];
+      if (searchStr.includes('end cap') || searchStr.includes('endcap') || searchStr.includes('remate')) return MOLDING_IMAGES['EndCap'];
+      if (searchStr.includes('reducer') || searchStr.includes('reductor')) return MOLDING_IMAGES['Standard-Reducer'];
+      if (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding')) return MOLDING_IMAGES['Standard-TMolding'];
       return MOLDING_IMAGES['CM-TMolding'];
     }
     if (product.category === 'stair-steps') {
-      const name = activeColor.name;
-      if (name.includes('Double Rounded')) return STAIR_PROFILES['DoubleRounded'];
-      if (name.includes('Square Step')) return STAIR_PROFILES['SquareStep'];
-      if (name.includes('Full Step')) return STAIR_PROFILES['FullStep'];
-      if (name.includes('Regular Step')) return STAIR_PROFILES['RegularStep'];
+      if (searchStr.includes('double') || searchStr.includes('doble') || searchStr.includes('round')) return STAIR_PROFILES['DoubleRounded'];
+      if (searchStr.includes('square') || searchStr.includes('cuadrad')) return STAIR_PROFILES['SquareStep'];
+      if (searchStr.includes('full') || searchStr.includes('completo')) return STAIR_PROFILES['FullStep'];
+      if (searchStr.includes('regular') || searchStr.includes('riser')) return STAIR_PROFILES['RegularStep'];
       return STAIR_PROFILES['DoubleRounded'];
     }
     return null;
   };
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
+  const accessoryPhoto = customPlankPhoto || formatImageUrl(accessoryData?.photoUrl);
+  const accessoryRoom = customRoomPhoto || formatImageUrl((accessoryData as any)?.roomUrl) || fallbackRoomSvg;
+  const blueprintSvg = accessoryData?.profileSvg || fallbackPlankSvg;
 
-  const currentDisplayImage = product.category === 'baseboards'
-    ? (accessoryData?.photoUrl || plankSvg)
-    : isAccessory
-    ? (viewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
-    : (viewMode === 'room' ? roomSvg : plankSvg);
+  let currentDisplayImage = '';
+  let fallbackImage = '';
+
+  if (product.category === 'baseboards') {
+    currentDisplayImage = accessoryPhoto || blueprintSvg;
+    fallbackImage = blueprintSvg;
+  } else if (product.category === 'moldings' || product.category === 'stair-steps') {
+    if (viewMode === 'room') {
+      currentDisplayImage = accessoryRoom;
+      fallbackImage = fallbackRoomSvg;
+    } else {
+      currentDisplayImage = accessoryPhoto || blueprintSvg;
+      fallbackImage = blueprintSvg;
+    }
+  } else {
+    if (viewMode === 'room') {
+      currentDisplayImage = customRoomPhoto || fallbackRoomSvg;
+      fallbackImage = fallbackRoomSvg;
+    } else {
+      currentDisplayImage = customPlankPhoto || fallbackPlankSvg;
+      fallbackImage = fallbackPlankSvg;
+    }
+  }
+
+  useEffect(() => {
+    setImgLoadError(false);
+  }, [activeColor, viewMode, product]);
 
   const handleColorPick = (col: ProductColor) => {
+    setImgLoadError(false);
     setActiveColor(col);
     if (onSelectColor) onSelectColor(col);
   };
@@ -111,7 +143,7 @@ export const FullViewModal: React.FC<Props> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            {/* View Mode Toggle: Plank vs Room - Hidden for Baseboards */}
+            {/* View Mode Toggle: Hidden for Baseboards */}
             {product.category !== 'baseboards' && (
               <div className="flex bg-[#262626] p-1 rounded-xl border border-[#383838]">
                 <button
@@ -123,7 +155,7 @@ export const FullViewModal: React.FC<Props> = ({
                   }`}
                 >
                   <Layers size={14} />
-                  <span>{isAccessory ? (language === 'en' ? 'Profile Diagram' : 'Diagrama Perfil') : (language === 'en' ? 'Plank Closeup' : 'Foto Plank')}</span>
+                  <span>{product.category === 'spc-vinyl' ? (language === 'en' ? 'Plank' : 'Plank') : (language === 'en' ? 'Photo' : 'Foto')}</span>
                 </button>
                 <button
                   onClick={() => setViewMode('room')}
@@ -134,7 +166,7 @@ export const FullViewModal: React.FC<Props> = ({
                   }`}
                 >
                   <Eye size={14} />
-                  <span>{isAccessory ? (language === 'en' ? '3D Installation' : 'Instalación 3D') : (language === 'en' ? 'Room Scene' : 'Ambiente')}</span>
+                  <span>{language === 'en' ? 'Room' : 'Ambiente'}</span>
                 </button>
               </div>
             )}
@@ -184,61 +216,55 @@ export const FullViewModal: React.FC<Props> = ({
             style={{ transform: `scale(${zoomLevel})` }}
           >
             <img
-              src={currentDisplayImage}
-              alt={product.name}
+              src={imgLoadError ? fallbackImage : currentDisplayImage}
+              alt={`${product.name} - ${activeColor.name}`}
+              referrerPolicy="no-referrer"
+              onError={() => setImgLoadError(true)}
               className="max-h-[70vh] max-w-full object-contain rounded-xl shadow-2xl border border-[#262626]"
             />
           </div>
 
-          {/* Floating Spec Watermark Bottom Left */}
-          <div className="absolute bottom-4 left-4 bg-[#141414]/90 backdrop-blur-md border border-[#262626] px-4 py-2.5 rounded-2xl text-white text-xs max-w-sm hidden sm:block">
-            <div className="font-extrabold text-white flex items-center gap-1.5">
-              <span>{activeColor.name}</span>
-              {activeColor.code && <span className="font-mono text-[10px] text-[#BCBAB4]">CODE: {activeColor.code}</span>}
+          {/* Quick Details Floating Badge */}
+          <div className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-[#333333] text-white pointer-events-none">
+            <div className="text-xs font-bold text-white">
+              {activeColor.name} {activeColor.code && activeColor.code !== activeColor.name ? `(${activeColor.code})` : ''}
             </div>
-            <div className="text-[11px] text-[#BCBAB4] mt-0.5">
-              {product.specs.plankSize ? `${product.specs.plankSize} • ` : ''}
-              {product.specs.sqftPerBox ? `${product.specs.sqftPerBox} sqft/box • ` : ''}
-              {product.specs.finished || 'Satin Finish'}
+            <div className="text-[11px] text-[#BCBAB4] font-mono mt-0.5">
+              {product.specs.plankSize || product.specs.wearLayer || ''} • {product.specs.installation || 'Waterproof'}
             </div>
           </div>
         </div>
 
-        {/* Bottom Palette Swatches Bar */}
-        {product.colors && product.colors.length > 1 && (
-          <div className="p-4 bg-[#141414] border-t border-[#262626]">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-[#BCBAB4] uppercase tracking-wider">
-                {language === 'en' ? 'Switch Color Variant:' : 'Cambiar Tono de Color:'}
-              </span>
-              <span className="text-xs text-white font-bold">
-                {activeColor.name} {activeColor.code ? `(${activeColor.code})` : ''}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              {product.colors.map((c) => {
-                const isSelected = activeColor.name === c.name;
-                return (
-                  <button
-                    key={c.name}
-                    onClick={() => handleColorPick(c)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border transition shrink-0 cursor-pointer ${
-                      isSelected
-                        ? 'border-white bg-white/10 text-white font-bold ring-2 ring-white/30'
-                        : 'border-[#262626] bg-[#1A1A1A] text-[#BCBAB4] hover:border-[#444444]'
-                    }`}
-                  >
-                    <span
-                      className="w-4 h-4 rounded-full border border-white/30 shrink-0"
-                      style={{ backgroundColor: c.hexColor }}
-                    ></span>
-                    <span>{c.name}</span>
-                  </button>
-                );
-              })}
-            </div>
+        {/* Bottom Swatch Selector Bar */}
+        <div className="px-6 py-3 bg-[#1A1A1A] border-t border-[#262626] flex items-center justify-between gap-4 overflow-x-auto">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#BCBAB4] shrink-0">
+            {language === 'en' ? `All Models / Options (${product.colors.length}):` : `Opciones / Modelos (${product.colors.length}):`}
           </div>
-        )}
+
+          <div className="flex items-center gap-2 overflow-x-auto py-1">
+            {product.colors.map((col, idx) => {
+              const isActive = activeColor.name === col.name;
+              return (
+                <button
+                  key={col.name + idx}
+                  onClick={() => handleColorPick(col)}
+                  title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer ${
+                    isActive
+                      ? 'bg-white text-[#0B0B0B] border-white shadow-md font-bold'
+                      : 'bg-[#262626] text-[#BCBAB4] border-[#383838] hover:border-white hover:text-white'
+                  }`}
+                >
+                  <span
+                    className="w-4 h-4 rounded-full border border-black/20 shrink-0"
+                    style={{ backgroundColor: col.hexColor }}
+                  />
+                  <span className="text-xs">{col.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

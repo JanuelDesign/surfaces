@@ -6,12 +6,11 @@ import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 
 interface Props {
   onSelectCategory: (id: CategoryId) => void;
-  onOpenStairsGuide: () => void;
+  onOpenVisualizer?: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
   onSelectCategory,
-  onOpenStairsGuide,
 }) => {
   const { language } = useLanguage();
   const isEn = language === 'en';
@@ -93,7 +92,7 @@ export const Footer: React.FC<Props> = ({
             </p>
           </div>
 
-          {/* Categorías de Pisos */}
+          {/* Categorías de Pisos y Accesorios */}
           <div className="space-y-2">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider">
               {isEn ? 'Product Lines' : 'Líneas de Productos'}
@@ -104,7 +103,7 @@ export const Footer: React.FC<Props> = ({
                   onClick={() => onSelectCategory('spc-vinyl')}
                   className="hover:text-white transition text-left cursor-pointer"
                 >
-                  PULSESelect SPC (5.5 mm / 20 Mil)
+                  SPC 5.5 mm (20 Mil Wear Layer)
                 </button>
               </li>
               <li>
@@ -112,7 +111,7 @@ export const Footer: React.FC<Props> = ({
                   onClick={() => onSelectCategory('spc-vinyl')}
                   className="hover:text-white transition text-left cursor-pointer"
                 >
-                  PULSEShield XL SPC (6 mm / 9"x60")
+                  SPC 6.0 mm (9" x 60" XL Planks)
                 </button>
               </li>
               <li>
@@ -120,7 +119,7 @@ export const Footer: React.FC<Props> = ({
                   onClick={() => onSelectCategory('spc-vinyl')}
                   className="hover:text-white transition text-left cursor-pointer"
                 >
-                  XLPULSE Premium (8 mm / 22 Mil)
+                  SPC 8.0 mm (22 Mil Commercial)
                 </button>
               </li>
               <li>
@@ -128,7 +127,7 @@ export const Footer: React.FC<Props> = ({
                   onClick={() => onSelectCategory('stair-steps')}
                   className="hover:text-white transition text-left cursor-pointer"
                 >
-                  {isEn ? 'Double Rounded & Square Stair Steps' : 'Gradas Double Rounded & Square 90°'}
+                  {isEn ? 'Stair Steps & Treads (Double Round & Square)' : 'Gradas & Peldaños (Double Round & Square)'}
                 </button>
               </li>
               <li>
@@ -136,7 +135,7 @@ export const Footer: React.FC<Props> = ({
                   onClick={() => onSelectCategory('moldings')}
                   className="hover:text-white transition text-left cursor-pointer"
                 >
-                  {isEn ? 'Architectural T-Moldings & Reducers' : 'Molduras T-Molding, Reducers & End Caps'}
+                  {isEn ? 'Moldings & Transitions (T-Molding, Reducers, End Caps)' : 'Molduras & Transiciones (T-Molding, Reducers, Remates)'}
                 </button>
               </li>
               <li>
@@ -144,7 +143,7 @@ export const Footer: React.FC<Props> = ({
                   onClick={() => onSelectCategory('baseboards')}
                   className="hover:text-white transition text-left cursor-pointer"
                 >
-                  {isEn ? 'Primed Pine & EPS Baseboards (Rodapiés)' : 'Zócalos Primed Pine & EPS (Rodapiés)'}
+                  {isEn ? 'Baseboards & Trims (Rodapiés Primed Pine & EPS)' : 'Zócalos & Rodapiés (Primed Pine & EPS)'}
                 </button>
               </li>
             </ul>
@@ -166,14 +165,6 @@ export const Footer: React.FC<Props> = ({
               <ExternalLink size={12} className="opacity-70" />
             </a>
 
-            <button
-              onClick={onOpenStairsGuide}
-              className="w-full py-2.5 px-4 rounded-full bg-white text-[#0B0B0B] hover:bg-[#F5F5F5] text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm cursor-pointer"
-            >
-              <Footprints size={14} />
-              <span>{isEn ? 'Stairs & Moldings Guide' : 'Guía de Gradas & Molduras'}</span>
-            </button>
-
             <div className="pt-2 text-[11px] text-[#6B6762]">
               © 2026 SURFACES. {isEn ? 'Interactive Architectural Catalog.' : 'Catálogo Arquitectónico Interactivo.'}
             </div>
@@ -183,4 +174,3 @@ export const Footer: React.FC<Props> = ({
     </footer>
   );
 };
-

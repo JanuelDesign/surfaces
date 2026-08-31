@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   FileSpreadsheet,
@@ -13,57 +13,84 @@ import {
   Layers,
   Sparkles,
   Info,
+  Link2,
 } from 'lucide-react';
 import {
-  GOOGLE_SHEET_ID,
-  GOOGLE_SHEET_URL,
+  getGoogleSheetId,
+  setGoogleSheetId,
+  getGoogleSheetUrl,
   syncFromGoogleSheets,
   parseGoogleSheetCSV,
   resetToDefaultCatalog,
   getCatalogTemplateCSV,
+  KNOWN_SHEET_TABS,
 } from '../utils/googleSheetsSync';
 import { useLanguage } from '../i18n/LanguageContext';
 import { Product } from '../types';
 
 interface Props {
   onClose: () => void;
-  onProductsUpdated: (products: Product[]) => void;
+  onProductsUpdated?: (products: Product[]) => void;
+  onSyncComplete?: (products?: Product[]) => void;
 }
 
-export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated }) => {
+export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated, onSyncComplete }) => {
   const { language } = useLanguage();
   const isEn = language === 'en';
 
+  const notifyUpdate = (products: Product[]) => {
+    if (onProductsUpdated) onProductsUpdated(products);
+    if (onSyncComplete) onSyncComplete(products);
+  };
+
   const [activeTab, setActiveTab] = useState<'sync' | 'structure' | 'github'>('sync');
   const [isSyncing, setIsSyncing] = useState(false);
-  const [syncResult, setSyncResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [syncResult, setSyncResult] = useState<{ success: boolean; message: string; details?: string[] } | null>(null);
   const [csvPasteText, setCsvPasteText] = useState('');
   const [showPasteArea, setShowPasteArea] = useState(false);
   const [copiedTemplate, setCopiedTemplate] = useState(false);
-  const [copiedUrlFormat, setCopiedUrlFormat] = useState(false);
+  const [sheetIdInput, setSheetIdInput] = useState('');
+  const [savedUrlSuccess, setSavedUrlSuccess] = useState(false);
 
-  const handleLiveSync = async () => {
+  useEffect(() => {
+    setSheetIdInput(getGoogleSheetId());
+  }, []);
+
+  const handleSaveSheetId = () => {
+    if (!sheetIdInput.trim()) return;
+    const cleanId = setGoogleSheetId(sheetIdInput);
+    setSheetIdInput(cleanId);
+    setSavedUrlSuccess(true);
+    setTimeout(() => setSavedUrlSuccess(false), 2500);
+  };
+
+  const handleLiveSync = async (tabName?: string) => {
     setIsSyncing(true);
     setSyncResult(null);
     try {
-      const res = await syncFromGoogleSheets();
+      if (sheetIdInput.trim()) {
+        setGoogleSheetId(sheetIdInput);
+      }
+
+      const res = await syncFromGoogleSheets(tabName);
       if (res.success) {
         setSyncResult({
           success: true,
           message: isEn
-            ? `Successfully synchronized ${res.count} products from Google Sheets!`
-            : `¡Se sincronizaron con éxito ${res.count} productos desde Google Sheets!`,
+            ? `Successfully loaded ${res.count} products from Google Sheets!`
+            : `¡Se cargaron con éxito ${res.count} productos desde Google Sheets!`,
+          details: res.syncedTabs ? res.syncedTabs : undefined,
         });
         const updated = await import('../utils/googleSheetsSync').then((m) => m.getStoredProducts());
-        onProductsUpdated(updated);
+        notifyUpdate(updated);
       } else {
         setSyncResult({
           success: false,
           message:
             res.error ||
             (isEn
-              ? 'Unable to connect to Google Sheets directly. Please paste your sheet CSV below.'
-              : 'No se pudo conectar directamente. Por favor copia y pega el CSV de tu hoja abajo.'),
+              ? 'Unable to connect to Google Sheets directly. Please ensure sharing is set to "Anyone with link can view" or use CSV paste below.'
+              : 'No se pudo conectar directamente. Asegúrate de que compartir esté en "Cualquier persona con el enlace (Lector)" o pega el CSV abajo.'),
         });
         setShowPasteArea(true);
       }
@@ -82,12 +109,12 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
     if (!csvPasteText.trim()) return;
     try {
       const products = parseGoogleSheetCSV(csvPasteText);
-      onProductsUpdated(products);
+      notifyUpdate(products);
       setSyncResult({
         success: true,
         message: isEn
           ? `Parsed and loaded ${products.length} products successfully!`
-          : `¡Se importaron ${products.length} productos correctamente!`,
+          : `¡Se importaron ${products.length} productos correctamente al catálogo!`,
       });
       setCsvPasteText('');
       setShowPasteArea(false);
@@ -106,23 +133,18 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
     setTimeout(() => setCopiedTemplate(false), 2000);
   };
 
-  const handleCopyGithubExample = () => {
-    const url = '05:#d6c09b:https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/spc/5.5mm/05.jpg';
-    navigator.clipboard.writeText(url);
-    setCopiedUrlFormat(true);
-    setTimeout(() => setCopiedUrlFormat(false), 2000);
-  };
-
   const handleResetCatalog = () => {
     resetToDefaultCatalog();
     import('../data/products').then((m) => {
-      onProductsUpdated(m.PRODUCTS);
+      notifyUpdate(m.PRODUCTS);
       setSyncResult({
         success: true,
         message: isEn ? 'Catalog restored to default factory products.' : 'Catálogo restaurado a valores por defecto.',
       });
     });
   };
+
+  const currentSheetUrl = getGoogleSheetUrl();
 
   return (
     <div
@@ -200,29 +222,45 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
           {/* TAB 1: LIVE SYNC */}
           {activeTab === 'sync' && (
             <div className="space-y-4">
-              {/* Linked Sheet Status */}
-              <div className="p-4 bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl space-y-2">
+              {/* Google Sheet Link & ID Input */}
+              <div className="p-4 bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#6B6762] uppercase tracking-wider">
-                    {isEn ? 'Connected Google Sheet:' : 'Google Sheet Vinculado:'}
+                  <span className="text-xs font-bold text-[#6B6762] uppercase tracking-wider flex items-center gap-1.5">
+                    <Link2 size={14} className="text-[#0B0B0B]" />
+                    {isEn ? 'Google Sheet ID or URL:' : 'Enlace o ID de tu Google Sheet:'}
                   </span>
-                  <span className="flex items-center gap-1 text-[11px] font-bold text-[#0B0B0B] bg-white border border-[#D9D9D9] px-2.5 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    ID: {GOOGLE_SHEET_ID.substring(0, 10)}...
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between gap-3 pt-1">
                   <a
-                    href={GOOGLE_SHEET_URL}
+                    href={currentSheetUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0B0B0B] hover:text-[#6B6762] underline"
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#0B0B0B] hover:text-[#6B6762] underline"
                   >
-                    <span>{isEn ? 'Open Sheet in Google Drive' : 'Abrir Hoja en Google Drive'}</span>
-                    <ExternalLink size={13} />
+                    <span>{isEn ? 'Open Sheet' : 'Abrir Hoja'}</span>
+                    <ExternalLink size={11} />
                   </a>
                 </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={sheetIdInput}
+                    onChange={(e) => setSheetIdInput(e.target.value)}
+                    placeholder="https://docs.google.com/spreadsheets/d/TU_ID_AQUI/edit o ID"
+                    className="flex-1 text-xs font-mono p-2.5 bg-white border border-[#D9D9D9] rounded-xl outline-none focus:border-[#0B0B0B]"
+                  />
+                  <button
+                    onClick={handleSaveSheetId}
+                    className="px-3.5 py-2.5 bg-[#0B0B0B] text-white text-xs font-bold rounded-xl hover:bg-[#262626] transition cursor-pointer shrink-0"
+                  >
+                    {savedUrlSuccess ? (isEn ? 'Saved!' : '¡Guardado!') : (isEn ? 'Save' : 'Guardar')}
+                  </button>
+                </div>
+
+                <p className="text-[11px] text-[#6B6762]">
+                  {isEn
+                    ? 'Important: In Google Sheets, make sure File > Share is set to "Anyone with the link can view" (Viewer).'
+                    : 'Importante: En tu Google Sheet, ve a Compartir y asegúrate que esté en "Cualquier persona con el enlace (Lector)".'}
+                </p>
               </div>
 
               {/* Sync Feedback Message */}
@@ -239,55 +277,89 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
                   ) : (
                     <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5" />
                   )}
-                  <div className="flex-1 font-medium">{syncResult.message}</div>
+                  <div className="flex-1">
+                    <p className="font-bold">{syncResult.message}</p>
+                    {syncResult.details && syncResult.details.length > 0 && (
+                      <p className="text-[11px] mt-1 opacity-90">
+                        {isEn ? 'Synced tabs: ' : 'Pestañas detectadas: '}
+                        {syncResult.details.join(', ')}
+                      </p>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {/* Actions Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Main Sync Button */}
+              <div className="space-y-2">
                 <button
-                  onClick={handleLiveSync}
+                  onClick={() => handleLiveSync()}
                   disabled={isSyncing}
-                  className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-[#0B0B0B] hover:bg-[#262626] text-white font-bold text-xs transition cursor-pointer disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-2xl bg-[#0B0B0B] hover:bg-[#262626] text-white font-bold text-xs transition cursor-pointer disabled:opacity-50 shadow-md"
                 >
-                  <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
+                  <RefreshCw size={16} className={isSyncing ? 'animate-spin text-emerald-400' : 'text-emerald-400'} />
                   <span>
                     {isSyncing
-                      ? (isEn ? 'Synchronizing...' : 'Sincronizando...')
-                      : (isEn ? 'Live Fetch from Google Sheet' : 'Sincronizar en Vivo desde Google Sheet')}
+                      ? (isEn ? 'Synchronizing all tabs...' : 'Sincronizando todas las pestañas...')
+                      : (isEn ? 'Sync All Tabs (SPC, Steps, Moldings, Baseboards)' : 'Sincronizar Catálogo Completo (SPC, Gradas, Molduras, Rodapiés)')}
                   </span>
                 </button>
 
+                {/* Individual Tab Sync Shortcuts */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  {KNOWN_SHEET_TABS.map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => handleLiveSync(tab)}
+                      disabled={isSyncing}
+                      className="py-1.5 px-2 bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#0B0B0B] text-[10px] font-bold rounded-lg border border-[#D9D9D9] transition cursor-pointer text-center truncate disabled:opacity-50"
+                      title={`Sync ${tab}`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* CSV Manual Paste Toggle */}
+              <div className="pt-2">
                 <button
                   onClick={() => setShowPasteArea(!showPasteArea)}
-                  className="flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-[#F5F5F5] hover:bg-[#D9D9D9] text-[#0B0B0B] font-bold text-xs border border-[#D9D9D9] transition cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-[#F5F5F5] hover:bg-[#E5E5E5] text-[#0B0B0B] font-bold text-xs border border-[#D9D9D9] transition cursor-pointer"
                 >
-                  <Upload size={16} className="text-[#0B0B0B]" />
-                  <span>{isEn ? 'Manual CSV Import / Paste' : 'Pegar CSV Manualmente'}</span>
+                  <Upload size={14} className="text-[#0B0B0B]" />
+                  <span>{showPasteArea ? (isEn ? 'Hide CSV Paste' : 'Ocultar Pegar CSV') : (isEn ? 'Manual CSV Paste (Instant 1-Click Update)' : 'Pegar CSV Manual (Actualización Instantánea en 1 Clic)')}</span>
                 </button>
               </div>
 
               {/* CSV Paste Textarea */}
               {showPasteArea && (
                 <div className="space-y-2 p-4 bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl animate-in fade-in">
-                  <label className="text-xs font-bold text-[#0B0B0B] block">
-                    {isEn
-                      ? 'Paste CSV or TSV text directly from your Google Sheet:'
-                      : 'Pega el texto CSV o TSV directamente de tu Google Sheet:'}
-                  </label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-[#0B0B0B] block">
+                      {isEn
+                        ? 'Paste CSV or TSV text directly from your Google Sheet:'
+                        : 'Pega el texto CSV de tu Google Sheet (Copia todo en la hoja y pega aquí):'}
+                    </label>
+                  </div>
                   <textarea
-                    rows={5}
+                    rows={6}
                     value={csvPasteText}
                     onChange={(e) => setCsvPasteText(e.target.value)}
-                    placeholder="id,name,category,thickness,wear_layer,plank_size,sqft_box,planks_box,installation,finished,colors,subtitle,description..."
+                    placeholder="id,name,category,thickness,wear_layer,plank_size,sqft_box,planks_box,color_code,color_hex,plank_photo_url,room_photo_url..."
                     className="w-full text-xs font-mono p-3 bg-white border border-[#D9D9D9] rounded-xl outline-none focus:border-[#0B0B0B]"
                   />
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-between items-center gap-2">
+                    <button
+                      onClick={handleResetCatalog}
+                      className="text-xs font-bold text-[#6B6762] hover:text-rose-600 transition cursor-pointer"
+                    >
+                      {isEn ? 'Restore Factory Catalog' : 'Restaurar Catálogo por Defecto'}
+                    </button>
                     <button
                       onClick={handleApplyCsvPaste}
                       className="py-2 px-4 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold transition cursor-pointer"
                     >
-                      {isEn ? 'Apply CSV to Catalog' : 'Aplicar CSV al Catálogo'}
+                      {isEn ? 'Apply to Catalog' : 'Aplicar al Catálogo'}
                     </button>
                   </div>
                 </div>
@@ -299,37 +371,35 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
           {activeTab === 'structure' && (
             <div className="space-y-4">
               <div className="p-4 bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold text-[#0B0B0B] uppercase tracking-wider">
-                    {isEn ? '1. Recommended Google Sheet Tabs:' : '1. Pestañas que debes crear en tu Google Sheet:'}
-                  </h3>
-                </div>
+                <h3 className="text-xs font-bold text-[#0B0B0B] uppercase tracking-wider">
+                  {isEn ? '1. Recommended Google Sheet Tabs:' : '1. Pestañas en tu Google Sheet:'}
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div className="p-3 bg-white border border-[#D9D9D9] rounded-xl">
                     <span className="font-bold text-[#0B0B0B] block font-mono">Pestaña: SPC_Flooring</span>
                     <p className="text-[11px] text-[#6B6762] mt-0.5">
-                      Pisos SPC por espesor: 5.5 mm, 6.0 mm, 8.0 mm con códigos de colores (01, 02, 05...).
+                      Pisos SPC 5.5 mm, 6.0 mm, 8.0 mm con 1 fila por cada color (01, 02, 05...).
                     </p>
                   </div>
 
                   <div className="p-3 bg-white border border-[#D9D9D9] rounded-xl">
                     <span className="font-bold text-[#0B0B0B] block font-mono">Pestaña: Steps_Treads</span>
                     <p className="text-[11px] text-[#6B6762] mt-0.5">
-                      Gradas y peldaños: Double Rounded Step y Square Edge Step (canto recto).
+                      Gradas y peldaños: Double Rounded Step y Square Edge Step.
                     </p>
                   </div>
 
                   <div className="p-3 bg-white border border-[#D9D9D9] rounded-xl">
                     <span className="font-bold text-[#0B0B0B] block font-mono">Pestaña: Moldings_Profiles</span>
                     <p className="text-[11px] text-[#6B6762] mt-0.5">
-                      Molduras: CM T-Molding, CM Reducer, T-Molding Standard, Reducer Standard, End Cap.
+                      Molduras: CM T-Molding, CM Reducer, T-Molding Standard, Reducer, End Cap.
                     </p>
                   </div>
 
                   <div className="p-3 bg-white border border-[#D9D9D9] rounded-xl">
                     <span className="font-bold text-[#0B0B0B] block font-mono">Pestaña: Baseboards</span>
                     <p className="text-[11px] text-[#6B6762] mt-0.5">
-                      Zócalos / Rodapiés: BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620, Quarter Round EPS.
+                      Zócalos / Rodapiés: BB1x6, BB1x4, BB1x3, Quarter Round EPS.
                     </p>
                   </div>
                 </div>
@@ -339,7 +409,7 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
               <div className="p-4 bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-bold text-[#0B0B0B] uppercase tracking-wider">
-                    {isEn ? '2. Columns (Headers in Row 1):' : '2. Columnas obligatorias (Fila 1 en Google Sheet):'}
+                    {isEn ? '2. Columns (Headers in Row 1):' : '2. Columnas obligatorias (Fila 1):'}
                   </h3>
                   <button
                     onClick={handleCopyTemplate}
@@ -352,106 +422,38 @@ export const GoogleSheetsModal: React.FC<Props> = ({ onClose, onProductsUpdated 
 
                 <div className="bg-white border border-[#D9D9D9] rounded-xl p-3 text-xs font-mono overflow-x-auto space-y-1">
                   <p className="font-bold text-[#0B0B0B]">
-                    id, name, category, thickness, wear_layer, plank_size, sqft_box, planks_box, installation, finished, photo_url, room_image_url, colors, color_images, subtitle, description
-                  </p>
-                </div>
-
-                <div className="text-[11px] text-[#6B6762] space-y-1.5 leading-relaxed">
-                  <p>
-                    <strong className="text-[#0B0B0B]">3 Opciones fáciles para poner tus imágenes:</strong>
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 pl-1">
-                    <li>
-                      <strong className="text-[#0B0B0B]">Columna <code>photo_url</code>:</strong> Pega la URL directa de la foto general o del color principal (ej. <code className="bg-white px-1 py-0.5 rounded border border-[#D9D9D9]">https://raw.githubusercontent.com/user/repo/main/spc/5.5mm/01.jpg</code>).
-                    </li>
-                    <li>
-                      <strong className="text-[#0B0B0B]">Columna <code>color_images</code>:</strong> Pega las fotos individuales de cada código separadas por comas (ej. <code className="bg-white px-1 py-0.5 rounded border border-[#D9D9D9]">01:https://.../01.jpg, 02:https://.../02.jpg, 05:https://.../05.jpg</code>).
-                    </li>
-                    <li>
-                      <strong className="text-[#0B0B0B]">Dentro de la columna <code>colors</code>:</strong> Código:Hex:URL (ej. <code className="bg-white px-1 py-0.5 rounded border border-[#D9D9D9]">05:#d6c09b:https://.../05.jpg</code>).
-                    </li>
-                  </ul>
-                  <p className="pt-1">
-                    <strong className="text-[#0B0B0B]">Columna <code>room_image_url</code> (opcional):</strong> Foto del piso instalado en una habitación real (para alternar entre vista Tabla y vista Ambiente).
+                    id, name, category, thickness, wear_layer, plank_size, sqft_box, planks_box, color_code, color_hex, plank_photo_url, room_photo_url
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* TAB 3: GITHUB PHOTOS GUIDE */}
+          {/* TAB 3: GITHUB GUIDE */}
           {activeTab === 'github' && (
-            <div className="space-y-4 text-xs leading-relaxed text-[#0B0B0B]">
+            <div className="space-y-4 text-xs text-[#0B0B0B]">
               <div className="p-4 bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl space-y-3">
-                <div className="flex items-center gap-2">
-                  <FolderGit2 size={16} className="text-[#0B0B0B]" />
-                  <h3 className="font-bold uppercase tracking-wider text-xs">
-                    {isEn ? 'How to Upload & Link Photos using GitHub:' : 'Paso a paso para subir fotos a GitHub y enlazarlas:'}
-                  </h3>
-                </div>
-
-                <ol className="list-decimal list-inside space-y-2 text-[#6B6762] text-[11px]">
+                <h3 className="font-bold uppercase tracking-wider">
+                  {isEn ? 'How to Host Free HD Photos on GitHub:' : 'Cómo alojar tus fotos en GitHub gratis:'}
+                </h3>
+                <ol className="list-decimal list-inside space-y-2 text-[#6B6762] text-xs">
                   <li>
-                    <strong className="text-[#0B0B0B]">Crea un repositorio en GitHub:</strong> Inicia sesión en GitHub y crea un repositorio público (ej. <code className="bg-white px-1 rounded border border-[#D9D9D9]">surfaces-assets</code>).
+                    Crea un repositorio público en GitHub (por ejemplo, <code className="bg-white px-1.5 py-0.5 rounded text-[#0B0B0B] font-bold">surfaces-catalog</code>).
                   </li>
                   <li>
-                    <strong className="text-[#0B0B0B]">Crea las carpetas para organizar las fotos:</strong>
-                    <div className="mt-1 p-2 bg-white border border-[#D9D9D9] rounded-xl font-mono text-[10px] text-[#0B0B0B]">
-                      surfaces-assets/<br />
-                      ├── spc/<br />
-                      │   ├── 5.5mm/ (01.jpg, 02.jpg, 05.jpg...)<br />
-                      │   ├── 6.0mm/ (01.jpg, 02.jpg...)<br />
-                      │   └── 8.0mm/ (01.jpg, 02.jpg...)<br />
-                      ├── steps/ (double-rounded.jpg, square-step.jpg)<br />
-                      ├── moldings/ (cm-t-molding.jpg, cm-reducer.jpg)<br />
-                      └── baseboards/ (bb1x6.jpg, bb1x4.jpg, eps-quarter.jpg)
-                    </div>
+                    Crea carpetas ordenadas: <code className="bg-white px-1.5 py-0.5 rounded text-[#0B0B0B] font-bold">spc/5.5mm/01.jpg</code>, etc.
                   </li>
                   <li>
-                    <strong className="text-[#0B0B0B]">Sube los archivos de imagen:</strong> Arrastra las fotos a sus respectivas carpetas en GitHub y haz clic en <em>Commit changes</em>.
-                  </li>
-                  <li>
-                    <strong className="text-[#0B0B0B]">Usa el enlace "Raw" (Crudo):</strong> Para que la web cargue la imagen directamente, la URL debe comenzar con <code className="bg-white px-1 rounded border border-[#D9D9D9]">raw.githubusercontent.com</code>:
+                    Usa el enlace directo <strong>raw.githubusercontent.com</strong>:
                   </li>
                 </ol>
 
-                {/* Example box with copy button */}
-                <div className="p-3 bg-white border border-[#D9D9D9] rounded-xl space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-[#6B6762] uppercase tracking-wider font-mono">
-                      Formato para la columna "colors" en Google Sheets:
-                    </span>
-                    <button
-                      onClick={handleCopyGithubExample}
-                      className="flex items-center gap-1 text-[10px] font-bold bg-[#0B0B0B] text-white px-2 py-0.5 rounded-md hover:bg-[#262626] transition cursor-pointer"
-                    >
-                      {copiedUrlFormat ? <Check size={11} /> : <Copy size={11} />}
-                      <span>{copiedUrlFormat ? '¡Copiado!' : 'Copiar Ejemplo'}</span>
-                    </button>
-                  </div>
-                  <div className="font-mono text-[10px] text-[#0B0B0B] break-all bg-[#F5F5F5] p-2 rounded border border-[#D9D9D9]">
-                    05:#d6c09b:https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/spc/5.5mm/05.jpg
-                  </div>
+                <div className="bg-white border border-[#D9D9D9] rounded-xl p-3 font-mono text-[11px] break-all">
+                  https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/spc/5.5mm/01.jpg
                 </div>
               </div>
             </div>
           )}
-
-          {/* Footer */}
-          <div className="pt-2 border-t border-[#D9D9D9] flex justify-between items-center text-xs">
-            <button
-              onClick={handleResetCatalog}
-              className="text-[#6B6762] hover:text-red-600 transition cursor-pointer underline"
-            >
-              {isEn ? 'Restore Factory Catalog' : 'Restaurar Catálogo de Fábrica'}
-            </button>
-            <button
-              onClick={onClose}
-              className="py-2 px-5 bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold rounded-xl transition cursor-pointer"
-            >
-              {isEn ? 'Close' : 'Cerrar'}
-            </button>
-          </div>
         </div>
       </div>
     </div>

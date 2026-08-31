@@ -49,6 +49,7 @@ interface ProductTranslation {
 }
 
 const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
+  // SPC Flooring
   'spc-pulse-select': {
     name: 'SPC 5.5 mm',
     subtitle: 'Waterproof Rigid Core SPC Vinyl Flooring (5.5 mm - 20 Mil)',
@@ -89,192 +90,101 @@ const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
     },
     recommendedUse: ['High-Traffic Zones', 'Multi-Family Buildings', 'Premium Residences', 'Boutique Retail'],
   },
-  'ultra-pulse': {
-    name: 'UltraPULSE Collection (10 mm)',
-    subtitle: 'High-Density Ultra-Mineral Core Flooring (AC5 / 22 Mil - 10 mm)',
-    description:
-      'Redefines durability and style with high-density ultra-mineral core (8 mm UMC + 2 mm EVA pad). Engineered to withstand the most demanding environments.',
-    specs: {
-      warrantyResidential: '30 Years Heavy Residential',
-      warrantyCommercial: '10 Years Heavy Commercial',
-      features: [
-        'Ultra Mineral Core 8mm',
-        'AC5 Commercial Layer',
-        'Pet Friendly',
-        'Extreme Scratch Resistance',
-        'Superior Dimensional Stability',
-      ],
-    },
-    recommendedUse: ['Hotels', 'Restaurants', 'Grand Lobbies', 'Luxury Residences', 'Medical Centers'],
-  },
-  'pulse-wood': {
-    name: 'PULSEWood Collection',
-    subtitle: 'Herringbone Flooring & Random Width Planks (22 Mil / 6 mm)',
-    description:
-      'Artistic herringbone (5"x27") and random width planks (Random x 48") to create classic and contemporary architectural geometry.',
-    specs: {
-      warrantyResidential: '30 Years Heavy Residential',
-      warrantyCommercial: '10 Years Commercial',
-      features: ['Herringbone Geometric Pattern', 'Random Width Options', '22 Mil Wear Layer', 'UV & Anti-Scratch Finish'],
-    },
-    recommendedUse: ['Main Living Areas', 'Galleries', 'Formal Dining', 'Master Suites', 'Design Studios'],
-  },
-  'pulse-hd-laminate': {
-    name: 'PULSEHD Collection',
-    subtitle: 'Waterproof High Density Laminate (AC5 - 7 mm)',
-    description:
-      'High-density 100% waterproof laminate featuring heavy-duty AC5 certification and integrated 1 mm HD EVA acoustic underlayment.',
-    specs: {
-      wearLayer: 'AC5 Commercial Resistance',
-      warrantyResidential: '30 Years Heavy Residential',
-      warrantyCommercial: '10 Years Commercial',
-      features: ['Free PVC Black HD Core', 'AC5 Wear Layer', 'Kraft Decor Paper', 'EVA Padding'],
-    },
-    recommendedUse: ['Homes with Pets', 'Offices', 'Cafes & Restaurants', 'High-Foot-Traffic Hallways'],
-  },
-  'finsa-laminate-spain': {
-    name: 'Finsa Waterproof Laminate',
-    subtitle: 'Commercial Intense AC6 / Class 33 (Evolve & Supreme Collections)',
-    description:
-      'Engineered in Spain with top European technology. AC6 Class 33 rating for intense commercial use (schools, retail stores, open-plan offices).',
-    specs: {
-      wearLayer: 'AC6 (Highest European Rating)',
-      classGrade: 'Class 33 Intense Commercial',
-      origin: 'Made in Spain (Europe)',
-      finished: 'Natural Woodgrain Texture',
-      features: ['AC6 Commercial Intense', 'Made in Spain', 'Certified for Schools & Stores', 'Class 33'],
-    },
-    recommendedUse: ['Schools & Universities', 'Retail Stores', 'Open Offices', 'High-Traffic Venues', 'Residences'],
-  },
-  'tile-pulse-porcelain': {
-    name: 'TilePULSE Porcelain Floor Tiles',
-    subtitle: 'Coloured Porcelain Floor Tiles (24" x 48" Rectified - PEI 3)',
-    description:
-      'Large-format 24"x48" tiles crafted with Rajasthan clay enriched with Makrana marble dust and pure quartz. Available in Satin, Glossy, and Matte finishes.',
-    specs: {
-      edge: 'Rectified Precision Edge',
-      finished: 'Satin, Glossy & Matte',
-      material: 'Porcelain with Makrana Marble Dust & Quartz',
-      features: ['Rectified Edge', 'Chemical Resistant', '3 Finishes (Satin/Glossy/Matte)', 'Eco-friendly'],
-    },
-    recommendedUse: ['Bathrooms & Showers', 'Feature Accent Walls', 'Lobbies', 'Gourmet Kitchens', 'Shopping Centers'],
-  },
-  'wall-panels-indoor': {
-    name: 'Indoor Wall Panels (WPC & Acoustic Slat)',
-    subtitle: 'Wood Plastic Composite (WPC) & Wooden Slat Acoustic Panels',
-    description:
-      'Fluted decorative acoustic wall panels for interior spaces. Elevate living rooms, bed headboards, and executive offices with texture and acoustic absorption.',
-    specs: {
-      material: 'Wood Plastic Composite (WPC) & Slat Acoustic Wood',
-      installation: 'Hidden tongue & groove with clips / Heavy-duty adhesive',
-      finished: 'Textured Matte WPC / Natural Wood Veneer',
-      features: ['Acoustic Absorption', 'Quick Tongue & Groove Install', 'Moisture Resistant', 'Architectural Modern Design'],
-    },
-    recommendedUse: ['TV Feature Walls', 'Bed Headboards', 'Audio Studios & Offices', 'Restaurants'],
-  },
-  'wall-panels-outdoor': {
-    name: 'Outdoor Wall Panels (Exterior WPC Composite)',
-    subtitle: 'WPC Exterior Composite Panels (8-1/2" x 114" x 26 mm)',
-    description:
-      'Heavy-duty exterior architectural panels engineered for UV resistance, heavy rain, and weather extremes. Never rots and requires zero painting.',
-    specs: {
-      material: 'Heavy-Duty Exterior Wood Plastic Composite (26 mm)',
-      installation: 'Exterior grooved interlocking system with stainless steel clips',
-      finished: 'Anti-UV Woodgrain Shield',
-      features: ['Extreme UV & Weather Proof', 'Zero Maintenance', '26 mm Robust Thickness', '100% Waterproof'],
-    },
-    recommendedUse: ['Building Facades', 'Patios & Terraces', 'Perimeter Accent Walls', 'Main Entrances'],
-  },
-  'stair-steps-treads': {
+
+  // Unified Stair Steps & Treads
+  'stair-steps-collection': {
     name: 'Stair Steps & Treads',
-    subtitle: 'Double Rounded & Square Step Profiles (Full & Regular Steps)',
+    subtitle: 'Double Rounded, Square Step, Full Step & Regular Steps (SPC & Laminate)',
     description:
-      'Precision stair treads manufactured to match all SPC and Laminate floor collections seamlessly. Providing safety, flawless aesthetics, and durability.',
+      'High-impact stair nose and tread profiles for SPC and laminate staircases with ergonomic rounded edges and modern 90° square edges. Seamless Full Steps and modular Regular Step systems exact-matching all flooring decors.',
     specs: {
       material: 'SPC Rigid Core & High Density Laminate',
-      length: 'Custom Cut Lengths Available',
-      installation: 'Direct Glue-Down & Interlocking with Riser',
+      height: '1-3/4" x 1-1/2" (Double) / 1-3/4" x 1-3/8" (Square)',
+      length: '48" / 60" / Custom lengths',
+      installation: 'Direct Glue-down & Click Locking with tread & riser',
+      finished: 'Satin Anti-Slip Real Touch',
+      warrantyResidential: '30 Years Heavy Residential',
       features: [
-        'Double Rounded Profile (SPC)',
-        'Square Step Profile (SPC & Laminate)',
-        'Full Steps Configuration (Single continuous tread)',
-        'Regular Steps Configuration (With matching filler plank)',
+        'Ergonomic Double Rounded Front Edge',
+        'Contemporary 90° Square Edge Step',
+        'Monolithic Full Step without joint lines',
+        'Modular Regular Step with matching Riser',
+        '100% Compatible with all SPC colorways',
       ],
     },
-    recommendedUse: ['Interior Staircases', 'Floating Stairs', 'Stairways with Integrated LED Lighting'],
+    recommendedUse: ['Interior Staircases', 'Floating Steps', 'Architectural Homes', 'Commercial & Main Stairs'],
   },
-  'moldings-transitions': {
-    name: 'Moldings & Transition Profiles',
-    subtitle: 'CM T-Molding, Reducer & End Cap Profiles',
+
+  // Unified Moldings & Transitions
+  'moldings-collection': {
+    name: 'Moldings & Transitions (CM & Standard)',
+    subtitle: 'CM T-Molding, CM Reducer, Standard T-Molding, Standard Reducer & End Cap',
     description:
-      'Essential transition moldings to bridge floors of varying heights or different materials, and finish door thresholds with clean lines.',
+      'Complete transition solutions between equal-height floors, height reducers down to tile or concrete, and perimeter thresholds for sliding doors and fireplaces.',
     specs: {
-      material: 'SPC & Laminate Wrapped High Density Aluminum/MDF Core',
+      material: 'Aluminum / High Density SPC/Laminate Wrapped Core',
+      plankSize: '1-3/4” x 3/8” / 1-3/4" x 1/4" (Length: 94")',
+      installation: 'Screwed base track or direct construction adhesive',
+      finished: 'Satin Match Decors',
+      warrantyResidential: '30 Years Heavy Residential',
       features: [
-        'CM T-Molding (1-3/4" x 3/8") - Clean transition between equal level floors',
-        'CM Reducer (1-3/4" x 3/8") - Smooth bridge between uneven subfloors',
-        'Standard T-Molding (1-3/4" x 1/4") - Standard seamless floor seam',
-        'Standard Reducer (1-3/4" x 3/8") - Practical versatile level reducer',
-        'End Cap (1-3/8" x 3/8") - Elegant finish against sliding door tracks and carpet',
+        'CM T-Molding for flush transitions',
+        'CM Reducer for smooth sloped transitions',
+        'Standard slim T-Molding',
+        'Standard multi-purpose Reducer',
+        'End Cap / Threshold for sliding doors and masonry',
       ],
     },
-    recommendedUse: ['Doorways', 'Floating Floor to Tile Transitions', 'Balcony Sliders', 'Perimeter Terminations'],
+    recommendedUse: ['Doorways', 'Room Transitions', 'SPC to Tile Junctions', 'Sliding Doors', 'Large Expansion Spans'],
   },
+
+  // Unified Baseboards & Trims
   'baseboards-collection': {
-    name: 'Baseboards & Trims Collection',
-    subtitle: 'Pine Baseboards (BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620) & Waterproof EPS/MDF',
+    name: 'Baseboards & Trims',
+    subtitle: 'BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620, Quarter Round EPS & Pine, Square 1x1 MDF',
     description:
-      'Pre-primed white pine wood baseboards along with 100% waterproof EPS polymer and moisture-resistant MDF trims. Heights from 1 1/2" up to 5 1/2" in 16ft and 17ft lengths.',
+      'Comprehensive line of wall baseboards and perimeter trims in white pre-primed finger-joint pine, 100% waterproof EPS polymer, and moisture-resistant MDF for flawless wall finishes.',
     specs: {
-      material: 'Pre-Primed Finger-Joint Pine, Waterproof EPS Polymer, and MDF',
+      material: 'White Pre-Primed Finger-Joint Pine / EPS Polymer / Hydrophobic MDF',
+      totalThickness: '14 mm (9/16") / 18 mm (11/16")',
+      plankSize: 'Long 16 ft / 17 ft / 12 ft / 8 ft strips',
+      installation: 'Brad nailer & Construction adhesive',
+      finished: 'Smooth Pre-Primed White Ready to Install',
+      warrantyResidential: '30 Years Heavy Residential',
       features: [
-        'BB1x6 | Pine - Thickness: 14 mm (9/16"), Height: 5 1/2" x 1/2", Length: 16 ft',
-        'BB1x6 | Pine - Thickness: 18 mm (11/16"), Height: 5 1/2" x 3/4", Length: 16 ft',
-        'BB1x4 | Pine - Thickness: 14 mm (9/16"), Height: 3 1/2" x 1/2", Length: 17 ft',
-        'BB1x4 | Pine - Thickness: 18 mm (11/16"), Height: 3 1/2" x 3/4", Length: 17 ft',
-        'BB1x3 | Pine - Thickness: 18 mm (11/16"), Height: 1 1/2" x 1/2", Length: 17 ft',
-        'BB1x3 | Pine - Thickness: 18 mm (11/16"), Height: 2 1/2" x 3/4", Length: 17 ft',
-        'BB5180 | Pine - Thickness: 14 mm (9/16"), Height: 5 1/4" x 9/16", Length: 16 ft',
-        'BB618 | Pine - Thickness: 14 mm (9/16"), Height: 5 1/2" x 9/16", Length: 16 ft',
-        'BB620 | Pine - Thickness: 18 mm (11/16"), Height: 3 1/4" x 9/16", Length: 16 ft',
-        'Quarter Round Pine (MDF 16 ft)',
-        'Quarter Round EPS (Waterproof 12 ft)',
-        'Square 1x1 MDF (Waterproof 8 ft)',
+        'High-stability white primed finger-joint pine',
+        'Extra long 16ft and 17ft strips for minimal wall seams',
+        '100% Waterproof EPS Quarter Round for wet areas',
+        'Classic colonial and modern square-edge profiles',
       ],
     },
-    recommendedUse: ['All Flooring Types', 'Perimeter Wall Base Trims', 'Kitchens & Bathrooms (Waterproof EPS)'],
+    recommendedUse: ['Living Rooms', 'Dining Rooms', 'Bedrooms', 'Bathrooms', 'Kitchens', 'All floor types'],
   },
 };
 
-export const getLocalizedProducts = (language: Language): Product[] => {
+export function getLocalizedProducts(language: Language): Product[] {
   if (language === 'es') {
     return PRODUCTS;
   }
 
-  return PRODUCTS.map((product) => {
-    const translation = PRODUCT_TRANSLATIONS_EN[product.id];
-    if (!translation) return product;
+  return PRODUCTS.map((prod) => {
+    const trans = PRODUCT_TRANSLATIONS_EN[prod.id];
+    if (!trans) return prod;
 
     return {
-      ...product,
-      name: translation.name || product.name,
-      subtitle: translation.subtitle || product.subtitle,
-      description: translation.description || product.description,
+      ...prod,
+      name: trans.name || prod.name,
+      subtitle: trans.subtitle || prod.subtitle,
+      description: trans.description || prod.description,
       specs: {
-        ...product.specs,
-        ...(translation.specs?.wearLayer && { wearLayer: translation.specs.wearLayer }),
-        ...(translation.specs?.warrantyResidential && { warrantyResidential: translation.specs.warrantyResidential }),
-        ...(translation.specs?.warrantyCommercial && { warrantyCommercial: translation.specs.warrantyCommercial }),
-        ...(translation.specs?.installation && { installation: translation.specs.installation }),
-        ...(translation.specs?.finished && { finished: translation.specs.finished }),
-        ...(translation.specs?.material && { material: translation.specs.material }),
-        ...(translation.specs?.features && { features: translation.specs.features }),
+        ...prod.specs,
+        ...(trans.specs || {}),
       },
-      recommendedUse: translation.recommendedUse || product.recommendedUse,
+      recommendedUse: trans.recommendedUse || prod.recommendedUse,
     };
   });
-};
+}
 
-export const getLocalizedCategories = (language: Language): Category[] => {
-  return LOCALIZED_CATEGORIES[language] || LOCALIZED_CATEGORIES.en;
-};
+export function getLocalizedCategories(language: Language): Category[] {
+  return LOCALIZED_CATEGORIES[language] || CATEGORIES;
+}

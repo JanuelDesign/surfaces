@@ -36,7 +36,9 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const PRODUCTS: Product[] = [
-  // 1. SPC VINYL: SPC 5.5 mm
+  // ==========================================
+  // 1. SPC VINYL FLOORING COLLECTIONS (3 COLLECTIONS)
+  // ==========================================
   {
     id: 'spc-pulse-select',
     name: 'SPC 5.5 mm',
@@ -78,7 +80,6 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Salas', 'Comedores', 'Cocinas', 'Oficinas', 'Dormitorios', 'Espacios Comerciales'],
   },
 
-  // 2. SPC VINYL: SPC 6.0 mm XL
   {
     id: 'spc-pulse-shield-xl',
     name: 'SPC 6.0 mm',
@@ -115,7 +116,6 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Hotelería', 'Residencias de Lujo', 'Open Concept Living', 'Locales Comerciales'],
   },
 
-  // 3. SPC VINYL: SPC 8.0 mm
   {
     id: 'spc-xl-pulse',
     name: 'SPC 8.0 mm',
@@ -157,112 +157,246 @@ export const PRODUCTS: Product[] = [
     recommendedUse: ['Zonas de Alto Tráfico', 'Edificios Multifamiliares', 'Residencias Premium', 'Boutiques'],
   },
 
-  // 4. STAIR STEPS & TREADS
+  // ==========================================
+  // 2. UNIFIED STAIR STEPS & TREADS COLLECTION (1 CONSOLIDATED CARD)
+  // ==========================================
   {
-    id: 'stair-steps-treads',
-    name: 'Gradas & Treads para Escaleras',
+    id: 'stair-steps-collection',
+    name: 'Gradas & Peldaños para Escaleras',
     category: 'stair-steps',
-    collection: 'Stair Steps & Profiles',
-    subtitle: 'Double Rounded & Square Step Profiles (Full & Regular Steps)',
+    collection: 'Gradas & Treads',
+    subtitle: 'Double Rounded, Square Step, Full Step & Regular Steps (SPC & Laminado)',
     description:
-      'Peldaños para escaleras diseñados a juego exacto con los pisos SPC y Laminados. Proporcionan seguridad, estética impecable y durabilidad.',
+      'Perfiles de grada de alto impacto para escaleras en SPC y Laminado con cantos redondeados y rectos a 90°. Peldaños monolíticos Full Steps y sistemas Regular Steps ajustables a juego exacto con los pisos.',
     specs: {
       material: 'SPC Rigid Core & High Density Laminate',
-      height: 'Double Rounded (1-3/4" x 1-1/2" x 7/8") | Square Step (1-3/4" x 1-3/8" x 7/8")',
-      length: 'Medidas Personalizadas / Custom Lengths',
-      installation: 'Direct Glue-down & Ensamble con Huella y Contrahuella (Riser)',
+      height: '1-3/4" x 1-1/2" (Double) / 1-3/4" x 1-3/8" (Square)',
+      length: '48" / 60" / Medidas personalizadas',
+      installation: 'Direct Glue-down & Ensamble Click con huella y contrahuella',
+      finished: 'Satin Anti-Slip Real Touch',
+      warrantyResidential: '30 Años Heavy Residential',
       features: [
-        'Perfil Double Rounded (SPC)',
-        'Perfil Square Step (SPC & Laminate)',
-        'Configuración Full Steps (Ancho completo)',
-        'Configuración Regular Steps (Con Plancha de Relleno)',
+        'Borde Doble Redondeado Ergonómico',
+        'Canto Recto 90° Contemporáneo',
+        'Peldaño Monolítico Full Step sin uniones',
+        'Sistema Regular Step con Riser a juego',
+        '100% Compatible con todos los tonos SPC',
       ],
     },
     colors: [
-      { name: 'Square Step SPC (All Colors)', code: 'Square-SPC', hexColor: '#c7b28e', patternType: 'wood' },
-      { name: 'Double Rounded SPC (All Colors)', code: 'DoubleRound-SPC', hexColor: '#dfc39a', patternType: 'wood' },
-      { name: 'Square Step Laminate (All Colors)', code: 'Square-Lam', hexColor: '#8a765d', patternType: 'wood' },
-      { name: 'Full Step Custom Stair Tread', code: 'Full-Step', hexColor: '#5c6368', patternType: 'wood' },
-      { name: 'Regular Step with Riser & Fill', code: 'Regular-Step', hexColor: '#965a31', patternType: 'wood' },
+      {
+        name: 'Double Rounded Step',
+        code: 'Double Round',
+        hexColor: '#d6c09b',
+        secondaryHex: '#c2a87d',
+        patternType: 'wood',
+      },
+      {
+        name: 'Square Step (90°)',
+        code: 'Square Step',
+        hexColor: '#c7b28e',
+        secondaryHex: '#a98f65',
+        patternType: 'wood',
+      },
+      {
+        name: 'Full Step Monolítico',
+        code: 'Full Step',
+        hexColor: '#5c6368',
+        secondaryHex: '#3e4448',
+        patternType: 'wood',
+      },
+      {
+        name: 'Regular Step con Riser',
+        code: 'Regular Step',
+        hexColor: '#965a31',
+        secondaryHex: '#7a3e1e',
+        patternType: 'wood',
+      },
     ],
     handSamplesAvailable: true,
+    featured: true,
     technicalDiagram: 'step-profile',
-    certifications: ['Anti-Slip Safety Standard', 'Matches All Floor Decors'],
-    recommendedUse: ['Escaleras Interiores', 'Gradas Voladas', 'Escaleras con Iluminación LED Integrada'],
+    certifications: ['Anti-Slip Safety Standard', 'Matches All Floor Decors', 'CARB Phase 2'],
+    recommendedUse: ['Escaleras Interiores', 'Gradas Voladas', 'Casas de Diseño', 'Escaleras Principales y Comerciales'],
   },
 
-  // 5. MOLDINGS & TRANSITIONS
+  // ==========================================
+  // 3. UNIFIED MOLDINGS & TRANSITIONS COLLECTION (1 CONSOLIDATED CARD)
+  // ==========================================
   {
-    id: 'moldings-transitions',
-    name: 'Molduras & Perfiles de Transición',
+    id: 'moldings-collection',
+    name: 'Molduras & Transiciones (CM & Standard)',
     category: 'moldings',
-    collection: 'Infinite Design Moldings',
-    subtitle: 'CM T-Molding, CM Reducer, T-Molding, Reducer & End Cap Profiles',
+    collection: 'Molduras & Transiciones',
+    subtitle: 'CM T-Molding, CM Reducer, Standard T-Molding, Standard Reducer & End Cap',
     description:
-      'Perfiles de transición para unir pisos de diferentes alturas o materiales, rematar bordes contra puertas y ventanas con acabado profesional.',
+      'Soluciones completas de remate y transición entre pisos del mismo nivel, desniveles hacia cerámica o alfombra y encuentros perimetrales con puertas corredizas o ventanales.',
     specs: {
-      material: 'SPC & Laminate Wrapped High Density Aluminum/MDF Core',
+      material: 'Aluminio / Núcleo de Alta Densidad Recubierto en SPC/Laminado',
+      plankSize: '1-3/4” x 3/8” / 1-3/4" x 1/4" (Largo: 94")',
+      installation: 'Riel base atornillado o fijación con adhesivo de montaje',
+      finished: 'Satin Match Decors',
+      warrantyResidential: '30 Años Heavy Residential',
       features: [
-        'CM T-Molding (1-3/4” x 3/8”) - Transición elegante entre pisos nivelados',
-        'CM Reducer (1-3/4” x 3/8”) - Nivelación de superficies con desnivel',
-        'T-Molding Estándar (1-3/4” x 1/4”) - Unión suave de pisos',
-        'Reducer Estándar (1-3/4” x 3/8”) - Transición práctica y versátil',
-        'End Cap (1-3/8” x 3/8”) - Remate elegante para puertas corredizas y alfombras',
+        'CM T-Molding para unión al mismo nivel',
+        'CM Reducer para compensar desniveles suaves',
+        'Standard T-Molding de perfil delgado',
+        'Standard Reducer multiuso',
+        'End Cap / Remate para puertas corredizas y chimeneas',
       ],
     },
     colors: [
-      { name: 'CM T-Molding', code: '1-3/4" x 3/8"', hexColor: '#cfbea0', patternType: 'wood' },
-      { name: 'CM Reducer', code: '1-3/4" x 3/8"', hexColor: '#d6c09b', patternType: 'wood' },
-      { name: 'Standard T-Molding', code: '1-3/4" x 1/4"', hexColor: '#bfa780', patternType: 'wood' },
-      { name: 'Standard Reducer', code: '1-3/4" x 3/8"', hexColor: '#c7b28e', patternType: 'wood' },
-      { name: 'End Cap', code: '1-3/8" x 3/8"', hexColor: '#d0d1cc', patternType: 'wood' },
+      {
+        name: 'CM T-Molding (1-3/4" x 3/8")',
+        code: 'CM-T',
+        hexColor: '#cfbea0',
+        secondaryHex: '#ad9b7d',
+        patternType: 'wood',
+      },
+      {
+        name: 'CM Reducer (1-3/4" x 3/8")',
+        code: 'CM-R',
+        hexColor: '#d6c09b',
+        secondaryHex: '#c2a87d',
+        patternType: 'wood',
+      },
+      {
+        name: 'Standard T-Molding (1-3/4" x 1/4")',
+        code: 'STD-T',
+        hexColor: '#bfa780',
+        secondaryHex: '#99815c',
+        patternType: 'wood',
+      },
+      {
+        name: 'Standard Reducer (1-3/4" x 3/8")',
+        code: 'STD-R',
+        hexColor: '#c7b28e',
+        secondaryHex: '#a98f65',
+        patternType: 'wood',
+      },
+      {
+        name: 'End Cap / Remate (1-3/8" x 3/8")',
+        code: 'EndCap',
+        hexColor: '#d0d1cc',
+        secondaryHex: '#b5b7b0',
+        patternType: 'wood',
+      },
     ],
     handSamplesAvailable: true,
+    featured: true,
     technicalDiagram: 'molding-profile',
-    certifications: ['Universal Floor Matching', 'Moisture Resistant'],
-    recommendedUse: ['Puertas', 'Unión Piso Flotante a Porcelanato', 'Ventanas Balcón', 'Terminaciones Perimetrales'],
+    certifications: ['Universal Floor Matching', 'Anti-Trip Safety Standard', 'Moisture Resistant'],
+    recommendedUse: ['Puertas', 'Unión entre Ambientes', 'Unión SPC a Cerámica', 'Puertas Corredizas', 'Grandes Superficies'],
   },
 
-  // 6. BASEBOARDS (ZÓCALOS)
+  // ==========================================
+  // 4. UNIFIED BASEBOARDS & TRIMS COLLECTION (1 CONSOLIDATED CARD)
+  // ==========================================
   {
     id: 'baseboards-collection',
-    name: 'Zócalos & Rodapiés (Baseboards)',
+    name: 'Zócalos & Rodapiés (Baseboards & Trims)',
     category: 'baseboards',
-    collection: 'Details That Make The Difference',
-    subtitle: 'Pine Baseboards (BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620) & Waterproof EPS/MDF',
+    collection: 'Zócalos & Rodapiés',
+    subtitle: 'BB1x6, BB1x4, BB1x3, BB5180, BB618, BB620, Quarter Round EPS & Pine, Square 1x1 MDF',
     description:
-      'Zócalos en madera de pino pre-pintados en blanco y opciones en polímero EPS 100% impermeable y MDF. Alturas desde 1 1/2" hasta 5 1/2" en tiras de 16 y 17 pies.',
+      'Línea integral de rodapiés y remates perimetrales en pino finger-joint pre-pintado blanco, polímero EPS 100% impermeable y MDF hidrófugo sellado para remates perfectos contra muros.',
     specs: {
-      material: 'Pino Finger-Joint Pre-Pintado Blanco, EPS Waterproof y MDF',
+      material: 'Pino Finger-Joint Pre-Pintado / Polímero EPS / MDF Hidrófugo',
+      totalThickness: '14 mm (9/16") / 18 mm (11/16")',
+      plankSize: 'Tiras de 16 ft / 17 ft / 12 ft / 8 ft',
+      installation: 'Clavadora neumática & Adhesivo de montaje',
+      finished: 'Blanco Pre-Pintado Liso Listo para Instalar',
+      warrantyResidential: '30 Años Heavy Residential',
       features: [
-        'BB1x6 | Pine - Espesor: 14 mm (9/16"), Alto: 5 1/2" x 1/2", Largo: 16 ft',
-        'BB1x6 | Pine - Espesor: 18 mm (11/16"), Alto: 5 1/2" x 3/4", Largo: 16 ft',
-        'BB1x4 | Pine - Espesor: 14 mm (9/16"), Alto: 3 1/2" x 1/2", Largo: 17 ft',
-        'BB1x4 | Pine - Espesor: 18 mm (11/16"), Alto: 3 1/2" x 3/4", Largo: 17 ft',
-        'BB1x3 | Pine - Espesor: 18 mm (11/16"), Alto: 1 1/2" x 1/2", Largo: 17 ft',
-        'BB1x3 | Pine - Espesor: 18 mm (11/16"), Alto: 2 1/2" x 3/4", Largo: 17 ft',
-        'BB5180 | Pine - Espesor: 14 mm (9/16"), Alto: 5 1/4" x 9/16", Largo: 16 ft',
-        'BB618 | Pine - Espesor: 14 mm (9/16"), Alto: 5 1/2" x 9/16", Largo: 16 ft',
-        'BB620 | Pine - Espesor: 18 mm (11/16"), Alto: 3 1/4" x 9/16", Largo: 16 ft',
-        'Quarter Round Pine (MDF 16 ft)',
-        'Quarter Round EPS (Waterproof 12 ft)',
-        'Square 1x1 MDF (Waterproof 8 ft)',
+        'Pino Finger-Joint pre-pintado blanco de alta estabilidad',
+        'Tiras extra largas de 16 ft y 17 ft para menos empalmes',
+        'Quarter Round EPS 100% Waterproof ideal para baños y cocinas',
+        'Modelos clásicos coloniales y perfiles rectos contemporáneos',
       ],
     },
     colors: [
-      { name: 'BB1x6 Pine (14mm / 18mm)', code: '5 1/2" x 16ft', hexColor: '#f8fafc', secondaryHex: '#e2e8f0', patternType: 'solid' },
-      { name: 'BB1x4 Pine (14mm / 18mm)', code: '3 1/2" x 17ft', hexColor: '#f8fafc', secondaryHex: '#e2e8f0', patternType: 'solid' },
-      { name: 'BB1x3 Pine (18mm)', code: '2 1/2" x 17ft', hexColor: '#f8fafc', secondaryHex: '#e2e8f0', patternType: 'solid' },
-      { name: 'BB5180 Molded Pine', code: '5 1/4" x 16ft', hexColor: '#f8fafc', secondaryHex: '#e2e8f0', patternType: 'solid' },
-      { name: 'BB618 Profile Pine', code: '5 1/2" x 16ft', hexColor: '#f8fafc', secondaryHex: '#e2e8f0', patternType: 'solid' },
-      { name: 'BB620 Profile Pine', code: '3 1/4" x 16ft', hexColor: '#f8fafc', secondaryHex: '#e2e8f0', patternType: 'solid' },
-      { name: 'Quarter Round EPS Waterproof', code: '12ft Long', hexColor: '#ffffff', secondaryHex: '#f1f5f9', patternType: 'solid' },
-      { name: 'Square 1x1 MDF Waterproof', code: '8ft Long', hexColor: '#ffffff', secondaryHex: '#e2e8f0', patternType: 'solid' },
+      {
+        name: 'BB1x6 Pine (14mm / 9/16" - 16ft)',
+        code: 'BB1x6 14mm',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB1x6 Pine Heavy (18mm / 11/16" - 16ft)',
+        code: 'BB1x6 18mm',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB1x4 Pine (14mm / 9/16" - 17ft)',
+        code: 'BB1x4 14mm',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB1x4 Pine Thick (18mm / 11/16" - 17ft)',
+        code: 'BB1x4 18mm',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB1x3 Pine Low-Profile (18mm - 17ft)',
+        code: 'BB1x3 18mm',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB5180 Colonial Pine (5 1/4" - 16ft)',
+        code: 'BB5180',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB618 Curved Pine (5 1/2" - 16ft)',
+        code: 'BB618',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'BB620 Traditional Pine (3 1/4" - 16ft)',
+        code: 'BB620',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'Quarter Round EPS Waterproof (12ft)',
+        code: 'EPS QR',
+        hexColor: '#ffffff',
+        secondaryHex: '#f1f5f9',
+        patternType: 'solid',
+      },
+      {
+        name: 'Quarter Round Pine (16ft)',
+        code: 'Pine QR',
+        hexColor: '#ffffff',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
+      {
+        name: 'Square 1x1 MDF Base Shoe (8ft)',
+        code: 'MDF 1x1',
+        hexColor: '#ffffff',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+      },
     ],
     handSamplesAvailable: true,
+    featured: true,
     technicalDiagram: 'molding-profile',
-    certifications: ['FSC Certified Pine', 'Waterproof EPS Polymer', 'Pre-primed White'],
-    recommendedUse: ['Todo Tipo de Pisos', 'Remates de Pared Perimetrales', 'Cocinas y Baños (EPS Waterproof)'],
+    certifications: ['FSC Certified Pine', '100% Waterproof Polymer (EPS)', 'Pre-primed White'],
+    recommendedUse: ['Salas', 'Comedores', 'Dormitorios', 'Baños', 'Cocinas', 'Todo tipo de pisos'],
   },
 ];
-

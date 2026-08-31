@@ -1,4 +1,4 @@
-import React, { useState, useId } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import {
   X,
   Eye,
@@ -24,6 +24,7 @@ import {
   MOLDING_IMAGES,
   STAIR_PROFILES,
 } from '../utils/imageCatalog';
+import { formatImageUrl } from '../utils/imageUrlFormatter';
 import { TechnicalLayerDiagram } from './TechnicalLayerDiagram';
 import { FullViewModal } from './FullViewModal';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -63,7 +64,6 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   // View Mode: 'plank' vs 'room'
   const [viewMode, setViewMode] = useState<'plank' | 'room'>('plank');
-  const [moldingSlideIndex, setMoldingSlideIndex] = useState<number>(0);
   const [showFullViewModal, setShowFullViewModal] = useState(false);
 
   // Calculator State
@@ -108,78 +108,94 @@ export const ProductDetailModal: React.FC<Props> = ({
   };
 
   // Image assets: prioritize real photo URL if available from Sheets/GitHub, fallback to SVG generator
-  const plankSvg = selectedColor.image || generatePlankSVG(
+  const customPlankPhoto = formatImageUrl(selectedColor.image);
+  const customRoomPhoto = formatImageUrl(selectedColor.roomImage);
+
+  const fallbackPlankSvg = generatePlankSVG(
     selectedColor.hexColor || '#c7b28e',
     selectedColor.secondaryHex || '#8c7355',
     'rgba(0,0,0,0.22)',
     selectedColor.patternType || 'wood'
   );
 
-  const roomSvg = selectedColor.roomImage || generateRoomSceneSVG(
+  const fallbackRoomSvg = generateRoomSceneSVG(
     selectedColor.hexColor || '#c7b28e',
     selectedColor.secondaryHex || '#8c7355',
     'living'
   );
 
+  const plankSvg = customPlankPhoto || fallbackPlankSvg;
+  const roomSvg = customRoomPhoto || fallbackRoomSvg;
+
   const getAccessoryData = () => {
+    const searchStr = `${product.id} ${product.name} ${selectedColor.name} ${product.subtitle || ''}`.toLowerCase();
+
     if (product.category === 'baseboards') {
-      const name = selectedColor.name;
-      if (name.includes('BB1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
-      if (name.includes('BB1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
-      if (name.includes('BB1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
-      if (name.includes('BB5180')) return BASEBOARD_IMAGES['BB5180'];
-      if (name.includes('BB618')) return BASEBOARD_IMAGES['BB618'];
-      if (name.includes('BB620')) return BASEBOARD_IMAGES['BB620'];
-      if (name.includes('EPS')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
-      if (name.includes('Pine') && name.includes('Round')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
-      if (name.includes('Square')) return BASEBOARD_IMAGES['Square1x1-MDF'];
+      if (searchStr.includes('bb1x6') && (searchStr.includes('18mm') || searchStr.includes('heavy') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x6-18mm'];
+      if (searchStr.includes('bb1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
+      if (searchStr.includes('bb1x4') && (searchStr.includes('18mm') || searchStr.includes('thick') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x4-18mm'];
+      if (searchStr.includes('bb1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
+      if (searchStr.includes('bb1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
+      if (searchStr.includes('5180')) return BASEBOARD_IMAGES['BB5180'];
+      if (searchStr.includes('618')) return BASEBOARD_IMAGES['BB618'];
+      if (searchStr.includes('620')) return BASEBOARD_IMAGES['BB620'];
+      if (searchStr.includes('eps')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
+      if (searchStr.includes('round') || searchStr.includes('quarter') || searchStr.includes('bocel')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
+      if (searchStr.includes('square') || searchStr.includes('1x1') || searchStr.includes('mdf')) return BASEBOARD_IMAGES['Square1x1-MDF'];
       return BASEBOARD_IMAGES['BB1x6-14mm'];
     }
     if (product.category === 'moldings') {
-      const name = selectedColor.name;
-      if (name.includes('CM T-Molding') || name.includes('CM-T')) return MOLDING_IMAGES['CM-TMolding'];
-      if (name.includes('CM Reducer') || name.includes('CM-R')) return MOLDING_IMAGES['CM-Reducer'];
-      if (name.includes('Standard T-Molding')) return MOLDING_IMAGES['Standard-TMolding'];
-      if (name.includes('Standard Reducer')) return MOLDING_IMAGES['Standard-Reducer'];
-      if (name.includes('End Cap')) return MOLDING_IMAGES['EndCap'];
+      if (searchStr.includes('cm') && (searchStr.includes('reducer') || searchStr.includes('desnivel') || searchStr.includes('reductor'))) return MOLDING_IMAGES['CM-Reducer'];
+      if (searchStr.includes('cm') && (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding'))) return MOLDING_IMAGES['CM-TMolding'];
+      if (searchStr.includes('end cap') || searchStr.includes('endcap') || searchStr.includes('remate')) return MOLDING_IMAGES['EndCap'];
+      if (searchStr.includes('reducer') || searchStr.includes('reductor')) return MOLDING_IMAGES['Standard-Reducer'];
+      if (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding')) return MOLDING_IMAGES['Standard-TMolding'];
       return MOLDING_IMAGES['CM-TMolding'];
     }
     if (product.category === 'stair-steps') {
-      const name = selectedColor.name;
-      if (name.includes('Double Rounded')) return STAIR_PROFILES['DoubleRounded'];
-      if (name.includes('Square Step')) return STAIR_PROFILES['SquareStep'];
-      if (name.includes('Full Step')) return STAIR_PROFILES['FullStep'];
-      if (name.includes('Regular Step')) return STAIR_PROFILES['RegularStep'];
+      if (searchStr.includes('double') || searchStr.includes('doble') || searchStr.includes('round')) return STAIR_PROFILES['DoubleRounded'];
+      if (searchStr.includes('square') || searchStr.includes('cuadrad')) return STAIR_PROFILES['SquareStep'];
+      if (searchStr.includes('full') || searchStr.includes('completo')) return STAIR_PROFILES['FullStep'];
+      if (searchStr.includes('regular') || searchStr.includes('riser')) return STAIR_PROFILES['RegularStep'];
       return STAIR_PROFILES['DoubleRounded'];
     }
     return null;
   };
 
   const accessoryData = isAccessory ? getAccessoryData() : null;
+  const accessoryPhoto = customPlankPhoto || formatImageUrl(accessoryData?.photoUrl);
+  const accessoryRoom = customRoomPhoto || formatImageUrl((accessoryData as any)?.roomUrl) || fallbackRoomSvg;
+  const blueprintSvg = accessoryData?.profileSvg || fallbackPlankSvg;
 
-  // For moldings: 3-slide gallery images
-  const moldingSlides = [
-    {
-      title: language === 'en' ? 'Profile Blueprint' : 'Corte de Perfil',
-      src: accessoryData?.profileSvg || plankSvg,
-    },
-    {
-      title: language === 'en' ? '3D In-Situ View' : 'Aplicación 3D en Piso',
-      src: accessoryData?.photoUrl || plankSvg,
-    },
-    {
-      title: language === 'en' ? 'Texture & Color' : 'Textura y Color',
-      src: plankSvg,
-    },
-  ];
+  let currentDisplayImage = '';
+  let fallbackImage = '';
 
-  const currentDisplayImage = product.category === 'moldings'
-    ? moldingSlides[moldingSlideIndex].src
-    : product.category === 'baseboards'
-    ? (accessoryData?.photoUrl || plankSvg)
-    : isAccessory
-    ? (viewMode === 'room' ? (accessoryData?.photoUrl || accessoryData?.profileSvg || plankSvg) : (accessoryData?.profileSvg || plankSvg))
-    : (viewMode === 'room' ? roomSvg : plankSvg);
+  if (product.category === 'baseboards') {
+    currentDisplayImage = accessoryPhoto || blueprintSvg;
+    fallbackImage = blueprintSvg;
+  } else if (product.category === 'moldings' || product.category === 'stair-steps') {
+    if (viewMode === 'room') {
+      currentDisplayImage = accessoryRoom;
+      fallbackImage = fallbackRoomSvg;
+    } else {
+      currentDisplayImage = accessoryPhoto || blueprintSvg;
+      fallbackImage = blueprintSvg;
+    }
+  } else {
+    if (viewMode === 'room') {
+      currentDisplayImage = customRoomPhoto || fallbackRoomSvg;
+      fallbackImage = fallbackRoomSvg;
+    } else {
+      currentDisplayImage = customPlankPhoto || fallbackPlankSvg;
+      fallbackImage = fallbackPlankSvg;
+    }
+  }
+
+  const [imgLoadError, setImgLoadError] = useState(false);
+
+  useEffect(() => {
+    setImgLoadError(false);
+  }, [selectedColor, viewMode, product]);
 
   return (
     <>
@@ -218,34 +234,21 @@ export const ProductDetailModal: React.FC<Props> = ({
               <div className="md:col-span-6 space-y-2">
                 <div className="relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-[#D9D9D9] shadow-sm bg-[#0B0B0B] group">
                   <img
-                    src={currentDisplayImage}
+                    src={imgLoadError ? fallbackImage : currentDisplayImage}
                     alt={`${product.name} - ${selectedColor.name}`}
+                    referrerPolicy="no-referrer"
+                    onError={() => setImgLoadError(true)}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
 
-                  {/* Top Switcher: Carousel for Moldings / Switcher for SPC & Steps / Hidden for Baseboards */}
-                  {product.category === 'moldings' ? (
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/75 backdrop-blur-md px-2 py-1 rounded-xl border border-white/20 z-10 text-white text-[11px] font-bold">
-                      <button
-                        onClick={() => setMoldingSlideIndex((prev) => (prev === 0 ? moldingSlides.length - 1 : prev - 1))}
-                        className="p-1 hover:bg-white/20 rounded-md transition cursor-pointer"
-                        title="Anterior"
-                      >
-                        <ChevronLeft size={14} />
-                      </button>
-                      <span className="px-1 text-[#F5F5F5] font-semibold">{moldingSlides[moldingSlideIndex].title} ({moldingSlideIndex + 1}/3)</span>
-                      <button
-                        onClick={() => setMoldingSlideIndex((prev) => (prev === moldingSlides.length - 1 ? 0 : prev + 1))}
-                        className="p-1 hover:bg-white/20 rounded-md transition cursor-pointer"
-                        title="Siguiente"
-                      >
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-                  ) : product.category !== 'baseboards' ? (
+                  {/* Top Switcher: Hidden for Baseboards; Photo/Room for Moldings & Steps; Plank/Room for SPC */}
+                  {product.category !== 'baseboards' && (
                     <div className="absolute top-3 left-3 flex bg-black/70 backdrop-blur-md p-1 rounded-xl border border-white/20 z-10">
                       <button
-                        onClick={() => setViewMode('plank')}
+                        onClick={() => {
+                          setImgLoadError(false);
+                          setViewMode('plank');
+                        }}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           viewMode === 'plank'
                             ? 'bg-[#0B0B0B] text-white shadow-xs'
@@ -253,10 +256,13 @@ export const ProductDetailModal: React.FC<Props> = ({
                         }`}
                       >
                         <Layers size={13} />
-                        <span>{isAccessory ? (language === 'en' ? 'Diagram' : 'Diagrama') : (language === 'en' ? 'Plank' : 'Plank')}</span>
+                        <span>{product.category === 'spc-vinyl' ? (language === 'en' ? 'Plank' : 'Plank') : (language === 'en' ? 'Photo' : 'Foto')}</span>
                       </button>
                       <button
-                        onClick={() => setViewMode('room')}
+                        onClick={() => {
+                          setImgLoadError(false);
+                          setViewMode('room');
+                        }}
                         className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
                           viewMode === 'room'
                             ? 'bg-[#0B0B0B] text-white shadow-xs'
@@ -264,23 +270,8 @@ export const ProductDetailModal: React.FC<Props> = ({
                         }`}
                       >
                         <Eye size={13} />
-                        <span>{isAccessory ? (language === 'en' ? 'Photo' : 'Foto') : (language === 'en' ? 'Room' : 'Ambiente')}</span>
+                        <span>{language === 'en' ? 'Room' : 'Ambiente'}</span>
                       </button>
-                    </div>
-                  ) : null}
-
-                  {/* Molding Carousel Indicator Dots */}
-                  {product.category === 'moldings' && (
-                    <div className="absolute bottom-12 left-3 flex gap-1.5 z-10">
-                      {moldingSlides.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setMoldingSlideIndex(idx)}
-                          className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                            moldingSlideIndex === idx ? 'w-6 bg-white' : 'w-2 bg-white/40'
-                          }`}
-                        />
-                      ))}
                     </div>
                   )}
 

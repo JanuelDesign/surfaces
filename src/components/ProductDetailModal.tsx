@@ -20,9 +20,6 @@ import { formatSqftBoxes } from '../utils/textureUtils';
 import {
   generatePlankSVG,
   generateRoomSceneSVG,
-  BASEBOARD_IMAGES,
-  MOLDING_IMAGES,
-  STAIR_PROFILES,
 } from '../utils/imageCatalog';
 import { formatImageUrl } from '../utils/imageUrlFormatter';
 import { TechnicalLayerDiagram } from './TechnicalLayerDiagram';
@@ -107,7 +104,7 @@ export const ProductDetailModal: React.FC<Props> = ({
     setTimeout(() => setSampleSuccess(false), 1500);
   };
 
-  // Image assets: prioritize real photo URL if available from Sheets/GitHub, fallback to SVG generator
+  // Dynamic Image Generation or Photo URL
   const customPlankPhoto = formatImageUrl(selectedColor.image);
   const customRoomPhoto = formatImageUrl(selectedColor.roomImage);
 
@@ -124,71 +121,15 @@ export const ProductDetailModal: React.FC<Props> = ({
     'living'
   );
 
-  const plankSvg = customPlankPhoto || fallbackPlankSvg;
-  const roomSvg = customRoomPhoto || fallbackRoomSvg;
-
-  const getAccessoryData = () => {
-    const searchStr = `${product.id} ${product.name} ${selectedColor.name} ${product.subtitle || ''}`.toLowerCase();
-
-    if (product.category === 'baseboards') {
-      if (searchStr.includes('bb1x6') && (searchStr.includes('18mm') || searchStr.includes('heavy') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x6-18mm'];
-      if (searchStr.includes('bb1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
-      if (searchStr.includes('bb1x4') && (searchStr.includes('18mm') || searchStr.includes('thick') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x4-18mm'];
-      if (searchStr.includes('bb1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
-      if (searchStr.includes('bb1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
-      if (searchStr.includes('5180')) return BASEBOARD_IMAGES['BB5180'];
-      if (searchStr.includes('618')) return BASEBOARD_IMAGES['BB618'];
-      if (searchStr.includes('620')) return BASEBOARD_IMAGES['BB620'];
-      if (searchStr.includes('eps')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
-      if (searchStr.includes('round') || searchStr.includes('quarter') || searchStr.includes('bocel')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
-      if (searchStr.includes('square') || searchStr.includes('1x1') || searchStr.includes('mdf')) return BASEBOARD_IMAGES['Square1x1-MDF'];
-      return BASEBOARD_IMAGES['BB1x6-14mm'];
-    }
-    if (product.category === 'moldings') {
-      if (searchStr.includes('cm') && (searchStr.includes('reducer') || searchStr.includes('desnivel') || searchStr.includes('reductor'))) return MOLDING_IMAGES['CM-Reducer'];
-      if (searchStr.includes('cm') && (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding'))) return MOLDING_IMAGES['CM-TMolding'];
-      if (searchStr.includes('end cap') || searchStr.includes('endcap') || searchStr.includes('remate')) return MOLDING_IMAGES['EndCap'];
-      if (searchStr.includes('reducer') || searchStr.includes('reductor')) return MOLDING_IMAGES['Standard-Reducer'];
-      if (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding')) return MOLDING_IMAGES['Standard-TMolding'];
-      return MOLDING_IMAGES['CM-TMolding'];
-    }
-    if (product.category === 'stair-steps') {
-      if (searchStr.includes('double') || searchStr.includes('doble') || searchStr.includes('round')) return STAIR_PROFILES['DoubleRounded'];
-      if (searchStr.includes('square') || searchStr.includes('cuadrad')) return STAIR_PROFILES['SquareStep'];
-      if (searchStr.includes('full') || searchStr.includes('completo')) return STAIR_PROFILES['FullStep'];
-      if (searchStr.includes('regular') || searchStr.includes('riser')) return STAIR_PROFILES['RegularStep'];
-      return STAIR_PROFILES['DoubleRounded'];
-    }
-    return null;
-  };
-
-  const accessoryData = isAccessory ? getAccessoryData() : null;
-  const accessoryPhoto = customPlankPhoto || formatImageUrl(accessoryData?.photoUrl);
-  const accessoryRoom = customRoomPhoto || formatImageUrl((accessoryData as any)?.roomUrl) || fallbackRoomSvg;
-  const blueprintSvg = accessoryData?.profileSvg || fallbackPlankSvg;
-
   let currentDisplayImage = '';
   let fallbackImage = '';
 
-  if (product.category === 'baseboards') {
-    currentDisplayImage = accessoryPhoto || blueprintSvg;
-    fallbackImage = blueprintSvg;
-  } else if (product.category === 'moldings' || product.category === 'stair-steps') {
-    if (viewMode === 'room') {
-      currentDisplayImage = accessoryRoom;
-      fallbackImage = fallbackRoomSvg;
-    } else {
-      currentDisplayImage = accessoryPhoto || blueprintSvg;
-      fallbackImage = blueprintSvg;
-    }
+  if (viewMode === 'room') {
+    currentDisplayImage = customRoomPhoto || customPlankPhoto || fallbackRoomSvg;
+    fallbackImage = fallbackRoomSvg;
   } else {
-    if (viewMode === 'room') {
-      currentDisplayImage = customRoomPhoto || fallbackRoomSvg;
-      fallbackImage = fallbackRoomSvg;
-    } else {
-      currentDisplayImage = customPlankPhoto || fallbackPlankSvg;
-      fallbackImage = fallbackPlankSvg;
-    }
+    currentDisplayImage = customPlankPhoto || fallbackPlankSvg;
+    fallbackImage = fallbackPlankSvg;
   }
 
   const [imgLoadError, setImgLoadError] = useState(false);
@@ -199,27 +140,27 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6">
         <div
-          className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-[#D9D9D9] overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
+          className="bg-white w-full max-w-4xl rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D9D9D9] overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#D9D9D9] bg-[#F5F5F5]">
-            <div className="flex items-center gap-3">
-              <span className="w-3 h-3 rounded-full bg-[#0B0B0B]"></span>
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#D9D9D9] bg-[#F5F5F5]">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#0B0B0B]"></span>
               <div>
-                <span className="text-[11px] font-bold uppercase text-[#6B6762] tracking-wider">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase text-[#6B6762] tracking-wider">
                   {product.collection}
                 </span>
-                <h2 className="text-lg sm:text-xl font-extrabold text-[#0B0B0B] leading-tight">
+                <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-[#0B0B0B] leading-tight">
                   {product.name}
                 </h2>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-full bg-white hover:bg-[#D9D9D9] border border-[#D9D9D9] flex items-center justify-center text-[#0B0B0B] transition cursor-pointer"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white hover:bg-[#D9D9D9] border border-[#D9D9D9] flex items-center justify-center text-[#0B0B0B] transition cursor-pointer"
               aria-label="Close modal"
             >
               <X size={18} />
@@ -227,12 +168,12 @@ export const ProductDetailModal: React.FC<Props> = ({
           </div>
 
           {/* Modal Scrollable Content */}
-          <div className="p-6 overflow-y-auto space-y-6">
+          <div className="p-3 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6">
             {/* Top Hero: Visualizer + Plank / Room Switcher + Active Color Selector */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
               {/* Visual Display Card */}
               <div className="md:col-span-6 space-y-2">
-                <div className="relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-[#D9D9D9] shadow-sm bg-[#0B0B0B] group">
+                <div className="relative h-56 sm:h-72 rounded-2xl overflow-hidden border border-[#D9D9D9] shadow-sm bg-[#0B0B0B] group">
                   <img
                     src={imgLoadError ? fallbackImage : currentDisplayImage}
                     alt={`${product.name} - ${selectedColor.name}`}
@@ -243,33 +184,33 @@ export const ProductDetailModal: React.FC<Props> = ({
 
                   {/* Top Switcher: Hidden for Baseboards; Photo/Room for Moldings & Steps; Plank/Room for SPC */}
                   {product.category !== 'baseboards' && (
-                    <div className="absolute top-3 left-3 flex bg-black/70 backdrop-blur-md p-1 rounded-xl border border-white/20 z-10">
+                    <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 flex bg-black/70 backdrop-blur-md p-0.5 sm:p-1 rounded-xl border border-white/20 z-10">
                       <button
                         onClick={() => {
                           setImgLoadError(false);
                           setViewMode('plank');
                         }}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
                           viewMode === 'plank'
                             ? 'bg-[#0B0B0B] text-white shadow-xs'
                             : 'text-white/80 hover:text-white'
                         }`}
                       >
-                        <Layers size={13} />
-                        <span>{product.category === 'spc-vinyl' ? (language === 'en' ? 'Plank' : 'Plank') : (language === 'en' ? 'Photo' : 'Foto')}</span>
+                        <Layers size={12} />
+                        <span>{product.category === 'spc-vinyl' ? 'Plank' : (language === 'en' ? 'Photo' : 'Foto')}</span>
                       </button>
                       <button
                         onClick={() => {
                           setImgLoadError(false);
                           setViewMode('room');
                         }}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                        className={`px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
                           viewMode === 'room'
                             ? 'bg-[#0B0B0B] text-white shadow-xs'
                             : 'text-white/80 hover:text-white'
                         }`}
                       >
-                        <Eye size={13} />
+                        <Eye size={12} />
                         <span>{language === 'en' ? 'Room' : 'Ambiente'}</span>
                       </button>
                     </div>
@@ -278,29 +219,29 @@ export const ProductDetailModal: React.FC<Props> = ({
                   {/* Full View Lightbox Expand Button */}
                   <button
                     onClick={() => setShowFullViewModal(true)}
-                    className="absolute top-3 right-3 p-2 rounded-xl bg-black/70 hover:bg-white hover:text-[#0B0B0B] text-white backdrop-blur-md border border-white/20 transition cursor-pointer shadow-md"
+                    className="absolute top-2.5 sm:top-3 right-2.5 sm:right-3 p-1.5 sm:p-2 rounded-xl bg-black/70 hover:bg-white hover:text-[#0B0B0B] text-white backdrop-blur-md border border-white/20 transition cursor-pointer shadow-md z-10"
                     title={language === 'en' ? 'Full Screen High-Res View' : 'Ver en Alta Resolución / Pantalla Completa'}
                   >
-                    <Maximize2 size={15} />
+                    <Maximize2 size={14} />
                   </button>
 
                   {/* Active Color Name Tag */}
-                  <div className="absolute bottom-3 left-3 text-white">
-                    <div className="text-sm font-extrabold flex items-center gap-2 drop-shadow-md">
+                  <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 text-white z-10 pointer-events-none">
+                    <div className="text-xs sm:text-sm font-extrabold flex flex-wrap items-center gap-1.5 drop-shadow-md">
                       {product.category === 'spc-vinyl' ? (
                         <span>{language === 'en' ? 'Color Code:' : 'Código de Color:'} {selectedColor.code || selectedColor.name}</span>
                       ) : (
                         <>
                           <span>{selectedColor.name}</span>
                           {selectedColor.code && selectedColor.code !== selectedColor.name && (
-                            <span className="text-[10px] bg-black/60 text-[#F5F5F5] px-2 py-0.5 rounded font-mono border border-white/20">
+                            <span className="text-[10px] bg-black/60 text-[#F5F5F5] px-1.5 py-0.5 rounded font-mono border border-white/20">
                               {selectedColor.code}
                             </span>
                           )}
                         </>
                       )}
                     </div>
-                    <div className="text-xs text-[#BCBAB4] drop-shadow-xs">
+                    <div className="text-[10px] sm:text-xs text-[#BCBAB4] drop-shadow-xs">
                       {selectedColor.finish || product.specs.finished || 'Satin'}
                     </div>
                   </div>
@@ -341,12 +282,13 @@ export const ProductDetailModal: React.FC<Props> = ({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-                  {product.colors.map((c) => {
+                <div className="grid grid-cols-2 gap-1.5 sm:gap-2 max-h-48 overflow-y-auto pr-1">
+                  {product.colors.map((c, idx) => {
                     const isSelected = selectedColor.name === c.name;
+                    const keyId = c.id || c.code || `${product.id}-${c.name}-${idx}`;
                     return (
                       <button
-                        key={c.name}
+                        key={keyId}
                         onClick={() => setSelectedColor(c)}
                         className={`flex items-center gap-2 p-2 rounded-xl text-left border transition cursor-pointer ${
                           isSelected
@@ -399,7 +341,7 @@ export const ProductDetailModal: React.FC<Props> = ({
                 {t('detailModal.specifications')}
               </h3>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-2.5 text-xs">
                 {product.specs.wearLayer && (
                   <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
                     <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.wearLayer')}</div>
@@ -410,6 +352,20 @@ export const ProductDetailModal: React.FC<Props> = ({
                   <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
                     <div className="text-[10px] text-[#6B6762] font-medium">{t('productCard.thickness')}</div>
                     <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.totalThickness}</div>
+                  </div>
+                )}
+                {product.specs.material && (
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.coreMaterial')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5 truncate" title={product.specs.material}>
+                      {product.specs.material}
+                    </div>
+                  </div>
+                )}
+                {product.specs.height && (
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('productCard.height')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.height}</div>
                   </div>
                 )}
                 {product.specs.rigidCore && (
@@ -428,6 +384,12 @@ export const ProductDetailModal: React.FC<Props> = ({
                   <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
                     <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.plankDimensions')}</div>
                     <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.plankSize}</div>
+                  </div>
+                )}
+                {product.specs.length && (
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('productCard.length')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.length}</div>
                   </div>
                 )}
                 {product.specs.planksPerBox && (
@@ -452,14 +414,26 @@ export const ProductDetailModal: React.FC<Props> = ({
                 )}
                 {product.specs.finished && (
                   <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
-                    <div className="text-[10px] text-[#6B6762] font-medium">{language === 'en' ? 'Surface Finish' : 'Acabado Superficial'}</div>
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.surfaceFinish')}</div>
                     <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.finished}</div>
+                  </div>
+                )}
+                {product.specs.compatibleWith && (
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl col-span-2">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.compatibleWith')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.compatibleWith}</div>
                   </div>
                 )}
                 {product.specs.warrantyResidential && (
                   <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
                     <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.warrantyResidential')}</div>
                     <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.warrantyResidential}</div>
+                  </div>
+                )}
+                {product.specs.warrantyCommercial && (
+                  <div className="p-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl">
+                    <div className="text-[10px] text-[#6B6762] font-medium">{t('detailModal.warrantyCommercial')}</div>
+                    <div className="font-bold text-[#0B0B0B] mt-0.5">{product.specs.warrantyCommercial}</div>
                   </div>
                 )}
                 {product.specs.origin && (

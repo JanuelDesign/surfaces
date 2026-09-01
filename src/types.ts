@@ -14,6 +14,7 @@ export interface Category {
 }
 
 export interface ProductColor {
+  id?: string;
   name: string;
   code?: string;
   hexColor: string;
@@ -44,6 +45,7 @@ export interface ProductSpecs {
   thickness?: string;
   length?: string;
   origin?: string;
+  compatibleWith?: string;
   features?: string[];
 }
 

@@ -64,13 +64,36 @@ export function getStoredProducts(): Product[] {
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Ensure default accessory collections (stair steps, moldings, baseboards) are merged if missing
-        const missingDefaults = PRODUCTS.filter(
-          (dp) =>
-            ['stair-steps', 'moldings', 'baseboards'].includes(dp.category) &&
-            !parsed.some((p: Product) => p.id === dp.id || p.category === dp.category)
-        );
-        return [...parsed, ...missingDefaults];
+        const canonicalOrder = [
+          'spc-pulse-select',
+          'spc-pulse-shield-xl',
+          'spc-xl-pulse',
+          'stair-steps-collection',
+          'moldings-collection',
+          'baseboards-collection',
+        ];
+
+        const productMap = new Map<string, Product>();
+        PRODUCTS.forEach((p) => productMap.set(p.id, JSON.parse(JSON.stringify(p))));
+
+        parsed.forEach((p: Product) => {
+          let canonicalId = p.id;
+          if (p.id === 'spc-5.5mm' || p.id.includes('select') || p.id.includes('5.5') || p.id.toLowerCase().includes('q-01')) canonicalId = 'spc-pulse-select';
+          else if (p.id === 'spc-6.0mm' || p.id.includes('shield') || p.id.includes('6.0') || p.id.toLowerCase().includes('px-02')) canonicalId = 'spc-pulse-shield-xl';
+          else if (p.id === 'spc-8.0mm' || p.id.includes('xl-pulse') || p.id.includes('8.0') || p.id.toLowerCase().includes('s-01')) canonicalId = 'spc-xl-pulse';
+          else if (p.id.includes('step') || p.id.includes('stair') || p.id.includes('grada')) canonicalId = 'stair-steps-collection';
+          else if (p.id.includes('molding') || p.id.includes('moldura')) canonicalId = 'moldings-collection';
+          else if (p.id.includes('baseboard') || p.id.includes('zocalo') || p.id.includes('rodapie')) canonicalId = 'baseboards-collection';
+
+          if (productMap.has(canonicalId)) {
+            const existing = productMap.get(canonicalId)!;
+            if (p.colors && p.colors.length > 0) {
+              existing.colors = p.colors;
+            }
+          }
+        });
+
+        return canonicalOrder.map((id) => productMap.get(id)!).filter(Boolean);
       }
     }
   } catch (e) {
@@ -90,7 +113,7 @@ export const KNOWN_SHEET_TABS = [
   'Zocalos',
 ];
 
-// Normalize and consolidate accessory category / id
+// Normalize and consolidate accessory category / id to strict 6 canonical IDs
 function normalizeProductCategoryAndId(rawId: string, rawCategory: string, rawName: string): {
   normalizedId: string;
   normalizedCategory: CategoryId;
@@ -98,29 +121,29 @@ function normalizeProductCategoryAndId(rawId: string, rawCategory: string, rawNa
 } {
   const combined = `${rawId} ${rawCategory} ${rawName}`.toLowerCase();
 
-  if (combined.includes('baseboard') || combined.includes('zocalo') || combined.includes('rodapie') || combined.includes('bb1x')) {
+  if (combined.includes('baseboard') || combined.includes('zocalo') || combined.includes('rodapie') || combined.includes('bb1x') || combined.includes('bb5') || combined.includes('bb6') || combined.includes('quarter') || combined.includes('shoe')) {
     return { normalizedId: 'baseboards-collection', normalizedCategory: 'baseboards', isAccessory: true };
   }
-  if (combined.includes('molding') || combined.includes('moldura') || combined.includes('reducer') || combined.includes('t-molding') || combined.includes('endcap') || combined.includes('transicion')) {
+  if (combined.includes('molding') || combined.includes('moldura') || combined.includes('reducer') || combined.includes('t-molding') || combined.includes('endcap') || combined.includes('end cap') || combined.includes('transicion') || combined.includes('transition')) {
     return { normalizedId: 'moldings-collection', normalizedCategory: 'moldings', isAccessory: true };
   }
-  if (combined.includes('step') || combined.includes('stair') || combined.includes('grada') || combined.includes('peldaño') || combined.includes('tread')) {
+  if (combined.includes('step') || combined.includes('stair') || combined.includes('grada') || combined.includes('peldaño') || combined.includes('pelda') || combined.includes('tread')) {
     return { normalizedId: 'stair-steps-collection', normalizedCategory: 'stair-steps', isAccessory: true };
   }
 
-  // SPC vinyl flooring identification
-  if (combined.includes('5.5') || rawId.includes('5.5')) {
-    return { normalizedId: 'spc-5.5mm', normalizedCategory: 'spc-vinyl', isAccessory: false };
+  // SPC vinyl flooring identification - mapped strictly to canonical IDs
+  if (combined.includes('5.5') || combined.includes('select') || combined.includes('q-') || rawId.includes('5.5') || rawId.includes('select') || rawId.includes('q-01')) {
+    return { normalizedId: 'spc-pulse-select', normalizedCategory: 'spc-vinyl', isAccessory: false };
   }
-  if (combined.includes('6.0') || combined.includes('6mm') || rawId.includes('6.0') || rawId.includes('6mm')) {
-    return { normalizedId: 'spc-6.0mm', normalizedCategory: 'spc-vinyl', isAccessory: false };
+  if (combined.includes('6.0') || combined.includes('6mm') || combined.includes('shield') || combined.includes('px-') || rawId.includes('6.0') || rawId.includes('6mm') || rawId.includes('shield') || rawId.includes('px-02')) {
+    return { normalizedId: 'spc-pulse-shield-xl', normalizedCategory: 'spc-vinyl', isAccessory: false };
   }
-  if (combined.includes('8.0') || combined.includes('8mm') || rawId.includes('8.0') || rawId.includes('8mm')) {
-    return { normalizedId: 'spc-8.0mm', normalizedCategory: 'spc-vinyl', isAccessory: false };
+  if (combined.includes('8.0') || combined.includes('8mm') || combined.includes('xl-pulse') || combined.includes('xl_pulse') || combined.includes('s-') || rawId.includes('8.0') || rawId.includes('8mm') || rawId.includes('s-01')) {
+    return { normalizedId: 'spc-xl-pulse', normalizedCategory: 'spc-vinyl', isAccessory: false };
   }
 
   const category = (rawCategory || 'spc-vinyl') as CategoryId;
-  return { normalizedId: rawId, normalizedCategory: category, isAccessory: false };
+  return { normalizedId: 'spc-pulse-select', normalizedCategory: category, isAccessory: false };
 }
 
 // Parse CSV text from Google Sheet into Product objects

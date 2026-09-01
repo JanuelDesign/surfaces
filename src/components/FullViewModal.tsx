@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ZoomIn, ZoomOut, RotateCcw, Eye, Layers } from 'lucide-react';
 import { Product, ProductColor } from '../types';
-import { generatePlankSVG, generateRoomSceneSVG, BASEBOARD_IMAGES, MOLDING_IMAGES, STAIR_PROFILES } from '../utils/imageCatalog';
+import { generatePlankSVG, generateRoomSceneSVG } from '../utils/imageCatalog';
 import { formatImageUrl } from '../utils/imageUrlFormatter';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -26,8 +26,6 @@ export const FullViewModal: React.FC<Props> = ({
   const [activeColor, setActiveColor] = useState<ProductColor>(selectedColor);
   const [imgLoadError, setImgLoadError] = useState(false);
 
-  const isAccessory = ['baseboards', 'moldings', 'stair-steps'].includes(product.category);
-
   // Generate or get image sources (prioritize real photo URL if available)
   const customPlankPhoto = formatImageUrl(activeColor.image);
   const customRoomPhoto = formatImageUrl(activeColor.roomImage);
@@ -45,69 +43,15 @@ export const FullViewModal: React.FC<Props> = ({
     'living'
   );
 
-  // For accessories
-  const getAccessoryData = () => {
-    const searchStr = `${product.id} ${product.name} ${activeColor.name} ${activeColor.code || ''} ${product.subtitle || ''}`.toLowerCase();
-
-    if (product.category === 'baseboards') {
-      if (searchStr.includes('bb1x6') && (searchStr.includes('18mm') || searchStr.includes('heavy') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x6-18mm'];
-      if (searchStr.includes('bb1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
-      if (searchStr.includes('bb1x4') && (searchStr.includes('18mm') || searchStr.includes('thick') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x4-18mm'];
-      if (searchStr.includes('bb1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
-      if (searchStr.includes('bb1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
-      if (searchStr.includes('5180')) return BASEBOARD_IMAGES['BB5180'];
-      if (searchStr.includes('618')) return BASEBOARD_IMAGES['BB618'];
-      if (searchStr.includes('620')) return BASEBOARD_IMAGES['BB620'];
-      if (searchStr.includes('eps')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
-      if (searchStr.includes('round') || searchStr.includes('quarter') || searchStr.includes('bocel')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
-      if (searchStr.includes('square') || searchStr.includes('1x1') || searchStr.includes('mdf')) return BASEBOARD_IMAGES['Square1x1-MDF'];
-      return BASEBOARD_IMAGES['BB1x6-14mm'];
-    }
-    if (product.category === 'moldings') {
-      if (searchStr.includes('cm') && (searchStr.includes('reducer') || searchStr.includes('desnivel') || searchStr.includes('reductor'))) return MOLDING_IMAGES['CM-Reducer'];
-      if (searchStr.includes('cm') && (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding'))) return MOLDING_IMAGES['CM-TMolding'];
-      if (searchStr.includes('end cap') || searchStr.includes('endcap') || searchStr.includes('remate')) return MOLDING_IMAGES['EndCap'];
-      if (searchStr.includes('reducer') || searchStr.includes('reductor')) return MOLDING_IMAGES['Standard-Reducer'];
-      if (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding')) return MOLDING_IMAGES['Standard-TMolding'];
-      return MOLDING_IMAGES['CM-TMolding'];
-    }
-    if (product.category === 'stair-steps') {
-      if (searchStr.includes('double') || searchStr.includes('doble') || searchStr.includes('round')) return STAIR_PROFILES['DoubleRounded'];
-      if (searchStr.includes('square') || searchStr.includes('cuadrad')) return STAIR_PROFILES['SquareStep'];
-      if (searchStr.includes('full') || searchStr.includes('completo')) return STAIR_PROFILES['FullStep'];
-      if (searchStr.includes('regular') || searchStr.includes('riser')) return STAIR_PROFILES['RegularStep'];
-      return STAIR_PROFILES['DoubleRounded'];
-    }
-    return null;
-  };
-
-  const accessoryData = isAccessory ? getAccessoryData() : null;
-  const accessoryPhoto = customPlankPhoto || formatImageUrl(accessoryData?.photoUrl);
-  const accessoryRoom = customRoomPhoto || formatImageUrl((accessoryData as any)?.roomUrl) || fallbackRoomSvg;
-  const blueprintSvg = accessoryData?.profileSvg || fallbackPlankSvg;
-
   let currentDisplayImage = '';
   let fallbackImage = '';
 
-  if (product.category === 'baseboards') {
-    currentDisplayImage = accessoryPhoto || blueprintSvg;
-    fallbackImage = blueprintSvg;
-  } else if (product.category === 'moldings' || product.category === 'stair-steps') {
-    if (viewMode === 'room') {
-      currentDisplayImage = accessoryRoom;
-      fallbackImage = fallbackRoomSvg;
-    } else {
-      currentDisplayImage = accessoryPhoto || blueprintSvg;
-      fallbackImage = blueprintSvg;
-    }
+  if (viewMode === 'room') {
+    currentDisplayImage = customRoomPhoto || customPlankPhoto || fallbackRoomSvg;
+    fallbackImage = fallbackRoomSvg;
   } else {
-    if (viewMode === 'room') {
-      currentDisplayImage = customRoomPhoto || fallbackRoomSvg;
-      fallbackImage = fallbackRoomSvg;
-    } else {
-      currentDisplayImage = customPlankPhoto || fallbackPlankSvg;
-      fallbackImage = fallbackPlankSvg;
-    }
+    currentDisplayImage = customPlankPhoto || fallbackPlankSvg;
+    fallbackImage = fallbackPlankSvg;
   }
 
   useEffect(() => {
@@ -244,9 +188,10 @@ export const FullViewModal: React.FC<Props> = ({
           <div className="flex items-center gap-2 overflow-x-auto py-1">
             {product.colors.map((col, idx) => {
               const isActive = activeColor.name === col.name;
+              const keyId = col.id || col.code || `${product.id}-${col.name}-${idx}`;
               return (
                 <button
-                  key={col.name + idx}
+                  key={keyId}
                   onClick={() => handleColorPick(col)}
                   title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer ${

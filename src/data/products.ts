@@ -1,5 +1,92 @@
 import { Category, Product } from '../types';
 
+// SPC Pulse Select Images
+import imgPS01Plank from '../images/products/spc/pulse-select/plank_1_moody_gray.webp';
+import imgPS01Room from '../images/mockups/pulse-select/room_1_moody_gray.webp';
+import imgPS02Plank from '../images/products/spc/pulse-select/plank_2_fearless_gray.webp';
+import imgPS02Room from '../images/mockups/pulse-select/room_2_fearless_gray.webp';
+import imgPS03Plank from '../images/products/spc/pulse-select/plank_3_trustable_oak.webp';
+import imgPS03Room from '../images/mockups/pulse-select/room_3_trustable_oak.webp';
+import imgPS04Plank from '../images/products/spc/pulse-select/plank_4_grateful_pine.webp';
+import imgPS04Room from '../images/mockups/pulse-select/room_4_grateful_pine.webp';
+import imgPS05Plank from '../images/products/spc/pulse-select/plank_5_vital_oak.webp';
+import imgPS05Room from '../images/mockups/pulse-select/room_5_vital_oak.webp';
+import imgPS09Plank from '../images/products/spc/pulse-select/plank_9_polar_pearl.webp';
+import imgPS09Room from '../images/mockups/pulse-select/room_9_polar_pearl.webp';
+import imgPS10Plank from '../images/products/spc/pulse-select/plank_10_serenity_oak.webp';
+import imgPS10Room from '../images/mockups/pulse-select/room_10_serenity_oak.webp';
+import imgPS11Plank from '../images/products/spc/pulse-select/plank_11_classic_walnut.webp';
+import imgPS11Room from '../images/mockups/pulse-select/room_11_classic_walnut.webp';
+import imgPS12Plank from '../images/products/spc/pulse-select/plank_12_oregon_vintage.webp';
+import imgPS12Room from '../images/mockups/pulse-select/room_12_oregon_vintage.webp';
+import imgPS13Plank from '../images/products/spc/pulse-select/plank_13_harmony_gray.webp';
+import imgPS13Room from '../images/mockups/pulse-select/room_13_harmony_gray.webp';
+
+// SPC Pulse Shield XL Images
+import imgPSX02Plank from '../images/products/spc/pulse-shield-xl/plank_2_golden_honey.webp';
+import imgPSX02Room from '../images/mockups/pulse-shield-xl/room_2_golden_honey.webp';
+import imgPSX04Plank from '../images/products/spc/pulse-shield-xl/plank_4_n_gray.webp';
+import imgPSX04Room from '../images/mockups/pulse-shield-xl/room_4_n_gray.webp';
+import imgPSX05Plank from '../images/products/spc/pulse-shield-xl/plank_5_variation_gray.webp';
+import imgPSX05Room from '../images/mockups/pulse-shield-xl/room_5_variation_gray.webp';
+import imgPSX06Plank from '../images/products/spc/pulse-shield-xl/plank_6_oak_blossom.webp';
+import imgPSX06Room from '../images/mockups/pulse-shield-xl/room_6_oak_blossom.webp';
+import imgPSX07Plank from '../images/products/spc/pulse-shield-xl/plank_7_maple.webp';
+import imgPSX07Room from '../images/mockups/pulse-shield-xl/room_7_maple.webp';
+
+// SPC XL Pulse Images
+import imgXLP01Plank from '../images/products/spc/xl-pulse/plank_1_liv_oak.webp';
+import imgXLP01Room from '../images/mockups/xl-pulse/room_1_liv_oak.webp';
+import imgXLP02Plank from '../images/products/spc/xl-pulse/plank_2_kirsche_oak.webp';
+import imgXLP02Room from '../images/mockups/xl-pulse/room_2_kirsche_oak.webp';
+import imgXLP03Plank from '../images/products/spc/xl-pulse/plank_3_hygge_gray.webp';
+import imgXLP03Room from '../images/mockups/xl-pulse/room_3_hygge_gray.webp';
+import imgXLP05Plank from '../images/products/spc/xl-pulse/plank_5_serenity_oak.webp';
+import imgXLP05Room from '../images/mockups/xl-pulse/room_5_serenity_oak.webp';
+import imgXLP06Plank from '../images/products/spc/xl-pulse/plank_6_japandi_oak.webp';
+import imgXLP06Room from '../images/mockups/xl-pulse/room_6_japandi_oak.webp';
+import imgXLP08Plank from '../images/products/spc/xl-pulse/plank_8_chic_dark.webp';
+import imgXLP08Room from '../images/mockups/xl-pulse/room_8_chic_dark.webp';
+import imgXLP09Plank from '../images/products/spc/xl-pulse/plank_9_silver_oak.webp';
+import imgXLP09Room from '../images/mockups/xl-pulse/room_9_silver_oak.webp';
+import imgXLP10Plank from '../images/products/spc/xl-pulse/plank_10_toupe_oak.webp';
+import imgXLP10Room from '../images/mockups/xl-pulse/room_10_toupe_oak.webp';
+import imgXLP11Plank from '../images/products/spc/xl-pulse/plank_11_jewel_oak.webp';
+import imgXLP11Room from '../images/mockups/xl-pulse/room_11_jewel_oak.webp';
+import imgXLP12Plank from '../images/products/spc/xl-pulse/plank_12_cherry_xl.webp';
+import imgXLP12Room from '../images/mockups/xl-pulse/room_12_cherry_xl.webp';
+
+// Stair Steps Images
+import imgStepDoubleRoundPhoto from '../images/products/steps/steps_double_rounded.webp';
+import imgStepDoubleRoundRoom from '../images/products/steps/room_steps_double_rounded.webp';
+import imgStepSquarePhoto from '../images/products/steps/steps_square_step.webp';
+import imgStepSquareRoom from '../images/products/steps/room_steps_square_step.webp';
+
+// Moldings Images
+import imgMoldingCMTPhoto from '../images/products/moldings/moldings_cm_t_molding.webp';
+import imgMoldingCMTRoom from '../images/products/moldings/room_moldings_cm_t_molding.webp';
+import imgMoldingCMRPhoto from '../images/products/moldings/moldings_cm_reducer.webp';
+import imgMoldingCMRRoom from '../images/products/moldings/room_moldings_cm_reducer.webp';
+import imgMoldingTPhoto from '../images/products/moldings/moldings_t_molding.webp';
+import imgMoldingTRoom from '../images/products/moldings/room_moldings_t_molding.webp';
+import imgMoldingRPhoto from '../images/products/moldings/moldings_reducer.webp';
+import imgMoldingRRoom from '../images/products/moldings/room_moldings_reducer.webp';
+import imgMoldingEndCapPhoto from '../images/products/moldings/moldings_end_cap.webp';
+import imgMoldingEndCapRoom from '../images/products/moldings/room_moldings_end_cap.webp';
+
+// Baseboards Images
+import imgBB1x6_14 from '../images/products/baseboards/baseboards_bb1x6_pine_14mm.webp';
+import imgBB1x6_18 from '../images/products/baseboards/baseboards_bb1x6_pine_18mm.webp';
+import imgBB1x4_14 from '../images/products/baseboards/baseboards_bb1x4_pine_14mm.webp';
+import imgBB1x4_18 from '../images/products/baseboards/baseboards_bb1x4_pine_18mm.webp';
+import imgBB1x3_18 from '../images/products/baseboards/baseboards_bb1x3_pine_18mm.webp';
+import imgBB1x3_18_alt from '../images/products/baseboards/baseboards_bb1x3_pine_18mm-1.webp';
+import imgBB5180 from '../images/products/baseboards/baseboards_bb5180_pine_14mm.webp';
+import imgBB620 from '../images/products/baseboards/baseboards_bb620_pine_18mm.webp';
+import imgQREPS from '../images/products/baseboards/baseboards_quarter_round_eps_waterproof.webp';
+import imgQRPine from '../images/products/baseboards/baseboards_quarter_round_pine_mdf.webp';
+import imgSquare1x1 from '../images/products/baseboards/baseboards_square 1x1_mdf.webp';
+
 export const CATEGORIES: Category[] = [
   {
     id: 'spc-vinyl',
@@ -62,16 +149,16 @@ export const PRODUCTS: Product[] = [
       features: ['100% Waterproof', 'Pet Friendly', 'Scratch Resistant', 'FloorScore Certified', 'High Density Core'],
     },
     colors: [
-      { name: '05', code: '05', hexColor: '#d6c09b', secondaryHex: '#c2a87d', patternType: 'wood' },
-      { name: '04', code: '04', hexColor: '#c7b28e', secondaryHex: '#a98f65', patternType: 'wood' },
-      { name: '01', code: '01', hexColor: '#5c6368', secondaryHex: '#3e4448', patternType: 'wood' },
-      { name: '09', code: '09', hexColor: '#e4e3df', secondaryHex: '#cbc9c3', patternType: 'wood' },
-      { name: '10', code: '10', hexColor: '#d8c7b0', secondaryHex: '#bfab90', patternType: 'wood' },
-      { name: '11', code: '11', hexColor: '#7b6348', secondaryHex: '#5e4832', patternType: 'wood' },
-      { name: '02', code: '02', hexColor: '#96999a', secondaryHex: '#73777a', patternType: 'wood' },
-      { name: '03', code: '03', hexColor: '#cfbea0', secondaryHex: '#ad9b7d', patternType: 'wood' },
-      { name: '07', code: '07', hexColor: '#9c5a35', secondaryHex: '#7a3e1e', patternType: 'wood' },
-      { name: '13', code: '13', hexColor: '#a7957b', secondaryHex: '#806e57', patternType: 'wood' },
+      { name: '05', code: '05', hexColor: '#d6c09b', secondaryHex: '#c2a87d', patternType: 'wood', image: imgPS05Plank, roomImage: imgPS05Room },
+      { name: '04', code: '04', hexColor: '#c7b28e', secondaryHex: '#a98f65', patternType: 'wood', image: imgPS04Plank, roomImage: imgPS04Room },
+      { name: '01', code: '01', hexColor: '#5c6368', secondaryHex: '#3e4448', patternType: 'wood', image: imgPS01Plank, roomImage: imgPS01Room },
+      { name: '09', code: '09', hexColor: '#e4e3df', secondaryHex: '#cbc9c3', patternType: 'wood', image: imgPS09Plank, roomImage: imgPS09Room },
+      { name: '10', code: '10', hexColor: '#d8c7b0', secondaryHex: '#bfab90', patternType: 'wood', image: imgPS10Plank, roomImage: imgPS10Room },
+      { name: '11', code: '11', hexColor: '#7b6348', secondaryHex: '#5e4832', patternType: 'wood', image: imgPS11Plank, roomImage: imgPS11Room },
+      { name: '02', code: '02', hexColor: '#96999a', secondaryHex: '#73777a', patternType: 'wood', image: imgPS02Plank, roomImage: imgPS02Room },
+      { name: '03', code: '03', hexColor: '#cfbea0', secondaryHex: '#ad9b7d', patternType: 'wood', image: imgPS03Plank, roomImage: imgPS03Room },
+      { name: '12', code: '12', hexColor: '#a15d38', secondaryHex: '#7f411f', patternType: 'wood', image: imgPS12Plank, roomImage: imgPS12Room },
+      { name: '13', code: '13', hexColor: '#a7957b', secondaryHex: '#806e57', patternType: 'wood', image: imgPS13Plank, roomImage: imgPS13Room },
     ],
     handSamplesAvailable: true,
     featured: true,
@@ -103,11 +190,11 @@ export const PRODUCTS: Product[] = [
       features: ['Formato XL Gran Amplitud', '100% Impermeable', 'Pet Friendly', 'Resistente a Rayones'],
     },
     colors: [
-      { name: '02', code: '02', hexColor: '#dfc39a', secondaryHex: '#c7a372', patternType: 'wood' },
-      { name: '04', code: '04', hexColor: '#bcc1c7', secondaryHex: '#9da3ab', patternType: 'wood' },
-      { name: '06', code: '06', hexColor: '#bfa780', secondaryHex: '#99815c', patternType: 'wood' },
-      { name: '07', code: '07', hexColor: '#ccb186', secondaryHex: '#a98c5f', patternType: 'wood' },
-      { name: '08', code: '08', hexColor: '#8a8d8e', secondaryHex: '#6d7072', patternType: 'wood' },
+      { name: '02', code: '02', hexColor: '#dfc39a', secondaryHex: '#c7a372', patternType: 'wood', image: imgPSX02Plank, roomImage: imgPSX02Room },
+      { name: '04', code: '04', hexColor: '#bcc1c7', secondaryHex: '#9da3ab', patternType: 'wood', image: imgPSX04Plank, roomImage: imgPSX04Room },
+      { name: '05', code: '05', hexColor: '#7a7671', secondaryHex: '#5c5853', patternType: 'wood', image: imgPSX05Plank, roomImage: imgPSX05Room },
+      { name: '06', code: '06', hexColor: '#bfa780', secondaryHex: '#99815c', patternType: 'wood', image: imgPSX06Plank, roomImage: imgPSX06Room },
+      { name: '07', code: '07', hexColor: '#ccb186', secondaryHex: '#a98c5f', patternType: 'wood', image: imgPSX07Plank, roomImage: imgPSX07Room },
     ],
     handSamplesAvailable: true,
     featured: true,
@@ -139,16 +226,16 @@ export const PRODUCTS: Product[] = [
       features: ['22 Mil Wear Layer', 'Aislamiento Acústico Superior 2mm EVA', 'Anti-Manchas', 'Textura Real Wood'],
     },
     colors: [
-      { name: '01', code: '01', hexColor: '#d3c2a3', secondaryHex: '#b4a07d', patternType: 'wood' },
-      { name: '02', code: '02', hexColor: '#b9957d', secondaryHex: '#99745b', patternType: 'wood' },
-      { name: '03', code: '03', hexColor: '#e3dfd7', secondaryHex: '#cac4ba', patternType: 'wood' },
-      { name: '05', code: '05', hexColor: '#d6c4a8', secondaryHex: '#b9a485', patternType: 'wood' },
-      { name: '06', code: '06', hexColor: '#ded2bc', secondaryHex: '#c2b399', patternType: 'wood' },
-      { name: '08', code: '08', hexColor: '#4f5052', secondaryHex: '#353637', patternType: 'wood' },
-      { name: '09', code: '09', hexColor: '#c8cbd0', secondaryHex: '#aab0b8', patternType: 'wood' },
-      { name: '10', code: '10', hexColor: '#8a765d', secondaryHex: '#6d5a42', patternType: 'wood' },
-      { name: '11', code: '11', hexColor: '#eeebe5', secondaryHex: '#ded8cf', patternType: 'wood' },
-      { name: '12', code: '12', hexColor: '#a15d38', secondaryHex: '#7f411f', patternType: 'wood' },
+      { name: '01', code: '01', hexColor: '#d3c2a3', secondaryHex: '#b4a07d', patternType: 'wood', image: imgXLP01Plank, roomImage: imgXLP01Room },
+      { name: '02', code: '02', hexColor: '#b9957d', secondaryHex: '#99745b', patternType: 'wood', image: imgXLP02Plank, roomImage: imgXLP02Room },
+      { name: '03', code: '03', hexColor: '#e3dfd7', secondaryHex: '#cac4ba', patternType: 'wood', image: imgXLP03Plank, roomImage: imgXLP03Room },
+      { name: '05', code: '05', hexColor: '#d6c4a8', secondaryHex: '#b9a485', patternType: 'wood', image: imgXLP05Plank, roomImage: imgXLP05Room },
+      { name: '06', code: '06', hexColor: '#ded2bc', secondaryHex: '#c2b399', patternType: 'wood', image: imgXLP06Plank, roomImage: imgXLP06Room },
+      { name: '08', code: '08', hexColor: '#4f5052', secondaryHex: '#353637', patternType: 'wood', image: imgXLP08Plank, roomImage: imgXLP08Room },
+      { name: '09', code: '09', hexColor: '#c8cbd0', secondaryHex: '#aab0b8', patternType: 'wood', image: imgXLP09Plank, roomImage: imgXLP09Room },
+      { name: '10', code: '10', hexColor: '#8a765d', secondaryHex: '#6d5a42', patternType: 'wood', image: imgXLP10Plank, roomImage: imgXLP10Room },
+      { name: '11', code: '11', hexColor: '#eeebe5', secondaryHex: '#ded8cf', patternType: 'wood', image: imgXLP11Plank, roomImage: imgXLP11Room },
+      { name: '12', code: '12', hexColor: '#a15d38', secondaryHex: '#7f411f', patternType: 'wood', image: imgXLP12Plank, roomImage: imgXLP12Room },
     ],
     handSamplesAvailable: true,
     featured: true,
@@ -172,6 +259,7 @@ export const PRODUCTS: Product[] = [
       material: 'SPC Rigid Core & High Density Laminate',
       height: '1-3/4" x 1-1/2" (Double) / 1-3/4" x 1-3/8" (Square)',
       length: '48" / 60" / Medidas personalizadas',
+      compatibleWith: 'Pisos SPC 5.5mm, 6.0mm, 8.0mm & Laminados',
       installation: 'Direct Glue-down & Ensamble Click con huella y contrahuella',
       finished: 'Satin Anti-Slip Real Touch',
       warrantyResidential: '30 Años Heavy Residential',
@@ -190,6 +278,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#d6c09b',
         secondaryHex: '#c2a87d',
         patternType: 'wood',
+        image: imgStepDoubleRoundPhoto,
+        roomImage: imgStepDoubleRoundRoom,
       },
       {
         name: 'Square Step (90°)',
@@ -197,6 +287,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#c7b28e',
         secondaryHex: '#a98f65',
         patternType: 'wood',
+        image: imgStepSquarePhoto,
+        roomImage: imgStepSquareRoom,
       },
       {
         name: 'Full Step Monolítico',
@@ -204,6 +296,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#5c6368',
         secondaryHex: '#3e4448',
         patternType: 'wood',
+        image: imgStepDoubleRoundPhoto,
+        roomImage: imgStepDoubleRoundRoom,
       },
       {
         name: 'Regular Step con Riser',
@@ -211,6 +305,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#965a31',
         secondaryHex: '#7a3e1e',
         patternType: 'wood',
+        image: imgStepSquarePhoto,
+        roomImage: imgStepSquareRoom,
       },
     ],
     handSamplesAvailable: true,
@@ -234,6 +330,7 @@ export const PRODUCTS: Product[] = [
     specs: {
       material: 'Aluminio / Núcleo de Alta Densidad Recubierto en SPC/Laminado',
       plankSize: '1-3/4” x 3/8” / 1-3/4" x 1/4" (Largo: 94")',
+      compatibleWith: 'Pisos SPC Vinyl & Laminados',
       installation: 'Riel base atornillado o fijación con adhesivo de montaje',
       finished: 'Satin Match Decors',
       warrantyResidential: '30 Años Heavy Residential',
@@ -252,6 +349,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#cfbea0',
         secondaryHex: '#ad9b7d',
         patternType: 'wood',
+        image: imgMoldingCMTPhoto,
+        roomImage: imgMoldingCMTRoom,
       },
       {
         name: 'CM Reducer (1-3/4" x 3/8")',
@@ -259,6 +358,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#d6c09b',
         secondaryHex: '#c2a87d',
         patternType: 'wood',
+        image: imgMoldingCMRPhoto,
+        roomImage: imgMoldingCMRRoom,
       },
       {
         name: 'Standard T-Molding (1-3/4" x 1/4")',
@@ -266,6 +367,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#bfa780',
         secondaryHex: '#99815c',
         patternType: 'wood',
+        image: imgMoldingTPhoto,
+        roomImage: imgMoldingTRoom,
       },
       {
         name: 'Standard Reducer (1-3/4" x 3/8")',
@@ -273,6 +376,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#c7b28e',
         secondaryHex: '#a98f65',
         patternType: 'wood',
+        image: imgMoldingRPhoto,
+        roomImage: imgMoldingRRoom,
       },
       {
         name: 'End Cap / Remate (1-3/8" x 3/8")',
@@ -280,6 +385,8 @@ export const PRODUCTS: Product[] = [
         hexColor: '#d0d1cc',
         secondaryHex: '#b5b7b0',
         patternType: 'wood',
+        image: imgMoldingEndCapPhoto,
+        roomImage: imgMoldingEndCapRoom,
       },
     ],
     handSamplesAvailable: true,
@@ -290,7 +397,7 @@ export const PRODUCTS: Product[] = [
   },
 
   // ==========================================
-  // 4. UNIFIED BASEBOARDS & TRIMS COLLECTION (1 CONSOLIDATED CARD)
+  // 4. UNIFIED BASEBOARDS & TRIMS COLLECTION (1 CONSOLIDATED CARD WITH 12 MODELS)
   // ==========================================
   {
     id: 'baseboards-collection',
@@ -304,6 +411,7 @@ export const PRODUCTS: Product[] = [
       material: 'Pino Finger-Joint Pre-Pintado / Polímero EPS / MDF Hidrófugo',
       totalThickness: '14 mm (9/16") / 18 mm (11/16")',
       plankSize: 'Tiras de 16 ft / 17 ft / 12 ft / 8 ft',
+      compatibleWith: 'Todo tipo de pisos y muros interiores',
       installation: 'Clavadora neumática & Adhesivo de montaje',
       finished: 'Blanco Pre-Pintado Liso Listo para Instalar',
       warrantyResidential: '30 Años Heavy Residential',
@@ -321,13 +429,15 @@ export const PRODUCTS: Product[] = [
         hexColor: '#f8fafc',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgBB1x6_14,
       },
       {
         name: 'BB1x6 Pine Heavy (18mm / 11/16" - 16ft)',
         code: 'BB1x6 18mm',
-        hexColor: '#f8fafc',
-        secondaryHex: '#e2e8f0',
+        hexColor: '#f1f5f9',
+        secondaryHex: '#cbd5e1',
         patternType: 'solid',
+        image: imgBB1x6_18,
       },
       {
         name: 'BB1x4 Pine (14mm / 9/16" - 17ft)',
@@ -335,20 +445,31 @@ export const PRODUCTS: Product[] = [
         hexColor: '#f8fafc',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgBB1x4_14,
       },
       {
         name: 'BB1x4 Pine Thick (18mm / 11/16" - 17ft)',
         code: 'BB1x4 18mm',
-        hexColor: '#f8fafc',
-        secondaryHex: '#e2e8f0',
+        hexColor: '#f1f5f9',
+        secondaryHex: '#cbd5e1',
         patternType: 'solid',
+        image: imgBB1x4_18,
       },
       {
-        name: 'BB1x3 Pine Low-Profile (18mm - 17ft)',
-        code: 'BB1x3 18mm',
+        name: 'BB1x3 Pine Low-Profile (18mm / 1-1/2" - 17ft)',
+        code: 'BB1x3 1.5"',
         hexColor: '#f8fafc',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgBB1x3_18,
+      },
+      {
+        name: 'BB1x3 Pine Low-Profile (18mm / 2-1/2" - 17ft)',
+        code: 'BB1x3 2.5"',
+        hexColor: '#f8fafc',
+        secondaryHex: '#e2e8f0',
+        patternType: 'solid',
+        image: imgBB1x3_18_alt,
       },
       {
         name: 'BB5180 Colonial Pine (5 1/4" - 16ft)',
@@ -356,6 +477,7 @@ export const PRODUCTS: Product[] = [
         hexColor: '#f8fafc',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgBB5180,
       },
       {
         name: 'BB618 Curved Pine (5 1/2" - 16ft)',
@@ -363,6 +485,7 @@ export const PRODUCTS: Product[] = [
         hexColor: '#f8fafc',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgBB1x6_14,
       },
       {
         name: 'BB620 Traditional Pine (3 1/4" - 16ft)',
@@ -370,6 +493,7 @@ export const PRODUCTS: Product[] = [
         hexColor: '#f8fafc',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgBB620,
       },
       {
         name: 'Quarter Round EPS Waterproof (12ft)',
@@ -377,13 +501,15 @@ export const PRODUCTS: Product[] = [
         hexColor: '#ffffff',
         secondaryHex: '#f1f5f9',
         patternType: 'solid',
+        image: imgQREPS,
       },
       {
-        name: 'Quarter Round Pine (16ft)',
+        name: 'Quarter Round Pine / MDF (16ft)',
         code: 'Pine QR',
         hexColor: '#ffffff',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgQRPine,
       },
       {
         name: 'Square 1x1 MDF Base Shoe (8ft)',
@@ -391,6 +517,7 @@ export const PRODUCTS: Product[] = [
         hexColor: '#ffffff',
         secondaryHex: '#e2e8f0',
         patternType: 'solid',
+        image: imgSquare1x1,
       },
     ],
     handSamplesAvailable: true,

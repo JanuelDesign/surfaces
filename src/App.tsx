@@ -40,15 +40,20 @@ function AppContent() {
 
   const [catalogVersion, setCatalogVersion] = useState(0);
 
-  // Auto background synchronization with linked Google Sheet on app load
+  // Initialize and clean up any legacy cache on startup
   useEffect(() => {
-    syncFromGoogleSheets().then((res) => {
-      if (res.success) {
-        setCatalogVersion((v) => v + 1);
+    try {
+      const saved = localStorage.getItem('surfaces_custom_synced_products_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 6) {
+          localStorage.removeItem('surfaces_custom_synced_products_v1');
+          setCatalogVersion((v) => v + 1);
+        }
       }
-    }).catch(() => {
-      // silent background fallback
-    });
+    } catch (e) {
+      // silent
+    }
   }, []);
 
   const baseProducts = useMemo(() => {
@@ -58,7 +63,15 @@ function AppContent() {
       try {
         const custom = getStoredProducts();
         if (custom && custom.length > 0) {
-          return custom;
+          const seen = new Set<string>();
+          const unique: Product[] = [];
+          for (const p of custom) {
+            if (!seen.has(p.id)) {
+              seen.add(p.id);
+              unique.push(p);
+            }
+          }
+          return unique;
         }
       } catch (e) {
         console.error('Error loading custom products', e);

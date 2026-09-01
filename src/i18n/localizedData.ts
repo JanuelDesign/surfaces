@@ -101,6 +101,7 @@ const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
       material: 'SPC Rigid Core & High Density Laminate',
       height: '1-3/4" x 1-1/2" (Double) / 1-3/4" x 1-3/8" (Square)',
       length: '48" / 60" / Custom lengths',
+      compatibleWith: 'SPC 5.5mm, 6.0mm, 8.0mm & Laminates',
       installation: 'Direct Glue-down & Click Locking with tread & riser',
       finished: 'Satin Anti-Slip Real Touch',
       warrantyResidential: '30 Years Heavy Residential',
@@ -124,6 +125,7 @@ const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
     specs: {
       material: 'Aluminum / High Density SPC/Laminate Wrapped Core',
       plankSize: '1-3/4” x 3/8” / 1-3/4" x 1/4" (Length: 94")',
+      compatibleWith: 'SPC Vinyl & Laminate Flooring',
       installation: 'Screwed base track or direct construction adhesive',
       finished: 'Satin Match Decors',
       warrantyResidential: '30 Years Heavy Residential',
@@ -148,6 +150,7 @@ const PRODUCT_TRANSLATIONS_EN: Record<string, ProductTranslation> = {
       material: 'White Pre-Primed Finger-Joint Pine / EPS Polymer / Hydrophobic MDF',
       totalThickness: '14 mm (9/16") / 18 mm (11/16")',
       plankSize: 'Long 16 ft / 17 ft / 12 ft / 8 ft strips',
+      compatibleWith: 'All floor types & interior walls',
       installation: 'Brad nailer & Construction adhesive',
       finished: 'Smooth Pre-Primed White Ready to Install',
       warrantyResidential: '30 Years Heavy Residential',

@@ -67,6 +67,14 @@ export interface Translations {
     wearLayer: string;
     sqftBox: string;
     origin: string;
+    height: string;
+    size: string;
+    length: string;
+    material: string;
+    compatibleWith: string;
+    modelsOptions: string;
+    clickToSelect: string;
+    cadBlueprint: string;
     viewInVisualizer: string;
     addToQuote: string;
   };
@@ -102,6 +110,8 @@ export interface Translations {
     boxSqft: string;
     piecesBox: string;
     wearLayer: string;
+    compatibleWith: string;
+    surfaceFinish: string;
   };
   visualizer: {
     title: string;
@@ -355,6 +365,14 @@ export const translations: Record<Language, Translations> = {
       wearLayer: 'Wear Layer',
       sqftBox: 'Sq.Ft./Box',
       origin: 'Origin',
+      height: 'Height',
+      size: 'Size',
+      length: 'Length',
+      material: 'Material',
+      compatibleWith: 'Compatibility',
+      modelsOptions: 'Models / Options',
+      clickToSelect: 'Click to select',
+      cadBlueprint: 'CAD PROFILE BLUEPRINT',
       viewInVisualizer: 'Test in 3D Visualizer',
       addToQuote: 'Add to Quote',
     },
@@ -390,6 +408,8 @@ export const translations: Record<Language, Translations> = {
       boxSqft: 'Sq.Ft. per Box',
       piecesBox: 'Pieces / Box',
       wearLayer: 'Wear Layer',
+      compatibleWith: 'Compatibility',
+      surfaceFinish: 'Surface Finish',
     },
     visualizer: {
       title: '3D Floor & Room Visualizer',
@@ -657,6 +677,14 @@ export const translations: Record<Language, Translations> = {
       wearLayer: 'Capa Uso',
       sqftBox: 'Sqft/Caja',
       origin: 'Origen',
+      height: 'Alto',
+      size: 'Medida',
+      length: 'Largo',
+      material: 'Material',
+      compatibleWith: 'Compatibilidad',
+      modelsOptions: 'Modelos / Opciones',
+      clickToSelect: 'Toca para cambiar',
+      cadBlueprint: 'PLANO DE PERFIL CAD',
       viewInVisualizer: 'Probar en Visualizador 3D',
       addToQuote: 'Cotizar',
     },
@@ -692,6 +720,8 @@ export const translations: Record<Language, Translations> = {
       boxSqft: 'Sq.Ft. por Caja',
       piecesBox: 'Piezas / Caja',
       wearLayer: 'Capa de Uso',
+      compatibleWith: 'Compatibilidad',
+      surfaceFinish: 'Acabado Superficial',
     },
     visualizer: {
       title: 'Visualizador 3D de Ambientes',

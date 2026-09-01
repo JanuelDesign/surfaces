@@ -4,15 +4,11 @@ import {
   Plus,
   Eye,
   Check,
-  Compass,
 } from 'lucide-react';
 import { Product, ProductColor } from '../types';
 import {
   generatePlankSVG,
   generateRoomSceneSVG,
-  BASEBOARD_IMAGES,
-  MOLDING_IMAGES,
-  STAIR_PROFILES,
 } from '../utils/imageCatalog';
 import { formatImageUrl } from '../utils/imageUrlFormatter';
 import { FullViewModal } from './FullViewModal';
@@ -49,8 +45,6 @@ export const ProductCard: React.FC<Props> = ({
     setTimeout(() => setSampleAddedFeedback(false), 1400);
   };
 
-  const isAccessory = ['baseboards', 'moldings', 'stair-steps'].includes(product.category);
-
   // Dynamic Image Generation or Photo URL
   const customPlankPhoto = formatImageUrl(selectedColor.image);
   const customRoomPhoto = formatImageUrl(selectedColor.roomImage);
@@ -68,73 +62,17 @@ export const ProductCard: React.FC<Props> = ({
     'living'
   );
 
-  const getAccessoryData = () => {
-    const searchStr = `${product.id} ${product.name} ${selectedColor.name} ${selectedColor.code || ''} ${product.subtitle || ''}`.toLowerCase();
-
-    if (product.category === 'baseboards') {
-      if (searchStr.includes('bb1x6') && (searchStr.includes('18mm') || searchStr.includes('heavy') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x6-18mm'];
-      if (searchStr.includes('bb1x6')) return BASEBOARD_IMAGES['BB1x6-14mm'];
-      if (searchStr.includes('bb1x4') && (searchStr.includes('18mm') || searchStr.includes('thick') || searchStr.includes('11/16'))) return BASEBOARD_IMAGES['BB1x4-18mm'];
-      if (searchStr.includes('bb1x4')) return BASEBOARD_IMAGES['BB1x4-14mm'];
-      if (searchStr.includes('bb1x3')) return BASEBOARD_IMAGES['BB1x3-18mm'];
-      if (searchStr.includes('5180')) return BASEBOARD_IMAGES['BB5180'];
-      if (searchStr.includes('618')) return BASEBOARD_IMAGES['BB618'];
-      if (searchStr.includes('620')) return BASEBOARD_IMAGES['BB620'];
-      if (searchStr.includes('eps')) return BASEBOARD_IMAGES['QuarterRound-EPS'];
-      if (searchStr.includes('round') || searchStr.includes('quarter') || searchStr.includes('bocel')) return BASEBOARD_IMAGES['QuarterRound-Pine'];
-      if (searchStr.includes('square') || searchStr.includes('1x1') || searchStr.includes('mdf')) return BASEBOARD_IMAGES['Square1x1-MDF'];
-      return BASEBOARD_IMAGES['BB1x6-14mm'];
-    }
-    if (product.category === 'moldings') {
-      if (searchStr.includes('cm') && (searchStr.includes('reducer') || searchStr.includes('desnivel') || searchStr.includes('reductor'))) return MOLDING_IMAGES['CM-Reducer'];
-      if (searchStr.includes('cm') && (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding'))) return MOLDING_IMAGES['CM-TMolding'];
-      if (searchStr.includes('end cap') || searchStr.includes('endcap') || searchStr.includes('remate')) return MOLDING_IMAGES['EndCap'];
-      if (searchStr.includes('reducer') || searchStr.includes('reductor')) return MOLDING_IMAGES['Standard-Reducer'];
-      if (searchStr.includes('t-molding') || searchStr.includes('t molding') || searchStr.includes('tmolding')) return MOLDING_IMAGES['Standard-TMolding'];
-      return MOLDING_IMAGES['CM-TMolding'];
-    }
-    if (product.category === 'stair-steps') {
-      if (searchStr.includes('double') || searchStr.includes('doble') || searchStr.includes('round')) return STAIR_PROFILES['DoubleRounded'];
-      if (searchStr.includes('square') || searchStr.includes('cuadrad')) return STAIR_PROFILES['SquareStep'];
-      if (searchStr.includes('full') || searchStr.includes('completo')) return STAIR_PROFILES['FullStep'];
-      if (searchStr.includes('regular') || searchStr.includes('riser')) return STAIR_PROFILES['RegularStep'];
-      return STAIR_PROFILES['DoubleRounded'];
-    }
-    return null;
-  };
-
-  const accessoryData = isAccessory ? getAccessoryData() : null;
-  const accessoryPhoto = customPlankPhoto || formatImageUrl(accessoryData?.photoUrl);
-  const accessoryRoom = customRoomPhoto || formatImageUrl((accessoryData as any)?.roomUrl) || fallbackRoomSvg;
-  const blueprintSvg = accessoryData?.profileSvg || fallbackPlankSvg;
-  const accessoryDimensions = (accessoryData as any)?.dimensions || ((accessoryData as any)?.thickness ? `${(accessoryData as any).thickness} • ${(accessoryData as any).height || ''}` : '');
-
-  // Determine which image to show in the top viewport based on product category & viewMode
+  // Exact same image logic for ALL products (SPC, Steps, Moldings, Baseboards):
+  // Uses the photo of the selected variant (first variant by default with ✓)
   let topDisplayImage = '';
   let fallbackImage = '';
 
-  if (product.category === 'baseboards') {
-    // Baseboards: SOLO PHOTO at top
-    topDisplayImage = accessoryPhoto || blueprintSvg;
-    fallbackImage = blueprintSvg;
-  } else if (product.category === 'moldings' || product.category === 'stair-steps') {
-    // Moldings & Steps: Photo vs Room mode
-    if (cardViewMode === 'room') {
-      topDisplayImage = accessoryRoom;
-      fallbackImage = fallbackRoomSvg;
-    } else {
-      topDisplayImage = accessoryPhoto || blueprintSvg;
-      fallbackImage = blueprintSvg;
-    }
+  if (cardViewMode === 'room') {
+    topDisplayImage = customRoomPhoto || customPlankPhoto || fallbackRoomSvg;
+    fallbackImage = fallbackRoomSvg;
   } else {
-    // SPC Vinyl Flooring: Plank vs Room mode
-    if (cardViewMode === 'room') {
-      topDisplayImage = customRoomPhoto || fallbackRoomSvg;
-      fallbackImage = fallbackRoomSvg;
-    } else {
-      topDisplayImage = customPlankPhoto || fallbackPlankSvg;
-      fallbackImage = fallbackPlankSvg;
-    }
+    topDisplayImage = customPlankPhoto || fallbackPlankSvg;
+    fallbackImage = fallbackPlankSvg;
   }
 
   useEffect(() => {
@@ -158,42 +96,40 @@ export const ProductCard: React.FC<Props> = ({
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
-          {/* Top Left: View Switcher - Only shown for Moldings, Steps & SPC Vinyl (Hidden for Baseboards) */}
-          {product.category !== 'baseboards' && (
-            <div
-              className="absolute top-2.5 left-2.5 flex bg-black/75 backdrop-blur-md p-0.5 rounded-lg border border-white/20 z-10"
-              onClick={(e) => e.stopPropagation()}
+          {/* Top Left: View Switcher (Plank/Photo vs Room) for ALL product cards */}
+          <div
+            className="absolute top-2.5 left-2.5 flex bg-black/75 backdrop-blur-md p-0.5 rounded-lg border border-white/20 z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => {
+                setImgLoadError(false);
+                setCardViewMode('plank');
+              }}
+              className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
+                cardViewMode === 'plank'
+                  ? 'bg-[#0B0B0B] text-white shadow-xs'
+                  : 'text-white/70 hover:text-white'
+              }`}
             >
-              <button
-                onClick={() => {
-                  setImgLoadError(false);
-                  setCardViewMode('plank');
-                }}
-                className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
-                  cardViewMode === 'plank'
-                    ? 'bg-[#0B0B0B] text-white shadow-xs'
-                    : 'text-white/70 hover:text-white'
-                }`}
-              >
-                {product.category === 'spc-vinyl'
-                  ? (language === 'en' ? 'Plank' : 'Plank')
-                  : (language === 'en' ? 'Photo' : 'Foto')}
-              </button>
-              <button
-                onClick={() => {
-                  setImgLoadError(false);
-                  setCardViewMode('room');
-                }}
-                className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
-                  cardViewMode === 'room'
-                    ? 'bg-[#0B0B0B] text-white shadow-xs'
-                    : 'text-white/70 hover:text-white'
-                }`}
-              >
-                {language === 'en' ? 'Room' : 'Ambiente'}
-              </button>
-            </div>
-          )}
+              {product.category === 'spc-vinyl'
+                ? (language === 'en' ? 'Plank' : 'Plank')
+                : (language === 'en' ? 'Photo' : 'Foto')}
+            </button>
+            <button
+              onClick={() => {
+                setImgLoadError(false);
+                setCardViewMode('room');
+              }}
+              className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition cursor-pointer ${
+                cardViewMode === 'room'
+                  ? 'bg-[#0B0B0B] text-white shadow-xs'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              {language === 'en' ? 'Room' : 'Ambiente'}
+            </button>
+          </div>
 
           {/* Top Right: Full View Lightbox Trigger */}
           <button
@@ -270,7 +206,7 @@ export const ProductCard: React.FC<Props> = ({
               )}
               {product.specs.height && (
                 <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{language === 'en' ? 'HEIGHT:' : 'ALTO:'}</span>
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.height')}:</span>
                   <span className="font-bold text-[#0B0B0B] truncate max-w-[90px]" title={product.specs.height}>
                     {product.specs.height}
                   </span>
@@ -278,9 +214,17 @@ export const ProductCard: React.FC<Props> = ({
               )}
               {product.specs.plankSize && (
                 <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{language === 'en' ? 'SIZE:' : 'MEDIDA:'}</span>
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.size')}:</span>
                   <span className="font-bold text-[#0B0B0B] truncate max-w-[90px]" title={product.specs.plankSize}>
                     {product.specs.plankSize.split('|')[0]}
+                  </span>
+                </div>
+              )}
+              {product.specs.length && (
+                <div className="bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.length')}:</span>
+                  <span className="font-bold text-[#0B0B0B] truncate max-w-[90px]" title={product.specs.length}>
+                    {product.specs.length.split('/')[0]}
                   </span>
                 </div>
               )}
@@ -290,51 +234,33 @@ export const ProductCard: React.FC<Props> = ({
                   <span className="font-bold text-[#0B0B0B]">{product.specs.sqftPerBox}</span>
                 </div>
               )}
-            </div>
-
-            {/* TECHNICAL CAD BLUEPRINT DIAGRAM DISPLAY FOR ALL ACCESSORIES (Baseboards, Moldings, Steps) */}
-            {isAccessory && (
-              <div className="my-2.5 p-2.5 rounded-xl bg-[#0F172A] border border-[#334155] text-white">
-                <div className="flex items-center justify-between text-[10px] font-mono mb-1.5 text-slate-300">
-                  <div className="flex items-center gap-1 font-bold text-sky-400">
-                    <Compass size={11} />
-                    <span>{language === 'en' ? 'CAD PROFILE BLUEPRINT' : 'PLANO DE PERFIL CAD'}</span>
-                  </div>
-                  <span className="text-slate-400 font-semibold truncate max-w-[120px]">
-                    {selectedColor.name}
+              {product.specs.compatibleWith && (
+                <div className="col-span-2 bg-[#F5F5F5] border border-[#D9D9D9] p-2 rounded-xl flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase text-[#6B6762]">{t('productCard.compatibleWith')}:</span>
+                  <span className="font-bold text-[#0B0B0B] truncate text-[10px] max-w-[200px]" title={product.specs.compatibleWith}>
+                    {product.specs.compatibleWith}
                   </span>
                 </div>
-                <div className="h-16 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center p-1 overflow-hidden">
-                  <img
-                    src={blueprintSvg}
-                    alt={`${selectedColor.name} CAD Profile`}
-                    className="max-h-full max-w-full object-contain filter drop-shadow-sm"
-                  />
-                </div>
-                {accessoryDimensions && (
-                  <div className="mt-1 text-[9px] font-mono text-slate-300 text-center">
-                    {language === 'en' ? 'Specs:' : 'Medidas:'} <span className="text-sky-300 font-semibold">{accessoryDimensions}</span>
-                  </div>
-                )}
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Color Palettes Swatch Strip */}
             <div>
               <div className="flex items-center justify-between text-[11px] font-medium text-[#6B6762] mb-1.5">
                 <span className="font-bold text-[#0B0B0B]">
-                  {language === 'en' ? `Models / Options (${product.colors.length}):` : `Modelos / Opciones (${product.colors.length}):`}
+                  {t('productCard.modelsOptions')} ({product.colors.length}):
                 </span>
                 <span className="text-[#BCBAB4] text-[10px]">
-                  {language === 'en' ? 'Click to select' : 'Toca para cambiar'}
+                  {t('productCard.clickToSelect')}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-1.5 max-h-20 overflow-y-auto pr-1">
                 {product.colors.map((col, idx) => {
                   const isCurrent = selectedColorIndex === idx;
+                  const keyId = col.id || col.code || `${product.id}-${col.name}-${idx}`;
                   return (
                     <button
-                      key={col.name + idx}
+                      key={keyId}
                       onClick={() => setSelectedColorIndex(idx)}
                       title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
                       className={`w-6 h-6 rounded-full border-2 transition-all relative cursor-pointer ${

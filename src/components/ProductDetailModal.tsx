@@ -140,13 +140,13 @@ export const ProductDetailModal: React.FC<Props> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-xs flex items-center justify-center p-0 sm:p-4 md:p-6">
         <div
-          className="bg-white w-full max-w-4xl rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D9D9D9] overflow-hidden flex flex-col max-h-[95vh] sm:max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
+          className="bg-white w-full h-full sm:h-auto sm:max-w-4xl rounded-none sm:rounded-3xl shadow-2xl border-0 sm:border border-[#D9D9D9] overflow-hidden flex flex-col max-h-[100dvh] sm:max-h-[92vh] animate-in fade-in zoom-in-95 duration-150"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Modal Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#D9D9D9] bg-[#F5F5F5]">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-[#D9D9D9] bg-[#F5F5F5] shrink-0">
             <div className="flex items-center gap-2.5 sm:gap-3">
               <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#0B0B0B]"></span>
               <div>
@@ -168,7 +168,7 @@ export const ProductDetailModal: React.FC<Props> = ({
           </div>
 
           {/* Modal Scrollable Content */}
-          <div className="p-3 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6">
+          <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-6 flex-1">
             {/* Top Hero: Visualizer + Plank / Room Switcher + Active Color Selector */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-start">
               {/* Visual Display Card */}

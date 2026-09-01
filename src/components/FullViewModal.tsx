@@ -65,51 +65,51 @@ export const FullViewModal: React.FC<Props> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl bg-[#121212] border border-[#262626] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black/95 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="relative w-full h-full sm:h-auto max-w-5xl bg-[#121212] border-0 sm:border border-[#262626] rounded-none sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[100dvh] sm:max-h-[95vh]">
         {/* Top Control Bar */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#1A1A1A] border-b border-[#262626] text-white z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-white"></div>
-            <div>
-              <h2 className="text-base sm:text-lg font-extrabold text-white flex items-center gap-2">
-                {product.name}
-                <span className="text-xs px-2 py-0.5 rounded-full bg-white text-[#0B0B0B] font-bold">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-[#1A1A1A] border-b border-[#262626] text-white z-10 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white shrink-0"></div>
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-lg font-extrabold text-white flex flex-wrap items-center gap-1.5 sm:gap-2 truncate">
+                <span className="truncate">{product.name}</span>
+                <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-white text-[#0B0B0B] font-bold shrink-0">
                   {product.category === 'spc-vinyl'
                     ? `Cod. ${activeColor.code || activeColor.name}`
                     : `${activeColor.name} ${activeColor.code && activeColor.code !== activeColor.name ? `(${activeColor.code})` : ''}`}
                 </span>
               </h2>
-              <p className="text-xs text-[#BCBAB4] font-mono">
+              <p className="text-[11px] sm:text-xs text-[#BCBAB4] font-mono truncate">
                 {product.name} • {product.specs.totalThickness || product.specs.wearLayer || ''}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* View Mode Toggle: Hidden for Baseboards */}
             {product.category !== 'baseboards' && (
-              <div className="flex bg-[#262626] p-1 rounded-xl border border-[#383838]">
+              <div className="flex bg-[#262626] p-0.5 sm:p-1 rounded-xl border border-[#383838]">
                 <button
                   onClick={() => setViewMode('plank')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                     viewMode === 'plank'
                       ? 'bg-white text-[#0B0B0B] shadow-xs'
                       : 'text-[#BCBAB4] hover:text-white'
                   }`}
                 >
-                  <Layers size={14} />
+                  <Layers size={13} />
                   <span>{product.category === 'spc-vinyl' ? (language === 'en' ? 'Plank' : 'Plank') : (language === 'en' ? 'Photo' : 'Foto')}</span>
                 </button>
                 <button
                   onClick={() => setViewMode('room')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition flex items-center gap-1 sm:gap-1.5 cursor-pointer ${
                     viewMode === 'room'
                       ? 'bg-white text-[#0B0B0B] shadow-xs'
                       : 'text-[#BCBAB4] hover:text-white'
                   }`}
                 >
-                  <Eye size={14} />
+                  <Eye size={13} />
                   <span>{language === 'en' ? 'Room' : 'Ambiente'}</span>
                 </button>
               </div>
@@ -146,7 +146,7 @@ export const FullViewModal: React.FC<Props> = ({
             {/* Close button */}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[#262626] rounded-full text-[#BCBAB4] hover:text-white transition cursor-pointer"
+              className="p-1.5 sm:p-2 hover:bg-[#262626] rounded-full text-[#BCBAB4] hover:text-white transition cursor-pointer"
             >
               <X size={20} />
             </button>
@@ -154,7 +154,7 @@ export const FullViewModal: React.FC<Props> = ({
         </div>
 
         {/* Main Full View Stage */}
-        <div className="relative flex-1 bg-black overflow-auto flex items-center justify-center p-4 min-h-[380px] sm:min-h-[500px]">
+        <div className="relative flex-1 bg-black overflow-auto flex items-center justify-center p-2 sm:p-4 min-h-[300px] sm:min-h-[500px]">
           <div
             className="transition-transform duration-200 ease-out flex items-center justify-center max-w-full max-h-full"
             style={{ transform: `scale(${zoomLevel})` }}
@@ -164,25 +164,25 @@ export const FullViewModal: React.FC<Props> = ({
               alt={`${product.name} - ${activeColor.name}`}
               referrerPolicy="no-referrer"
               onError={() => setImgLoadError(true)}
-              className="max-h-[70vh] max-w-full object-contain rounded-xl shadow-2xl border border-[#262626]"
+              className="max-h-[65vh] sm:max-h-[70vh] max-w-full object-contain rounded-lg sm:rounded-xl shadow-2xl border border-[#262626]"
             />
           </div>
 
           {/* Quick Details Floating Badge */}
-          <div className="absolute bottom-6 left-6 bg-black/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-[#333333] text-white pointer-events-none">
-            <div className="text-xs font-bold text-white">
+          <div className="absolute bottom-3 left-3 sm:bottom-6 sm:left-6 bg-black/80 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl border border-[#333333] text-white pointer-events-none max-w-[calc(100%-24px)]">
+            <div className="text-[11px] sm:text-xs font-bold text-white truncate">
               {activeColor.name} {activeColor.code && activeColor.code !== activeColor.name ? `(${activeColor.code})` : ''}
             </div>
-            <div className="text-[11px] text-[#BCBAB4] font-mono mt-0.5">
+            <div className="text-[10px] sm:text-[11px] text-[#BCBAB4] font-mono mt-0.5 truncate">
               {product.specs.plankSize || product.specs.wearLayer || ''} • {product.specs.installation || 'Waterproof'}
             </div>
           </div>
         </div>
 
         {/* Bottom Swatch Selector Bar */}
-        <div className="px-6 py-3 bg-[#1A1A1A] border-t border-[#262626] flex items-center justify-between gap-4 overflow-x-auto">
-          <div className="text-xs font-bold uppercase tracking-wider text-[#BCBAB4] shrink-0">
-            {language === 'en' ? `All Models / Options (${product.colors.length}):` : `Opciones / Modelos (${product.colors.length}):`}
+        <div className="px-4 sm:px-6 py-2.5 sm:py-3 bg-[#1A1A1A] border-t border-[#262626] flex items-center justify-between gap-3 sm:gap-4 overflow-x-auto shrink-0">
+          <div className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#BCBAB4] shrink-0">
+            {language === 'en' ? `Options (${product.colors.length}):` : `Opciones (${product.colors.length}):`}
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto py-1">
@@ -194,17 +194,17 @@ export const FullViewModal: React.FC<Props> = ({
                   key={keyId}
                   onClick={() => handleColorPick(col)}
                   title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer ${
+                  className={`flex items-center gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer ${
                     isActive
                       ? 'bg-white text-[#0B0B0B] border-white shadow-md font-bold'
                       : 'bg-[#262626] text-[#BCBAB4] border-[#383838] hover:border-white hover:text-white'
                   }`}
                 >
                   <span
-                    className="w-4 h-4 rounded-full border border-black/20 shrink-0"
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border border-black/20 shrink-0"
                     style={{ backgroundColor: col.hexColor }}
                   />
-                  <span className="text-xs">{col.name}</span>
+                  <span className="text-[11px] sm:text-xs">{col.name}</span>
                 </button>
               );
             })}

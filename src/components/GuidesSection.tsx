@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, X, Printer, CheckCircle } from 'lucide-react';
+import { FileText, Download, ExternalLink, X, Printer, Eye } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 export interface GuideItem {
@@ -8,7 +8,8 @@ export interface GuideItem {
   titleEs: string;
   subtitleEn: string;
   subtitleEs: string;
-  pdfUrl?: string;
+  pdfRawUrl: string;
+  githubUrl: string;
   summaryEn: string;
   summaryEs: string;
   keyPointsEn: string[];
@@ -22,7 +23,8 @@ export const GUIDES_DATA: GuideItem[] = [
     titleEs: 'Guía de Instalación',
     subtitleEn: 'Step by Step Guide',
     subtitleEs: 'Guía Paso a Paso',
-    pdfUrl: '/guides/installation-guide.pdf',
+    pdfRawUrl: 'https://raw.githubusercontent.com/JanuelDesign/quicksurfacesplanks/main/public/guides/installation-guide.pdf',
+    githubUrl: 'https://github.com/JanuelDesign/quicksurfacesplanks/blob/main/public/guides/installation-guide.pdf',
     summaryEn: 'Complete technical instructions for floating SPC rigid core flooring, stair treads, and architectural transitions.',
     summaryEs: 'Instrucciones técnicas completas para la instalación flotante de pisos SPC rigid core, gradas y molduras.',
     keyPointsEn: [
@@ -46,7 +48,8 @@ export const GUIDES_DATA: GuideItem[] = [
     titleEs: 'Guía de Mantenimiento',
     subtitleEn: 'Easy Maintenance',
     subtitleEs: 'Mantenimiento Sencillo',
-    pdfUrl: '/guides/maintenance-guide.pdf',
+    pdfRawUrl: 'https://raw.githubusercontent.com/JanuelDesign/quicksurfacesplanks/main/public/guides/maintenance-guide.pdf',
+    githubUrl: 'https://github.com/JanuelDesign/quicksurfacesplanks/blob/main/public/guides/maintenance-guide.pdf',
     summaryEn: 'Care and cleaning protocol to maintain the high-definition UV ceramic bead finish and lasting beauty.',
     summaryEs: 'Protocolo de limpieza y cuidado para proteger el acabado cerámico UV y conservar el brillo original.',
     keyPointsEn: [
@@ -70,7 +73,8 @@ export const GUIDES_DATA: GuideItem[] = [
     titleEs: 'Guía de Garantía',
     subtitleEn: 'Assured Tranquility',
     subtitleEs: 'Tranquilidad Asegurada',
-    pdfUrl: '/guides/warranty-guide.pdf',
+    pdfRawUrl: 'https://raw.githubusercontent.com/JanuelDesign/quicksurfacesplanks/main/public/guides/warranty-guide.pdf',
+    githubUrl: 'https://github.com/JanuelDesign/quicksurfacesplanks/blob/main/public/guides/warranty-guide.pdf',
     summaryEn: 'Comprehensive manufacturer warranty policy covering wear-layer integrity, waterproofing, and structural stability.',
     summaryEs: 'Póliza de garantía integral de fábrica que cubre la capa de uso, impermeabilidad y estabilidad estructural.',
     keyPointsEn: [
@@ -93,14 +97,13 @@ export const GuidesSection: React.FC = () => {
   const isEn = language === 'en';
   const [activeModalGuide, setActiveModalGuide] = useState<GuideItem | null>(null);
 
-  const handleDownloadClick = (guide: GuideItem) => {
-    // If a custom direct PDF URL is hosted, we can trigger or open it,
-    // and open the quick viewer modal so the user gets instant offline/printable access
+  const handleOpenViewer = (guide: GuideItem) => {
     setActiveModalGuide(guide);
   };
 
-  const handlePrintDocument = () => {
-    window.print();
+  const handleDownloadDirect = (e: React.MouseEvent, url: string) => {
+    e.stopPropagation();
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -130,188 +133,146 @@ export const GuidesSection: React.FC = () => {
 
         {/* 3 Guide Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          {/* 1. Installation Guide Card */}
-          <div className="bg-white rounded-2xl border border-[#D9D9D9] p-6 sm:p-8 flex flex-col items-center text-center shadow-xs hover:shadow-md transition-all duration-200 group">
-            {/* PDF Sheet Icon */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#0B0B0B] mb-5 group-hover:bg-[#ECECEC] group-hover:scale-105 transition-all">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 sm:w-9 sm:h-9 text-[#0B0B0B]">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <line x1="10" y1="9" x2="8" y2="9" />
-              </svg>
-            </div>
-
-            <h3 className="text-lg sm:text-xl font-black text-[#0B0B0B] mb-1.5">
-              {isEn ? 'Installation Guide' : 'Guía de Instalación'}
-            </h3>
-            <p className="text-xs sm:text-sm font-semibold text-[#4B5563] mb-8">
-              {isEn ? 'Step by Step Guide' : 'Guía Paso a Paso'}
-            </p>
-
-            <div className="w-full mt-auto pt-2">
-              <button
-                onClick={() => handleDownloadClick(GUIDES_DATA[0])}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-98"
+          {GUIDES_DATA.map((guide) => (
+            <div
+              key={guide.id}
+              className="bg-white rounded-2xl border border-[#D9D9D9] p-6 sm:p-8 flex flex-col items-center text-center shadow-xs hover:shadow-md transition-all duration-200 group"
+            >
+              {/* PDF Sheet Icon */}
+              <div
+                onClick={() => handleOpenViewer(guide)}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#0B0B0B] mb-5 group-hover:bg-[#ECECEC] group-hover:scale-105 transition-all cursor-pointer"
+                title={isEn ? 'Click to preview PDF' : 'Clic para visualizar PDF'}
               >
-                <span>{isEn ? 'DOWNLOAD GUIDE' : 'DESCARGAR GUÍA'}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 sm:w-9 sm:h-9 text-[#0B0B0B]">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                   <polyline points="14 2 14 8 20 8" />
-                  <path d="M12 18v-6" />
-                  <path d="m9 15 3 3 3-3" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <line x1="10" y1="9" x2="8" y2="9" />
                 </svg>
-              </button>
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-black text-[#0B0B0B] mb-1.5">
+                {isEn ? guide.titleEn : guide.titleEs}
+              </h3>
+              <p className="text-xs sm:text-sm font-semibold text-[#4B5563] mb-6">
+                {isEn ? guide.subtitleEn : guide.subtitleEs}
+              </p>
+
+              {/* Action Buttons */}
+              <div className="w-full mt-auto pt-2 space-y-2">
+                <button
+                  onClick={() => handleOpenViewer(guide)}
+                  className="w-full py-3 px-4 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-98"
+                >
+                  <Eye size={15} />
+                  <span>{isEn ? 'VIEW PDF' : 'VISUALIZAR PDF'}</span>
+                </button>
+
+                <a
+                  href={guide.pdfRawUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  onClick={(e) => handleDownloadDirect(e, guide.pdfRawUrl)}
+                  className="w-full py-2.5 px-4 rounded-xl bg-[#F5F5F5] hover:bg-[#EBEBEB] text-[#0B0B0B] border border-[#D9D9D9] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <Download size={14} />
+                  <span>{isEn ? 'DOWNLOAD PDF' : 'DESCARGAR PDF'}</span>
+                </a>
+              </div>
             </div>
-          </div>
-
-          {/* 2. Maintenance Guide Card */}
-          <div className="bg-white rounded-2xl border border-[#D9D9D9] p-6 sm:p-8 flex flex-col items-center text-center shadow-xs hover:shadow-md transition-all duration-200 group">
-            {/* PDF Sheet Icon */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#0B0B0B] mb-5 group-hover:bg-[#ECECEC] group-hover:scale-105 transition-all">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 sm:w-9 sm:h-9 text-[#0B0B0B]">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <line x1="10" y1="9" x2="8" y2="9" />
-              </svg>
-            </div>
-
-            <h3 className="text-lg sm:text-xl font-black text-[#0B0B0B] mb-1.5">
-              {isEn ? 'Maintenance Guide' : 'Guía de Mantenimiento'}
-            </h3>
-            <p className="text-xs sm:text-sm font-semibold text-[#4B5563] mb-8">
-              {isEn ? 'Easy Maintenance' : 'Mantenimiento Sencillo'}
-            </p>
-
-            <div className="w-full mt-auto pt-2">
-              <button
-                onClick={() => handleDownloadClick(GUIDES_DATA[1])}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-98"
-              >
-                <span>{isEn ? 'DOWNLOAD GUIDE' : 'DESCARGAR GUÍA'}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <path d="M12 18v-6" />
-                  <path d="m9 15 3 3 3-3" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* 3. Warranty Guide Card */}
-          <div className="bg-white rounded-2xl border border-[#D9D9D9] p-6 sm:p-8 flex flex-col items-center text-center shadow-xs hover:shadow-md transition-all duration-200 group">
-            {/* PDF Sheet Icon */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#0B0B0B] mb-5 group-hover:bg-[#ECECEC] group-hover:scale-105 transition-all">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 sm:w-9 sm:h-9 text-[#0B0B0B]">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
-                <line x1="10" y1="9" x2="8" y2="9" />
-              </svg>
-            </div>
-
-            <h3 className="text-lg sm:text-xl font-black text-[#0B0B0B] mb-1.5">
-              {isEn ? 'Warranty Guide' : 'Guía de Garantía'}
-            </h3>
-            <p className="text-xs sm:text-sm font-semibold text-[#4B5563] mb-8">
-              {isEn ? 'Assured Tranquility' : 'Tranquilidad Asegurada'}
-            </p>
-
-            <div className="w-full mt-auto pt-2">
-              <button
-                onClick={() => handleDownloadClick(GUIDES_DATA[2])}
-                className="w-full py-3.5 px-4 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-98"
-              >
-                <span>{isEn ? 'DOWNLOAD GUIDE' : 'DESCARGAR GUÍA'}</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <path d="M12 18v-6" />
-                  <path d="m9 15 3 3 3-3" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Interactive Guide Reader / Printable PDF Modal */}
+      {/* Embedded PDF Viewer Modal */}
       {activeModalGuide && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-150">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-150"
+          onClick={() => setActiveModalGuide(null)}
+        >
           <div
-            className="bg-white w-full max-w-2xl rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D9D9D9] overflow-hidden flex flex-col max-h-[95vh]"
+            className="bg-white w-full max-w-5xl h-[92vh] rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D9D9D9] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#D9D9D9] bg-[#F5F5F5] shrink-0">
+            {/* Modal Header & Actions Bar */}
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-[#D9D9D9] bg-[#F5F5F5] shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#0B0B0B] text-white flex items-center justify-center font-bold">
                   <FileText size={16} />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#0B0B0B]">
+                  <h3 className="text-sm sm:text-base font-black text-[#0B0B0B] truncate max-w-[200px] sm:max-w-md">
                     {isEn ? activeModalGuide.titleEn : activeModalGuide.titleEs}
                   </h3>
-                  <p className="text-xs text-[#6B6762] font-medium">
-                    {isEn ? activeModalGuide.subtitleEn : activeModalGuide.subtitleEs} • SURFACES 2026
+                  <p className="text-[11px] text-[#6B6762] font-medium hidden sm:block">
+                    {isEn ? activeModalGuide.subtitleEn : activeModalGuide.subtitleEs} • QuickSurfaces PDF Viewer
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setActiveModalGuide(null)}
-                className="p-1.5 sm:p-2 rounded-full hover:bg-black/5 text-[#0B0B0B] transition cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+
+              <div className="flex items-center gap-2">
+                {/* Download Button */}
+                <a
+                  href={activeModalGuide.pdfRawUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                  title={isEn ? 'Download PDF File' : 'Descargar archivo PDF'}
+                >
+                  <Download size={14} />
+                  <span className="hidden sm:inline">{isEn ? 'Download' : 'Descargar'}</span>
+                </a>
+
+                {/* Open in new tab */}
+                <a
+                  href={activeModalGuide.pdfRawUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white hover:bg-[#EBEBEB] text-[#0B0B0B] border border-[#D9D9D9] text-xs font-bold transition cursor-pointer"
+                  title={isEn ? 'Open raw PDF in new tab' : 'Abrir PDF en pestaña nueva'}
+                >
+                  <ExternalLink size={15} />
+                </a>
+
+                {/* Close */}
+                <button
+                  onClick={() => setActiveModalGuide(null)}
+                  className="p-2 rounded-xl hover:bg-black/10 text-[#0B0B0B] transition cursor-pointer ml-1"
+                  title={isEn ? 'Close' : 'Cerrar'}
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
-            {/* Content Body */}
-            <div className="p-5 sm:p-7 overflow-y-auto space-y-6">
-              <div className="p-4 rounded-xl bg-[#FAFAFA] border border-[#E5E5E5]">
-                <p className="text-xs sm:text-sm text-[#0B0B0B] leading-relaxed font-medium">
-                  {isEn ? activeModalGuide.summaryEn : activeModalGuide.summaryEs}
-                </p>
-              </div>
+            {/* Modal Body: Embedded PDF View with fallback */}
+            <div className="flex-1 w-full bg-[#525659] relative overflow-hidden flex flex-col">
+              <iframe
+                src={`https://docs.google.com/gview?url=${encodeURIComponent(activeModalGuide.pdfRawUrl)}&embedded=true`}
+                title={isEn ? activeModalGuide.titleEn : activeModalGuide.titleEs}
+                className="w-full h-full border-0"
+              />
 
-              <div>
-                <h4 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-[#0B0B0B] mb-3 flex items-center gap-2">
-                  <CheckCircle size={16} className="text-[#FF7A00]" />
-                  <span>{isEn ? 'Official Guidelines & Standards' : 'Directrices y Normas Oficiales'}</span>
-                </h4>
-                <ul className="space-y-2.5 text-xs sm:text-sm text-[#374151]">
-                  {(isEn ? activeModalGuide.keyPointsEn : activeModalGuide.keyPointsEs).map((pt, i) => (
-                    <li key={i} className="flex items-start gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#0B0B0B] mt-2 shrink-0"></span>
-                      <span className="leading-relaxed">{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="border-t border-[#E5E5E5] pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="text-[11px] text-[#6B6762]">
-                  {isEn ? 'Need assistance? Contact your technical representative.' : '¿Requiere asistencia técnica? Contacte a su representante.'}
-                </div>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <button
-                    onClick={handlePrintDocument}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#F5F5F5] hover:bg-[#EBEBEB] text-[#0B0B0B] text-xs font-bold border border-[#D9D9D9] transition cursor-pointer"
-                  >
-                    <Printer size={14} />
-                    <span>{isEn ? 'Print / Save PDF' : 'Imprimir / Guardar PDF'}</span>
-                  </button>
-                  <button
-                    onClick={() => setActiveModalGuide(null)}
-                    className="flex-1 sm:flex-none px-5 py-2.5 rounded-full bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold transition cursor-pointer"
-                  >
-                    {isEn ? 'Close' : 'Cerrar'}
-                  </button>
-                </div>
+              {/* Bottom Quick Bar fallback if blocked */}
+              <div className="bg-[#1E1E1E] text-white px-4 py-2.5 flex items-center justify-between text-xs border-t border-white/10 shrink-0">
+                <span className="text-[#BCBAB4] text-[11px] truncate mr-2">
+                  {isEn
+                    ? 'Viewing official PDF document. If preview does not load, use the direct download button.'
+                    : 'Visualizando documento PDF oficial. Si la vista previa no carga, usa el botón de descarga directa.'}
+                </span>
+                <a
+                  href={activeModalGuide.pdfRawUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white hover:underline font-bold shrink-0 flex items-center gap-1"
+                >
+                  <span>{isEn ? 'Direct link' : 'Enlace directo'}</span>
+                  <ExternalLink size={12} />
+                </a>
               </div>
             </div>
           </div>
@@ -320,3 +281,4 @@ export const GuidesSection: React.FC = () => {
     </section>
   );
 };
+

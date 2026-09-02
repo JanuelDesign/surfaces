@@ -61,7 +61,7 @@ export interface Product {
   handSamplesAvailable: boolean;
   featured?: boolean;
   coverImage?: string;
-  technicalDiagram?: 'spc-layers' | 'ultra-layers' | 'laminate-layers' | 'molding-profile' | 'step-profile' | 'wpc-slat';
+  technicalDiagram?: 'spc-layers' | 'ultra-layers' | 'laminate-layers' | 'molding-profile' | 'step-profile' | 'wpc-slat' | 'baseboard-profiles';
   certifications?: string[];
   recommendedUse?: string[];
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Package, Sparkles, ExternalLink, ShieldCheck, Layers } from 'lucide-react';
+import { Eye, Package, Sparkles, ExternalLink, ShieldCheck, Layers, FileText } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 
@@ -7,10 +7,12 @@ interface Props {
   onOpenOrderDrawer: () => void;
   onSelectCategory?: (category: string) => void;
   onOpenVisualizer?: () => void;
+  onNavigateToGuides?: () => void;
 }
 
 export const HeroSection: React.FC<Props> = ({
   onOpenOrderDrawer,
+  onNavigateToGuides,
 }) => {
   const { t, language } = useLanguage();
 
@@ -79,6 +81,20 @@ export const HeroSection: React.FC<Props> = ({
               >
                 <Package size={15} className="text-[#F5F5F5]" />
                 <span>{t('hero.btnSamples')}</span>
+              </button>
+              <button
+                onClick={() => {
+                  if (onNavigateToGuides) {
+                    onNavigateToGuides();
+                  } else {
+                    const el = document.getElementById('guides-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="flex items-center gap-2 px-5 py-3 rounded-full bg-black/50 hover:bg-black text-[#FF7A00] hover:text-[#FFA14A] text-xs font-bold uppercase tracking-wider border border-[#FF7A00]/40 transition cursor-pointer"
+              >
+                <FileText size={15} />
+                <span>{language === 'en' ? 'PDF Guides' : 'Guías PDF'}</span>
               </button>
             </div>
           </div>

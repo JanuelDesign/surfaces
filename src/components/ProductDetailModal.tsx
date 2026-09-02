@@ -224,27 +224,6 @@ export const ProductDetailModal: React.FC<Props> = ({
                   >
                     <Maximize2 size={14} />
                   </button>
-
-                  {/* Active Color Name Tag */}
-                  <div className="absolute bottom-2.5 sm:bottom-3 left-2.5 sm:left-3 text-white z-10 pointer-events-none">
-                    <div className="text-xs sm:text-sm font-extrabold flex flex-wrap items-center gap-1.5 drop-shadow-md">
-                      {product.category === 'spc-vinyl' ? (
-                        <span>{language === 'en' ? 'Color Code:' : 'Código de Color:'} {selectedColor.code || selectedColor.name}</span>
-                      ) : (
-                        <>
-                          <span>{selectedColor.name}</span>
-                          {selectedColor.code && selectedColor.code !== selectedColor.name && (
-                            <span className="text-[10px] bg-black/60 text-[#F5F5F5] px-1.5 py-0.5 rounded font-mono border border-white/20">
-                              {selectedColor.code}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-[#BCBAB4] drop-shadow-xs">
-                      {selectedColor.finish || product.specs.finished || 'Satin'}
-                    </div>
-                  </div>
                 </div>
 
                 {/* Direct Roomvo Official AR Launch link - ONLY FOR SPC VINYL */}

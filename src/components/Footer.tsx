@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Sparkles, Footprints, Layers, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Sparkles, Footprints, Layers, ExternalLink, FileText } from 'lucide-react';
 import { CategoryId } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
@@ -7,10 +7,12 @@ import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 interface Props {
   onSelectCategory: (id: CategoryId) => void;
   onOpenVisualizer?: () => void;
+  onNavigateToGuides?: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
   onSelectCategory,
+  onNavigateToGuides,
 }) => {
   const { language } = useLanguage();
   const isEn = language === 'en';
@@ -152,7 +154,7 @@ export const Footer: React.FC<Props> = ({
           {/* Herramientas Interactivas */}
           <div className="space-y-3">
             <h4 className="text-white font-bold text-xs uppercase tracking-wider">
-              {isEn ? 'Interactive Tools' : 'Herramientas Interactivas'}
+              {isEn ? 'Interactive Tools & Downloads' : 'Herramientas y Descargas'}
             </h4>
             <a
               href={ROOMVO_VISUALIZER_URL}
@@ -164,6 +166,21 @@ export const Footer: React.FC<Props> = ({
               <span>{isEn ? '3D Room Visualizer' : 'Visualizador 3D Roomvo'}</span>
               <ExternalLink size={12} className="opacity-70" />
             </a>
+
+            <button
+              onClick={() => {
+                if (onNavigateToGuides) {
+                  onNavigateToGuides();
+                } else {
+                  const el = document.getElementById('guides-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="w-full py-2.5 px-4 rounded-full bg-[#1A1A1A] hover:bg-[#262626] text-[#FF7A00] hover:text-[#FFA14A] text-xs font-bold uppercase tracking-wider transition flex items-center justify-center gap-2 border border-[#FF7A00]/30 cursor-pointer"
+            >
+              <FileText size={14} />
+              <span>{isEn ? 'Installation & Care Guides' : 'Guías de Instalación & Uso'}</span>
+            </button>
 
             <div className="pt-2 text-[11px] text-[#6B6762]">
               © 2026 SURFACES. {isEn ? 'Interactive Architectural Catalog.' : 'Catálogo Arquitectónico Interactivo.'}

@@ -254,7 +254,7 @@ export const ProductCard: React.FC<Props> = ({
                   {t('productCard.clickToSelect')}
                 </span>
               </div>
-              <div className="flex flex-wrap items-center gap-1.5 max-h-20 overflow-y-auto pr-1">
+              <div className="flex flex-wrap items-center gap-2 py-1">
                 {product.colors.map((col, idx) => {
                   const isCurrent = selectedColorIndex === idx;
                   const keyId = col.id || col.code || `${product.id}-${col.name}-${idx}`;
@@ -263,15 +263,15 @@ export const ProductCard: React.FC<Props> = ({
                       key={keyId}
                       onClick={() => setSelectedColorIndex(idx)}
                       title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
-                      className={`w-6 h-6 rounded-full border-2 transition-all relative cursor-pointer ${
+                      className={`w-6 h-6 rounded-md border transition-all relative cursor-pointer flex items-center justify-center shrink-0 ${
                         isCurrent
-                          ? 'border-[#0B0B0B] scale-110 shadow-xs ring-2 ring-[#BCBAB4]'
-                          : 'border-[#D9D9D9] hover:border-[#6B6762]'
+                          ? 'border-[#0B0B0B] ring-2 ring-[#0B0B0B]/30 shadow-xs scale-105'
+                          : 'border-[#D9D9D9] hover:border-[#6B6762] hover:scale-105'
                       }`}
                       style={{ backgroundColor: col.hexColor }}
                     >
                       {isCurrent && (
-                        <span className="absolute inset-0 flex items-center justify-center text-[#0B0B0B] text-[9px] font-black">
+                        <span className="text-[#0B0B0B] text-[10px] font-black drop-shadow-xs">
                           ✓
                         </span>
                       )}

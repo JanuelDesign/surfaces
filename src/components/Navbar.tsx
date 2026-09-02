@@ -19,6 +19,7 @@ interface Props {
   sampleItemCount: number;
   onOpenOrderDrawer: () => void;
   onOpenDatabaseSync?: () => void;
+  onNavigateToGuides?: () => void;
 }
 
 export const Navbar: React.FC<Props> = ({
@@ -30,6 +31,7 @@ export const Navbar: React.FC<Props> = ({
   orderItemCount,
   sampleItemCount,
   onOpenOrderDrawer,
+  onNavigateToGuides,
 }) => {
   const { language, setLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -145,6 +147,19 @@ export const Navbar: React.FC<Props> = ({
             }`}
           >
             {language === 'en' ? 'Baseboards' : 'Zócalos'}
+          </button>
+          <button
+            onClick={() => {
+              if (onNavigateToGuides) {
+                onNavigateToGuides();
+              } else {
+                const el = document.getElementById('guides-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+            className="text-xs font-bold uppercase tracking-wider pb-1 text-[#FF7A00] hover:text-[#E06900] transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <span>{language === 'en' ? 'PDF Guides' : 'Guías PDF'}</span>
           </button>
         </nav>
 
@@ -295,6 +310,22 @@ export const Navbar: React.FC<Props> = ({
             >
               <span>{language === 'en' ? 'Baseboards & Trims (Rodapiés)' : 'Zócalos y Rodapiés (Baseboards)'}</span>
               <ChevronRight size={14} className={selectedCategory === 'baseboards' ? 'text-white' : 'text-[#6B6762]'} />
+            </button>
+
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (onNavigateToGuides) {
+                  onNavigateToGuides();
+                } else {
+                  const el = document.getElementById('guides-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="w-full flex items-center justify-between p-3 rounded-xl text-left text-xs font-bold bg-[#FFF7ED] text-[#EA580C] border border-[#FFEDD5] hover:bg-[#FFEDD5] transition cursor-pointer min-h-[44px]"
+            >
+              <span>{language === 'en' ? '📄 Installation & Maintenance PDF Guides' : '📄 Guías PDF de Instalación y Mantenimiento'}</span>
+              <ChevronRight size={14} className="text-[#EA580C]" />
             </button>
           </div>
         </div>

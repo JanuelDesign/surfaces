@@ -1,14 +1,19 @@
 import React from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { BaseboardsProfileDiagram } from './BaseboardsProfileDiagram';
 
 interface Props {
-  type?: 'spc-layers' | 'ultra-layers' | 'laminate-layers' | 'molding-profile' | 'step-profile' | 'wpc-slat';
+  type?: 'spc-layers' | 'ultra-layers' | 'laminate-layers' | 'molding-profile' | 'step-profile' | 'wpc-slat' | 'baseboard-profiles';
   className?: string;
 }
 
 export const TechnicalLayerDiagram: React.FC<Props> = ({ type = 'spc-layers', className = '' }) => {
   const { language } = useLanguage();
   const isEn = language === 'en';
+
+  if (type === 'baseboard-profiles') {
+    return <BaseboardsProfileDiagram className={className} />;
+  }
 
   if (type === 'step-profile') {
     return (
@@ -65,161 +70,171 @@ export const TechnicalLayerDiagram: React.FC<Props> = ({ type = 'spc-layers', cl
 
   if (type === 'molding-profile') {
     return (
-      <div className={`bg-[#F5F5F5] border border-[#D9D9D9] rounded-2xl p-4 sm:p-5 ${className}`}>
-        <div className="flex items-center justify-between mb-4">
+      <div className={`space-y-4 ${className}`}>
+        <div className="flex items-center justify-between">
           <h4 className="text-xs font-bold text-[#0B0B0B] uppercase tracking-wider flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#0B0B0B]"></span>
-            {isEn ? 'Molding & Transition Profiles (5 Architectural Models)' : 'Perfiles Técnicos de Molduras & Transiciones (5 Modelos)'}
+            {isEn ? 'Molding & Transition Profiles' : 'Perfiles de Molduras & Transiciones'}
           </h4>
-          <span className="text-[10px] font-bold text-[#6B6762] bg-white px-2.5 py-0.5 rounded-full border border-[#D9D9D9]">
-            {isEn ? 'Engineering Cross-Sections' : 'Cortes Transversales'}
+          <span className="text-[10px] font-bold text-[#6B6762] bg-[#F5F5F5] px-2.5 py-0.5 rounded-full border border-[#D9D9D9]">
+            {isEn ? 'Cross-Sections & Dimensions' : 'Cortes Transversales & Medidas'}
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {/* Model 1: T-Molding */}
-          <div className="bg-white p-3.5 rounded-xl border border-[#D9D9D9] text-center flex flex-col justify-between">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          {/* Card 1: T-MOLDING */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9D9D9] flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
             <div>
-              <div className="text-xs font-extrabold text-[#0B0B0B]">T-Molding</div>
-              <div className="text-[10px] font-mono text-[#6B6762]">1-3/4" x 3/8" (45 mm x 10 mm)</div>
-              <div className="mt-1 inline-block text-[9px] font-bold text-white bg-[#0B0B0B] px-2 py-0.5 rounded-full">
-                {isEn ? 'Same Level' : 'Mismo Nivel'}
-              </div>
+              <h5 className="text-base sm:text-lg font-black text-[#0B0B0B] tracking-tight mb-2">
+                T-MOLDING
+              </h5>
+              <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed mb-6">
+                {isEn
+                  ? 'Perfect for joining different floors, ensuring a smooth transition.'
+                  : 'Perfecto para unir diferentes pisos, asegurando una transición suave.'}
+              </p>
             </div>
-            <div className="my-2 py-1">
-              <svg viewBox="0 0 180 80" className="w-full h-16 mx-auto">
-                {/* T-shape profile */}
+            <div className="pt-2 pb-1 flex items-center justify-center">
+              <svg viewBox="0 0 260 100" className="w-full h-24 max-w-[240px]">
+                {/* Dimension Top 1-3/4" */}
+                <path d="M 52 20 L 52 12 L 210 12 L 210 20" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="131" y="9" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#0B0B0B">1-3/4″</text>
+                {/* Dimension Left 1/4" */}
+                <path d="M 28 36 L 20 36 L 20 54 L 28 54" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="14" y="49" textAnchor="end" fontSize="11" fontWeight="bold" fill="#0B0B0B">1/4″</text>
+                {/* Profile shape */}
                 <path
-                  d="M 15 30 Q 90 22 165 30 L 165 37 Q 105 35 102 40 L 102 68 L 78 68 L 78 40 Q 75 35 15 37 Z"
-                  fill="#0B0B0B"
-                  fillOpacity="0.08"
+                  d="M 52 38 Q 131 34 210 38 Q 216 39 216 45 Q 216 52 210 53 L 148 53 L 148 68 Q 148 72 144 72 L 140 72 L 138 76 L 124 76 L 122 72 L 118 72 Q 114 72 114 68 L 114 53 L 52 53 Q 46 52 46 45 Q 46 39 52 38 Z"
+                  fill="#C4C8CC"
                   stroke="#0B0B0B"
                   strokeWidth="1.8"
                 />
-                {/* Dimensions */}
-                <line x1="15" y1="18" x2="165" y2="18" stroke="#6B6762" strokeWidth="1" strokeDasharray="2 2" />
-                <text x="90" y="14" fontSize="8" fill="#6B6762" textAnchor="middle" fontWeight="bold">1-3/4"</text>
-                <text x="170" y="48" fontSize="8" fill="#6B6762">3/8"</text>
               </svg>
             </div>
-            <p className="text-[10px] text-[#6B6762] leading-tight">
-              {isEn ? 'Seamless bridge between two level surfaces of identical height.' : 'Puente de unión entre dos pisos de la misma altura.'}
-            </p>
           </div>
 
-          {/* Model 2: Reducer */}
-          <div className="bg-white p-3.5 rounded-xl border border-[#D9D9D9] text-center flex flex-col justify-between">
+          {/* Card 2: REDUCER */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9D9D9] flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
             <div>
-              <div className="text-xs font-extrabold text-[#0B0B0B]">Reducer</div>
-              <div className="text-[10px] font-mono text-[#6B6762]">1-3/4" x 3/8" (45 mm x 10 mm)</div>
-              <div className="mt-1 inline-block text-[9px] font-bold text-white bg-[#0B0B0B] px-2 py-0.5 rounded-full">
-                {isEn ? 'Floor Transition' : 'Desnivel de Piso'}
-              </div>
+              <h5 className="text-base sm:text-lg font-black text-[#0B0B0B] tracking-tight mb-2">
+                REDUCER
+              </h5>
+              <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed mb-6">
+                {isEn
+                  ? 'Facilitates the transition between floors of different heights, practical and versatile.'
+                  : 'Facilita la transición entre pisos de diferentes alturas, práctico y versátil.'}
+              </p>
             </div>
-            <div className="my-2 py-1">
-              <svg viewBox="0 0 180 80" className="w-full h-16 mx-auto">
-                {/* Reducer ramp shape */}
+            <div className="pt-2 pb-1 flex items-center justify-center">
+              <svg viewBox="0 0 260 100" className="w-full h-24 max-w-[240px]">
+                {/* Dimension Top 1-3/4" */}
+                <path d="M 68 16 L 68 8 L 222 8 L 222 16" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="145" y="5" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#0B0B0B">1-3/4″</text>
+                {/* Dimension Left 3/8" */}
+                <path d="M 60 26 L 52 26 L 52 74 L 60 74" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="46" y="54" textAnchor="end" fontSize="11" fontWeight="bold" fill="#0B0B0B">3/8″</text>
+                {/* Reducer profile shape */}
                 <path
-                  d="M 20 28 L 95 28 Q 155 35 165 65 L 145 65 Q 135 48 95 44 L 95 68 L 72 68 L 72 44 L 20 44 Z"
-                  fill="#0B0B0B"
-                  fillOpacity="0.08"
+                  d="M 120 26 Q 180 26 220 32 Q 225 34 223 42 Q 220 46 212 46 L 180 46 L 180 60 L 170 60 L 166 54 L 148 54 L 144 60 L 138 60 L 138 44 L 122 44 L 122 74 L 70 74 Q 76 48 120 26 Z"
+                  fill="#C4C8CC"
                   stroke="#0B0B0B"
                   strokeWidth="1.8"
                 />
-                <line x1="20" y1="18" x2="165" y2="18" stroke="#6B6762" strokeWidth="1" strokeDasharray="2 2" />
-                <text x="92" y="14" fontSize="8" fill="#6B6762" textAnchor="middle" fontWeight="bold">1-3/4"</text>
-                <text x="170" y="48" fontSize="8" fill="#6B6762">3/8"</text>
               </svg>
             </div>
-            <p className="text-[10px] text-[#6B6762] leading-tight">
-              {isEn ? 'Smooth transition ramp to lower floors, tile, or bare concrete.' : 'Rampa suave para desniveles hacia baldosas o concreto.'}
-            </p>
           </div>
 
-          {/* Model 3: End Cap */}
-          <div className="bg-white p-3.5 rounded-xl border border-[#D9D9D9] text-center flex flex-col justify-between">
+          {/* Card 3: END CAP */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9D9D9] flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
             <div>
-              <div className="text-xs font-extrabold text-[#0B0B0B]">End Cap</div>
-              <div className="text-[10px] font-mono text-[#6B6762]">1-3/8" x 3/8" (35 mm x 10 mm)</div>
-              <div className="mt-1 inline-block text-[9px] font-bold text-white bg-[#0B0B0B] px-2 py-0.5 rounded-full">
-                {isEn ? 'Perimeter Finish' : 'Remate Perimetral'}
-              </div>
+              <h5 className="text-base sm:text-lg font-black text-[#0B0B0B] tracking-tight mb-2">
+                END CAP
+              </h5>
+              <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed mb-6">
+                {isEn
+                  ? 'Completes your floor installation with an elegant and professional touch.'
+                  : 'Completa la instalación de tu piso con un toque elegante y profesional.'}
+              </p>
             </div>
-            <div className="my-2 py-1">
-              <svg viewBox="0 0 180 80" className="w-full h-16 mx-auto">
-                {/* End cap / Square threshold shape */}
+            <div className="pt-2 pb-1 flex items-center justify-center">
+              <svg viewBox="0 0 260 100" className="w-full h-24 max-w-[240px]">
+                {/* Dimension Top 1-3/8" */}
+                <path d="M 60 16 L 60 8 L 215 8 L 215 16" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="137" y="5" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#0B0B0B">1-3/8″</text>
+                {/* Dimension Left 3/8" */}
+                <path d="M 50 26 L 42 26 L 42 74 L 50 74" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="36" y="54" textAnchor="end" fontSize="11" fontWeight="bold" fill="#0B0B0B">3/8″</text>
+                {/* End Cap profile shape */}
                 <path
-                  d="M 25 28 L 130 28 L 130 68 L 105 68 L 105 44 L 25 44 Z"
-                  fill="#0B0B0B"
-                  fillOpacity="0.08"
+                  d="M 68 26 Q 160 26 210 32 Q 215 34 213 42 Q 210 46 202 46 L 172 46 L 168 60 L 158 60 L 154 54 L 136 54 L 132 60 L 124 60 L 124 44 L 102 44 L 102 74 L 64 74 Q 58 74 58 68 L 58 34 Q 58 26 68 26 Z"
+                  fill="#C4C8CC"
                   stroke="#0B0B0B"
                   strokeWidth="1.8"
                 />
-                <line x1="25" y1="18" x2="130" y2="18" stroke="#6B6762" strokeWidth="1" strokeDasharray="2 2" />
-                <text x="78" y="14" fontSize="8" fill="#6B6762" textAnchor="middle" fontWeight="bold">1-3/8"</text>
-                <text x="140" y="48" fontSize="8" fill="#6B6762">3/8"</text>
               </svg>
             </div>
-            <p className="text-[10px] text-[#6B6762] leading-tight">
-              {isEn ? 'Square clean stop against sliding doors, carpets, or thresholds.' : 'Remate recto para puertas corredizas, ventanales o alfombras.'}
-            </p>
           </div>
 
-          {/* Model 4: Quarter Round */}
-          <div className="bg-white p-3.5 rounded-xl border border-[#D9D9D9] text-center flex flex-col justify-between">
+          {/* Card 4: CM T-MOLDING */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9D9D9] flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
             <div>
-              <div className="text-xs font-extrabold text-[#0B0B0B]">Quarter Round</div>
-              <div className="text-[10px] font-mono text-[#6B6762]">5/8" x 5/8" (16 mm x 16 mm)</div>
-              <div className="mt-1 inline-block text-[9px] font-bold text-white bg-[#0B0B0B] px-2 py-0.5 rounded-full">
-                {isEn ? 'Wall & Baseboard Shoe' : 'Remate de Zócalo'}
-              </div>
+              <h5 className="text-base sm:text-lg font-black text-[#0B0B0B] tracking-tight mb-2">
+                CM T-MOLDING
+              </h5>
+              <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed mb-6">
+                {isEn
+                  ? 'Provides a stylish transition between floors, both functional and aesthetically pleasing.'
+                  : 'Ofrece una elegante transición entre pisos, tanto funcional como estéticamente atractiva.'}
+              </p>
             </div>
-            <div className="my-2 py-1">
-              <svg viewBox="0 0 180 80" className="w-full h-16 mx-auto">
-                {/* Quarter round curve shape */}
+            <div className="pt-2 pb-1 flex items-center justify-center">
+              <svg viewBox="0 0 260 100" className="w-full h-24 max-w-[240px]">
+                {/* Dimension Top 1-3/4" */}
+                <path d="M 52 18 L 52 10 L 210 10 L 210 18" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="131" y="7" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#0B0B0B">1-3/4″</text>
+                {/* Dimension Left 3/8" */}
+                <path d="M 38 42 L 30 42 L 30 76 L 38 76" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="24" y="63" textAnchor="end" fontSize="11" fontWeight="bold" fill="#0B0B0B">3/8″</text>
+                {/* CM T-Molding curved arch shape */}
                 <path
-                  d="M 60 20 L 60 70 L 110 70 Q 110 20 60 20 Z"
-                  fill="#0B0B0B"
-                  fillOpacity="0.08"
+                  d="M 52 74 Q 56 46 95 44 L 165 44 Q 204 46 208 74 Q 210 78 204 80 L 194 80 Q 188 78 184 68 Q 170 60 130 60 Q 90 60 76 68 Q 72 78 66 80 L 56 80 Q 50 78 52 74 Z"
+                  fill="#C4C8CC"
                   stroke="#0B0B0B"
                   strokeWidth="1.8"
                 />
-                <text x="85" y="14" fontSize="8" fill="#6B6762" textAnchor="middle" fontWeight="bold">5/8"</text>
-                <text x="120" y="50" fontSize="8" fill="#6B6762">5/8"</text>
               </svg>
             </div>
-            <p className="text-[10px] text-[#6B6762] leading-tight">
-              {isEn ? 'Covers expansion gaps against walls and existing baseboards.' : 'Cubre el espacio de dilatación contra zócalos o muros.'}
-            </p>
           </div>
 
-          {/* Model 5: Flush Stair Nose */}
-          <div className="bg-white p-3.5 rounded-xl border border-[#D9D9D9] text-center flex flex-col justify-between sm:col-span-2 lg:col-span-2">
+          {/* Card 5: CM REDUCER */}
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-[#D9D9D9] flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
             <div>
-              <div className="text-xs font-extrabold text-[#0B0B0B]">Stair Nose (Flush / Overlap)</div>
-              <div className="text-[10px] font-mono text-[#6B6762]">2-3/4" x 1-1/8" (70 mm x 28 mm)</div>
-              <div className="mt-1 inline-block text-[9px] font-bold text-white bg-[#0B0B0B] px-2 py-0.5 rounded-full">
-                {isEn ? 'Step Edge Transition' : 'Borde de Grada'}
-              </div>
+              <h5 className="text-base sm:text-lg font-black text-[#0B0B0B] tracking-tight mb-2">
+                CM REDUCER
+              </h5>
+              <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed mb-6">
+                {isEn
+                  ? 'Ideal for leveling uneven surfaces, combining utility and design.'
+                  : 'Ideal para nivelar superficies irregulares, combinando utilidad y diseño.'}
+              </p>
             </div>
-            <div className="my-2 py-1">
-              <svg viewBox="0 0 240 80" className="w-full h-16 mx-auto">
-                {/* Stair nose bullnose curve */}
+            <div className="pt-2 pb-1 flex items-center justify-center">
+              <svg viewBox="0 0 260 100" className="w-full h-24 max-w-[240px]">
+                {/* Dimension Top 1-3/4" */}
+                <path d="M 52 14 L 52 6 L 210 6 L 210 14" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="131" y="3" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#0B0B0B">1-3/4″</text>
+                {/* Dimension Left 3/8" */}
+                <path d="M 38 28 L 30 28 L 30 80 L 38 80" stroke="#0B0B0B" strokeWidth="1.2" fill="none" />
+                <text x="24" y="58" textAnchor="end" fontSize="11" fontWeight="bold" fill="#0B0B0B">3/8″</text>
+                {/* CM Reducer curved ramp shape */}
                 <path
-                  d="M 30 35 L 170 35 Q 195 35 195 50 Q 195 68 180 68 L 165 68 L 165 52 L 30 52 Z"
-                  fill="#0B0B0B"
-                  fillOpacity="0.08"
+                  d="M 54 78 Q 50 36 90 32 L 180 32 Q 206 34 210 56 Q 210 64 200 64 L 192 64 Q 186 52 170 50 L 92 50 Q 72 52 72 78 Q 72 84 62 84 L 56 84 Q 52 84 54 78 Z"
+                  fill="#C4C8CC"
                   stroke="#0B0B0B"
                   strokeWidth="1.8"
                 />
-                <line x1="30" y1="22" x2="195" y2="22" stroke="#6B6762" strokeWidth="1" strokeDasharray="2 2" />
-                <text x="110" y="16" fontSize="8" fill="#6B6762" textAnchor="middle" fontWeight="bold">2-3/4"</text>
-                <text x="205" y="52" fontSize="8" fill="#6B6762">1-1/8"</text>
               </svg>
             </div>
-            <p className="text-[10px] text-[#6B6762] leading-tight">
-              {isEn ? 'Architectural nosing providing clean transition at step landings and top staircase treads.' : 'Remate frontal para descanso de escaleras y peldaños superiores.'}
-            </p>
           </div>
         </div>
       </div>

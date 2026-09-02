@@ -25,6 +25,7 @@ import { GoogleSheetsModal } from './components/GoogleSheetsModal';
 import { OrderDrawer } from './components/OrderDrawer';
 import { PrintQuoteSheet } from './components/PrintQuoteSheet';
 import { SearchModal } from './components/SearchModal';
+import { GuidesSection } from './components/GuidesSection';
 import { Footer } from './components/Footer';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
 import { getLocalizedProducts, getLocalizedCategories } from './i18n/localizedData';
@@ -375,6 +376,13 @@ function AppContent() {
 
   const currentCategoryObj = categories.find((c) => c.id === selectedCategory);
 
+  const scrollToGuides = () => {
+    const el = document.getElementById('guides-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-[#0B0B0B] flex flex-col selection:bg-[#D9D9D9] selection:text-[#0B0B0B]">
       {/* Toast Notification */}
@@ -405,6 +413,7 @@ function AppContent() {
         sampleItemCount={sampleCount}
         onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
         onOpenDatabaseSync={() => setIsGoogleSheetsOpen(true)}
+        onNavigateToGuides={scrollToGuides}
       />
 
       {/* Hero Banner only when on all categories and no search */}
@@ -413,6 +422,7 @@ function AppContent() {
           onSelectCategory={(cat) => setSelectedCategory(cat)}
           onOpenVisualizer={openRoomVisualizer}
           onOpenOrderDrawer={() => setIsOrderDrawerOpen(true)}
+          onNavigateToGuides={scrollToGuides}
         />
       )}
 
@@ -599,10 +609,14 @@ function AppContent() {
       {/* Printable Sheet for printing / PDF */}
       <PrintQuoteSheet orderItems={orderItems} clientInfo={clientInfo} />
 
+      {/* PDF Guides & Manuals Section */}
+      <GuidesSection />
+
       {/* Footer */}
       <Footer
         onSelectCategory={setSelectedCategory}
         onOpenVisualizer={openRoomVisualizer}
+        onNavigateToGuides={scrollToGuides}
       />
     </div>
   );

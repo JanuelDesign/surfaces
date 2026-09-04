@@ -28,6 +28,7 @@ import { SearchModal } from './components/SearchModal';
 import { GuidesSection } from './components/GuidesSection';
 import { Footer } from './components/Footer';
 import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
+import { roundNumber } from './utils/numberUtils';
 import { getLocalizedProducts, getLocalizedCategories } from './i18n/localizedData';
 import { getStoredProducts, syncFromGoogleSheets } from './utils/googleSheetsSync';
 import { openRoomVisualizer } from './utils/constants';
@@ -210,8 +211,8 @@ function AppContent() {
       quantity: 1,
       unit: 'sample_unit',
       notes: isEn
-        ? `Physical hand sample (${color.code || 'standard'})`
-        : `Muestra física de mano (${color.code || 'estándar'})`,
+        ? `Physical hand sample (${color.code || color.name || 'standard'})`
+        : `Muestra física de mano (${color.code || color.name || 'estándar'})`,
     };
 
     setOrderItems((prev) => [newItem, ...prev]);
@@ -222,14 +223,15 @@ function AppContent() {
     );
   };
 
-  // Add Product / Boxes to Quote Order
+  // Add Product / Boxes / Pieces to Quote Order
   const handleAddToOrder = (
     product: Product,
     color: ProductColor,
     quantity: number = 10,
     unit: 'boxes' | 'sqft' | 'linear_ft' | 'pieces' = 'boxes',
     estimatedSqft: number = 0,
-    notes?: string
+    notes?: string,
+    estimatedLinearFt?: number
   ) => {
     const existingIndex = orderItems.findIndex(
       (item) =>
@@ -239,6 +241,23 @@ function AppContent() {
         item.unit === unit
     );
 
+    const unitDisplay =
+      unit === 'pieces'
+        ? isEn
+          ? quantity === 1
+            ? 'piece'
+            : 'pieces'
+          : quantity === 1
+          ? 'pieza'
+          : 'piezas'
+        : isEn
+        ? quantity === 1
+          ? 'box'
+          : 'boxes'
+        : quantity === 1
+        ? 'caja'
+        : 'cajas';
+
     if (existingIndex >= 0) {
       setOrderItems((prev) =>
         prev.map((item, idx) =>
@@ -246,15 +265,16 @@ function AppContent() {
             ? {
                 ...item,
                 quantity: item.quantity + quantity,
-                estimatedSqft: (item.estimatedSqft || 0) + estimatedSqft,
+                estimatedSqft: roundNumber((item.estimatedSqft || 0) + estimatedSqft, 2),
+                estimatedLinearFt: roundNumber((item.estimatedLinearFt || 0) + (estimatedLinearFt || 0), 2),
               }
             : item
         )
       );
       showToast(
         isEn
-          ? `Added +${quantity} ${unit} of ${color.name} to your quote`
-          : `Se agregaron +${quantity} ${unit} de ${color.name} a tu pedido`
+          ? `Added +${quantity} ${unitDisplay} of ${color.name} to your quote`
+          : `Se agregaron +${quantity} ${unitDisplay} de ${color.name} a tu cotización`
       );
     } else {
       const newItem: OrderItem = {
@@ -267,14 +287,17 @@ function AppContent() {
         itemType: 'order',
         quantity,
         unit,
-        estimatedSqft,
-        notes: notes || `${isEn ? 'Color' : 'Color'}: ${color.name} (${color.code || ''})`,
+        estimatedSqft: roundNumber(estimatedSqft, 2),
+        estimatedLinearFt: estimatedLinearFt ? roundNumber(estimatedLinearFt, 2) : undefined,
+        notes: notes || (color.code && color.code !== color.name
+          ? `${isEn ? 'Color' : 'Color'}: ${color.name} (${color.code})`
+          : `${isEn ? 'Color' : 'Color'}: ${color.name || color.code}`),
       };
       setOrderItems((prev) => [newItem, ...prev]);
       showToast(
         isEn
-          ? `✓ ${quantity} ${unit} of ${color.name} added to quote`
-          : `✓ ${quantity} ${unit} de ${color.name} agregados al pedido`
+          ? `✓ ${quantity} ${unitDisplay} of ${color.name} added to quote`
+          : `✓ ${quantity} ${unitDisplay} de ${color.name} agregados a la cotización`
       );
     }
   };
@@ -287,9 +310,16 @@ function AppContent() {
           if (item.id === id) {
             const newQty = item.quantity + delta;
             if (newQty <= 0) return null;
+            const ratio = newQty / item.quantity;
             return {
               ...item,
               quantity: newQty,
+              estimatedSqft: item.estimatedSqft
+                ? roundNumber(item.estimatedSqft * ratio, 2)
+                : undefined,
+              estimatedLinearFt: item.estimatedLinearFt
+                ? roundNumber(item.estimatedLinearFt * ratio, 2)
+                : undefined,
             };
           }
           return item;
@@ -305,15 +335,8 @@ function AppContent() {
 
   // Clear All
   const handleClearOrder = () => {
-    if (
-      window.confirm(
-        isEn
-          ? 'Are you sure you want to clear your entire order list and samples?'
-          : '¿Está seguro de vaciar toda su lista de pedido y muestras?'
-      )
-    ) {
-      setOrderItems([]);
-    }
+    setOrderItems([]);
+    showToast(isEn ? 'Your quote list has been cleared' : 'Tu lista de cotización ha sido vaciada');
   };
 
   // Filtered Products Calculation
@@ -329,8 +352,8 @@ function AppContent() {
         return false;
       }
 
-      // Wear Layer filter
-      if (selectedWearFilter !== 'all') {
+      // Wear Layer filter (only applies to SPC Vinyl category)
+      if (selectedCategory === 'spc-vinyl' && selectedWearFilter !== 'all') {
         const wear = product.specs.wearLayer || '';
         if (!wear.toLowerCase().includes(selectedWearFilter.toLowerCase())) {
           return false;
@@ -388,13 +411,22 @@ function AppContent() {
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-16 right-4 z-50 bg-[#0B0B0B] text-white px-4 py-3 rounded-2xl shadow-xl border border-[#262626] flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[#0B0B0B] text-xs font-bold shrink-0">
+          <div className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-500/60 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">
             ✓
           </div>
           <span className="text-xs font-semibold text-white">{toastMessage}</span>
           <button
+            onClick={() => {
+              setToastMessage(null);
+              setIsOrderDrawerOpen(true);
+            }}
+            className="px-3 py-1 rounded-lg bg-white text-[#0B0B0B] text-xs font-extrabold hover:bg-[#E5E5E5] transition cursor-pointer whitespace-nowrap shrink-0"
+          >
+            {isEn ? 'View Quote →' : 'Ir a Cotización →'}
+          </button>
+          <button
             onClick={() => setToastMessage(null)}
-            className="text-white/70 hover:text-white ml-1 cursor-pointer"
+            className="text-white/70 hover:text-white ml-0.5 cursor-pointer"
             aria-label="Dismiss toast"
           >
             <X size={14} />
@@ -435,25 +467,18 @@ function AppContent() {
       />
 
       {/* Main Catalog Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 sm:pb-36 space-y-6">
         {/* Active Category Header & Secondary Quick Filters */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-[#D9D9D9] shadow-xs">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold text-white tracking-widest bg-[#0B0B0B] px-2.5 py-0.5 rounded-full">
-                {selectedCategory === 'all'
-                  ? (isEn ? 'Official 2026 Catalog' : 'Catálogo Oficial 2026')
-                  : currentCategoryObj?.name}
-              </span>
-              <span className="text-xs text-[#6B6762]">•</span>
-              <span className="text-xs text-[#6B6762] font-medium">
-                {filteredProducts.length}{' '}
-                {isEn
-                  ? `${filteredProducts.length === 1 ? 'collection' : 'collections'} available`
-                  : `${filteredProducts.length === 1 ? 'colección disponible' : 'colecciones disponibles'}`}
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#0B0B0B] mt-1.5 tracking-tight">
+            {selectedCategory !== 'all' && currentCategoryObj?.name && (
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] uppercase font-bold text-white tracking-widest bg-[#0B0B0B] px-2.5 py-0.5 rounded-full">
+                  {currentCategoryObj.name}
+                </span>
+              </div>
+            )}
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#0B0B0B] mt-0.5 tracking-tight">
               {selectedCategory === 'all'
                 ? (isEn ? 'SPC Rigid Core Flooring & Architectural Trims' : 'Pisos SPC Rigid Core & Molduras de Precisión')
                 : currentCategoryObj?.tagline}
@@ -465,32 +490,21 @@ function AppContent() {
             )}
           </div>
 
-          {/* Quick Filter Controls */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Filter by Wear layer */}
-            <select
-              value={selectedWearFilter}
-              onChange={(e) => setSelectedWearFilter(e.target.value)}
-              className="bg-[#F5F5F5] hover:bg-white text-[#0B0B0B] text-xs font-semibold px-3 py-1.5 rounded-full border border-[#D9D9D9] focus:border-[#0B0B0B] outline-none cursor-pointer transition"
-            >
-              <option value="all">{isEn ? 'All Wear Layers' : 'Todas las Capas de Uso'}</option>
-              <option value="20 Mil">20 Mil ({isEn ? 'Residential / Commercial' : 'Residencial/Comercial'})</option>
-              <option value="22 Mil">22 Mil ({isEn ? 'Heavy Commercial' : 'Ultra Resistente'})</option>
-            </select>
-
-            {/* Hand samples available filter */}
-            <button
-              onClick={() => setOnlySamplesAvailable(!onlySamplesAvailable)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border transition-all cursor-pointer ${
-                onlySamplesAvailable
-                  ? 'bg-[#0B0B0B] border-[#0B0B0B] text-white shadow-xs'
-                  : 'bg-white border-[#D9D9D9] text-[#0B0B0B] hover:bg-[#F5F5F5]'
-              }`}
-            >
-              <Sparkles size={13} className={onlySamplesAvailable ? 'text-white' : 'text-[#6B6762]'} />
-              <span>{isEn ? 'Samples Only' : 'Solo Muestras'}</span>
-            </button>
-          </div>
+          {/* Quick Filter Controls - Only shown for SPC Vinyl category */}
+          {selectedCategory === 'spc-vinyl' && (
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Filter by Wear layer */}
+              <select
+                value={selectedWearFilter}
+                onChange={(e) => setSelectedWearFilter(e.target.value)}
+                className="bg-[#F5F5F5] hover:bg-white text-[#0B0B0B] text-xs font-semibold px-3 py-1.5 rounded-full border border-[#D9D9D9] focus:border-[#0B0B0B] outline-none cursor-pointer transition"
+              >
+                <option value="all">{isEn ? 'All Wear Layers' : 'Todas las Capas de Uso'}</option>
+                <option value="20 Mil">20 Mil ({isEn ? 'Residential / Commercial' : 'Residencial/Comercial'})</option>
+                <option value="22 Mil">22 Mil ({isEn ? 'Heavy Commercial' : 'Ultra Resistente'})</option>
+              </select>
+            </div>
+          )}
         </div>
 
         {/* Product Cards Grid */}
@@ -541,16 +555,22 @@ function AppContent() {
         )}
       </main>
 
-      {/* Floating Bottom Action Bar */}
+      {/* Floating Bottom Action Bar - Compact pill with z-30 that never obscures cards */}
       {(orderCount > 0 || sampleCount > 0) && (
-        <div className="fixed bottom-5 right-5 z-40 animate-in slide-in-from-bottom duration-200">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-30 pointer-events-none animate-in slide-in-from-bottom duration-200">
           <button
             onClick={() => setIsOrderDrawerOpen(true)}
-            className="flex items-center gap-3 px-5 py-3.5 rounded-full bg-[#0B0B0B] hover:bg-[#262626] text-white font-extrabold text-xs sm:text-sm shadow-2xl border border-white/20 transition transform hover:scale-105 cursor-pointer"
+            className="pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 sm:px-5 sm:py-3 rounded-full bg-[#0B0B0B]/95 hover:bg-[#0B0B0B] text-white font-bold text-xs sm:text-sm shadow-xl shadow-black/25 border border-white/20 backdrop-blur-md transition-all transform hover:scale-105 active:scale-95 cursor-pointer min-h-[44px]"
+            aria-label={isEn ? `View Quote (${orderCount + sampleCount} items)` : `Ver Pedido (${orderCount + sampleCount} productos)`}
           >
-            <ShoppingCart size={18} className="text-white" />
-            <span>{isEn ? 'View Quote' : 'Ver Pedido'} ({orderCount + sampleCount})</span>
-            <span className="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+            <div className="relative flex items-center justify-center">
+              <ShoppingCart size={16} className="text-white shrink-0" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400"></span>
+            </div>
+            <span>{isEn ? 'View Quote' : 'Ver Pedido'}</span>
+            <span className="px-2 py-0.5 rounded-full bg-white text-[#0B0B0B] text-[11px] font-black">
+              {orderCount + sampleCount}
+            </span>
           </button>
         </div>
       )}
@@ -563,9 +583,10 @@ function AppContent() {
           onClose={() => setActiveDetailProduct(null)}
           onOpenVisualizer={() => openRoomVisualizer()}
           onAddSample={(prod, color) => handleAddSample(prod, color)}
-          onAddToOrder={(prod, color, qty, unit, sqft, notes) => {
-            handleAddToOrder(prod, color, qty, unit, sqft, notes);
+          onAddToOrder={(prod, color, qty, unit, sqft, notes, estimatedLinearFt) => {
+            handleAddToOrder(prod, color, qty, unit, sqft, notes, estimatedLinearFt);
           }}
+          onOpenQuoteDrawer={() => setIsOrderDrawerOpen(true)}
         />
       )}
 
@@ -590,6 +611,7 @@ function AppContent() {
         onClearOrder={handleClearOrder}
         clientInfo={clientInfo}
         onUpdateClientInfo={(updates) => setClientInfo((prev) => ({ ...prev, ...updates }))}
+        onSelectCategory={(cat) => setSelectedCategory(cat)}
       />
 
       {/* Search Modal */}
@@ -607,7 +629,9 @@ function AppContent() {
       />
 
       {/* Printable Sheet for printing / PDF */}
-      <PrintQuoteSheet orderItems={orderItems} clientInfo={clientInfo} />
+      <div id="print-quote-container">
+        <PrintQuoteSheet orderItems={orderItems} clientInfo={clientInfo} />
+      </div>
 
       {/* PDF Guides & Manuals Section */}
       <GuidesSection />

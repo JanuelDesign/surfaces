@@ -77,6 +77,7 @@ export interface OrderItem {
   quantity: number;
   unit: 'boxes' | 'sqft' | 'linear_ft' | 'pieces' | 'sample_unit';
   estimatedSqft?: number;
+  estimatedLinearFt?: number;
   notes?: string;
 }
 
@@ -88,7 +89,7 @@ export interface ClientOrderInfo {
   projectCity: string;
   projectAddress: string;
   needsInstallation: boolean;
-  projectType: 'Residencial' | 'Comercial' | 'Contratista' | 'Diseño / Arquitectura' | 'Otro';
+  projectType: string;
   deliveryTimeframe: string;
   additionalNotes: string;
 }

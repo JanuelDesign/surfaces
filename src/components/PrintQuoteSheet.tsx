@@ -1,6 +1,7 @@
 import React from 'react';
 import { OrderItem, ClientOrderInfo } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+import { roundNumber, formatCleanNumber } from '../utils/numberUtils';
 
 interface Props {
   orderItems: OrderItem[];
@@ -18,7 +19,12 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
     .filter((i) => i.unit === 'boxes')
     .reduce((sum, i) => sum + i.quantity, 0);
 
-  const totalEstSqft = quoteItems.reduce((sum, i) => sum + (i.estimatedSqft || 0), 0);
+  const totalPieces = quoteItems
+    .filter((i) => i.unit === 'pieces')
+    .reduce((sum, i) => sum + i.quantity, 0);
+
+  const totalEstSqft = roundNumber(quoteItems.reduce((sum, i) => sum + (i.estimatedSqft || 0), 0), 2);
+  const totalEstLinearFt = roundNumber(quoteItems.reduce((sum, i) => sum + (i.estimatedLinearFt || 0), 0), 2);
 
   const today = new Date().toLocaleDateString(isEn ? 'en-US' : 'es-ES', {
     year: 'numeric',
@@ -27,28 +33,37 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
   });
 
   return (
-    <div className="hidden print:block print-only p-8 bg-white text-[#0B0B0B] font-sans max-w-4xl mx-auto">
+    <div
+      id="print-quote-document"
+      className="hidden print:block p-8 bg-white text-[#0B0B0B] font-sans max-w-4xl mx-auto"
+    >
       {/* Header */}
       <div className="flex justify-between items-start border-b-2 border-[#0B0B0B] pb-4 mb-6">
         <div>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-[#0B0B0B] flex items-center justify-center text-white font-black text-base">
-              S
+              QS
             </div>
-            <h1 className="text-2xl font-black tracking-wider text-[#0B0B0B]">
-              SURFACES
-            </h1>
+            <div>
+              <h1 className="text-xl font-black tracking-wider text-[#0B0B0B]">
+                QUICK SURFACES
+              </h1>
+              <p className="text-[10px] uppercase font-bold text-[#6B6762] tracking-wider">
+                {isEn ? 'Architectural Surfaces & Flooring' : 'Pisos y Superficies Arquitectónicas'}
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-[#6B6762] mt-1">
-            {isEn ? 'Official Architectural Product Catalog 2026' : 'Catálogo Arquitectónico Oficial 2026'}
-          </p>
+          <div className="text-[11px] text-[#6B6762] mt-2 space-y-0.5">
+            <div><strong>{isEn ? 'Direct Line / WhatsApp:' : 'Línea Directa / WhatsApp:'}</strong> (786) 658-3677</div>
+            <div><strong>{isEn ? 'Sales & Orders:' : 'Ventas y Pedidos:'}</strong> marketingquicksurfaces@gmail.com</div>
+          </div>
         </div>
         <div className="text-right">
           <span className="inline-block bg-[#0B0B0B] text-white text-xs font-bold px-3 py-1 rounded">
-            {isEn ? 'OFFICIAL QUOTE / ORDER REQUEST' : 'SOLICITUD DE PEDIDO / COTIZACIÓN'}
+            {isEn ? 'OFFICIAL QUOTE / ORDER REQUEST' : 'SOLICITUD DE COTIZACIÓN / PEDIDO'}
           </span>
-          <div className="text-xs text-[#6B6762] mt-1">{isEn ? 'Date' : 'Fecha'}: {today}</div>
-          <div className="text-xs text-[#6B6762]">Ref: SRF-2026-{Math.floor(Math.random() * 90000 + 10000)}</div>
+          <div className="text-xs text-[#6B6762] mt-1.5">{isEn ? 'Date' : 'Fecha'}: {today}</div>
+          <div className="text-xs font-mono text-[#6B6762]">Ref: QS-2026-{Math.floor(Math.random() * 90000 + 10000)}</div>
         </div>
       </div>
 
@@ -88,7 +103,7 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
                 <th className="p-2 text-left">{isEn ? 'Color / Code' : 'Color / Código'}</th>
                 <th className="p-2 text-center">{isEn ? 'Quantity' : 'Cantidad'}</th>
                 <th className="p-2 text-center">{isEn ? 'Unit' : 'Unidad'}</th>
-                <th className="p-2 text-center">{isEn ? 'Est. Sqft' : 'Sqft Estimado'}</th>
+                <th className="p-2 text-center">{isEn ? 'Coverage' : 'Cobertura'}</th>
                 <th className="p-2 text-left">{isEn ? 'Notes / Area' : 'Notas / Área'}</th>
               </tr>
             </thead>
@@ -98,11 +113,24 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
                   <td className="p-2 text-[#6B6762]">{idx + 1}</td>
                   <td className="p-2 font-bold text-[#0B0B0B]">{item.collectionName}</td>
                   <td className="p-2">
-                    {item.selectedColor.name} {item.selectedColor.code ? `(${item.selectedColor.code})` : ''}
+                    {item.selectedColor.name}{' '}
+                    {item.selectedColor.code && item.selectedColor.code !== item.selectedColor.name ? (
+                      <span className="text-[#6B6762]">({item.selectedColor.code})</span>
+                    ) : null}
                   </td>
                   <td className="p-2 text-center font-bold text-[#0B0B0B]">{item.quantity}</td>
-                  <td className="p-2 text-center capitalize">{item.unit}</td>
-                  <td className="p-2 text-center">{item.estimatedSqft ? `${item.estimatedSqft} sqft` : '-'}</td>
+                  <td className="p-2 text-center capitalize">
+                    {item.unit === 'pieces'
+                      ? item.quantity === 1 ? (isEn ? 'piece' : 'pieza') : (isEn ? 'pieces' : 'piezas')
+                      : item.quantity === 1 ? (isEn ? 'box' : 'caja') : (isEn ? 'boxes' : 'cajas')}
+                  </td>
+                  <td className="p-2 text-center font-medium">
+                    {item.estimatedLinearFt
+                      ? `≈ ${formatCleanNumber(item.estimatedLinearFt)} lin. ft`
+                      : item.estimatedSqft
+                      ? `≈ ${formatCleanNumber(item.estimatedSqft)} sqft`
+                      : '-'}
+                  </td>
                   <td className="p-2 text-[#6B6762] text-[11px]">{item.notes || '-'}</td>
                 </tr>
               ))}
@@ -110,9 +138,19 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
           </table>
 
           {/* Totals bar */}
-          <div className="flex justify-end gap-6 bg-[#F5F5F5] p-3 rounded-b-lg border-x border-b border-[#D9D9D9] text-xs font-bold">
-            <div>{isEn ? 'Total Boxes:' : 'Total Cajas:'} <span className="text-[#0B0B0B]">{totalBoxes} {isEn ? 'Boxes' : 'Cajas'}</span></div>
-            <div>{isEn ? 'Total Est. Area:' : 'Total Área Estimada:'} <span className="text-[#0B0B0B]">{totalEstSqft.toFixed(2)} Sq. Ft.</span></div>
+          <div className="flex flex-wrap justify-end gap-6 bg-[#F5F5F5] p-3 rounded-b-lg border-x border-b border-[#D9D9D9] text-xs font-bold">
+            {totalBoxes > 0 && (
+              <div>{isEn ? 'Total Boxes:' : 'Total Cajas:'} <span className="text-[#0B0B0B]">{totalBoxes} {isEn ? 'Boxes' : 'Cajas'}</span></div>
+            )}
+            {totalPieces > 0 && (
+              <div>{isEn ? 'Total Pieces:' : 'Total Piezas:'} <span className="text-[#0B0B0B]">{totalPieces} {isEn ? 'Pieces' : 'Piezas'}</span></div>
+            )}
+            {totalEstSqft > 0 && (
+              <div>{isEn ? 'Total Est. Area:' : 'Total Área Estimada:'} <span className="text-[#0B0B0B]">{formatCleanNumber(totalEstSqft)} Sq. Ft.</span></div>
+            )}
+            {totalEstLinearFt > 0 && (
+              <div>{isEn ? 'Total Linear Run:' : 'Total Metraje Lineal:'} <span className="text-[#0B0B0B]">{formatCleanNumber(totalEstLinearFt)} Linear Ft.</span></div>
+            )}
           </div>
         </div>
       )}
@@ -138,7 +176,10 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
                   <td className="p-2 text-[#6B6762]">{idx + 1}</td>
                   <td className="p-2 font-bold">{item.collectionName}</td>
                   <td className="p-2">
-                    {item.selectedColor.name} {item.selectedColor.code ? `(${item.selectedColor.code})` : ''}
+                    {item.selectedColor.name}{' '}
+                    {item.selectedColor.code && item.selectedColor.code !== item.selectedColor.name ? (
+                      <span className="text-[#6B6762]">({item.selectedColor.code})</span>
+                    ) : null}
                   </td>
                   <td className="p-2 text-center font-semibold text-[#0B0B0B]">
                     {isEn ? 'Physical Hand Sample' : 'Muestra Física de Mano'}
@@ -162,11 +203,11 @@ export const PrintQuoteSheet: React.FC<Props> = ({ orderItems, clientInfo }) => 
       <div className="border-t border-[#D9D9D9] pt-4 flex justify-between items-center text-[10px] text-[#6B6762]">
         <div>
           {isEn
-            ? 'Official document generated via SURFACES Interactive Portal. Commercial warranty up to 30 years.'
-            : 'Documento oficial generado por SURFACES Interactivo. Garantía de fábrica hasta 30 años.'}
+            ? 'Official quotation generated via QUICK SURFACES. Factory warranty up to 30 years.'
+            : 'Documento oficial generado por QUICK SURFACES. Garantía de fábrica hasta 30 años.'}
         </div>
         <div className="text-right font-medium">
-          SURFACES Architectural Specifications
+          QUICK SURFACES Architectural Specifications • (786) 658-3677
         </div>
       </div>
     </div>

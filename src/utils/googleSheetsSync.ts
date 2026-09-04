@@ -146,6 +146,26 @@ function normalizeProductCategoryAndId(rawId: string, rawCategory: string, rawNa
   return { normalizedId: 'spc-pulse-select', normalizedCategory: category, isAccessory: false };
 }
 
+function getSpcColorCodeWithPrefix(rawCode: string, productId: string, productName: string): string {
+  if (!rawCode) return '';
+  const trimmed = rawCode.trim();
+  const upper = trimmed.toUpperCase();
+  if (upper.startsWith('Q-') || upper.startsWith('PX-') || upper.startsWith('S-')) {
+    return upper;
+  }
+  const cleanNumber = trimmed.replace(/^(cod\.?|código|color|code)\s*/i, '').trim();
+  const searchStr = `${productId} ${productName}`.toLowerCase();
+  let prefix = '';
+  if (searchStr.includes('6.0') || searchStr.includes('shield') || searchStr.includes('px')) {
+    prefix = 'PX-';
+  } else if (searchStr.includes('8.0') || searchStr.includes('xl-pulse') || searchStr.includes('s-')) {
+    prefix = 'S-';
+  } else if (searchStr.includes('5.5') || searchStr.includes('pulse-select') || searchStr.includes('q-')) {
+    prefix = 'Q-';
+  }
+  return prefix ? `${prefix}${cleanNumber}` : trimmed;
+}
+
 // Parse CSV text from Google Sheet into Product objects
 export function parseGoogleSheetCSV(csvText: string, existingProductsMap?: Map<string, Product>): Product[] {
   const lines = csvText.split(/\r?\n/).filter((l) => l.trim().length > 0);
@@ -272,17 +292,28 @@ export function parseGoogleSheetCSV(csvText: string, existingProductsMap?: Map<s
     } else {
       // SPC Flooring row handling
       if (singleColorCode) {
-        const existingColorIdx = prodEntry.colors.findIndex(
-          (c) => c.code.toLowerCase() === singleColorCode.toLowerCase() || c.name.toLowerCase() === singleColorCode.toLowerCase()
-        );
+        const fullColorCode = getSpcColorCodeWithPrefix(singleColorCode, prodEntry.id, prodEntry.name);
+        const targetClean = fullColorCode.toLowerCase().replace(/^(q-|px-|s-)/, '');
+        const existingColorIdx = prodEntry.colors.findIndex((c) => {
+          const cCode = (c.code || '').toLowerCase();
+          const cName = (c.name || '').toLowerCase();
+          return (
+            cCode === fullColorCode.toLowerCase() ||
+            cName === fullColorCode.toLowerCase() ||
+            cCode.replace(/^(q-|px-|s-)/, '') === targetClean ||
+            cName.replace(/^(q-|px-|s-)/, '') === targetClean
+          );
+        });
         if (existingColorIdx >= 0) {
+          prodEntry.colors[existingColorIdx].name = fullColorCode;
+          prodEntry.colors[existingColorIdx].code = fullColorCode;
           if (singlePlankPhoto) prodEntry.colors[existingColorIdx].image = singlePlankPhoto;
           if (singleRoomPhoto) prodEntry.colors[existingColorIdx].roomImage = singleRoomPhoto;
           if (singleColorHex) prodEntry.colors[existingColorIdx].hexColor = singleColorHex.startsWith('#') ? singleColorHex : `#${singleColorHex}`;
         } else {
           prodEntry.colors.push({
-            name: singleColorCode,
-            code: singleColorCode,
+            name: fullColorCode,
+            code: fullColorCode,
             hexColor: singleColorHex.startsWith('#') ? singleColorHex : `#${singleColorHex}`,
             patternType: 'wood',
             image: singlePlankPhoto || undefined,
@@ -309,8 +340,9 @@ export function parseGoogleSheetCSV(csvText: string, existingProductsMap?: Map<s
           const colorItems: ProductColor[] = colorsRaw.split(',').map((cStr, cIdx) => {
             const parts = cStr.split(':').map((s) => s.trim());
             const rawNameC = parts[0] || `0${cIdx + 1}`;
+            const fullColorCode = getSpcColorCodeWithPrefix(rawNameC, prodEntry.id, prodEntry.name);
             let cHex = '#c7b28e';
-            let cPhoto: string | undefined = colorImagesMap[rawNameC] || (singlePlankPhoto || undefined);
+            let cPhoto: string | undefined = colorImagesMap[rawNameC] || colorImagesMap[fullColorCode] || (singlePlankPhoto || undefined);
             let cRoomPhoto: string | undefined = singleRoomPhoto || undefined;
 
             if (parts[1]) {
@@ -326,8 +358,8 @@ export function parseGoogleSheetCSV(csvText: string, existingProductsMap?: Map<s
             }
 
             return {
-              name: rawNameC,
-              code: rawNameC,
+              name: fullColorCode,
+              code: fullColorCode,
               hexColor: cHex,
               patternType: 'wood',
               image: cPhoto,

@@ -76,7 +76,7 @@ export const FullViewModal: React.FC<Props> = ({
                 <span className="truncate">{product.name}</span>
                 <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-white text-[#0B0B0B] font-bold shrink-0">
                   {product.category === 'spc-vinyl'
-                    ? `Cod. ${activeColor.code || activeColor.name}`
+                    ? `${activeColor.code || activeColor.name}`
                     : `${activeColor.name} ${activeColor.code && activeColor.code !== activeColor.name ? `(${activeColor.code})` : ''}`}
                 </span>
               </h2>

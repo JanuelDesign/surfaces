@@ -77,6 +77,7 @@ export interface Translations {
     cadBlueprint: string;
     viewInVisualizer: string;
     addToQuote: string;
+    viewProduct: string;
   };
   detailModal: {
     specifications: string;
@@ -374,7 +375,8 @@ export const translations: Record<Language, Translations> = {
       clickToSelect: 'Click to select',
       cadBlueprint: 'CAD PROFILE BLUEPRINT',
       viewInVisualizer: 'Test in 3D Visualizer',
-      addToQuote: 'Add to Quote',
+      addToQuote: 'View Product',
+      viewProduct: 'View Product',
     },
     detailModal: {
       specifications: 'Technical Specifications',
@@ -686,7 +688,8 @@ export const translations: Record<Language, Translations> = {
       clickToSelect: 'Toca para cambiar',
       cadBlueprint: 'PLANO DE PERFIL CAD',
       viewInVisualizer: 'Probar en Visualizador 3D',
-      addToQuote: 'Cotizar',
+      addToQuote: 'Ver Producto',
+      viewProduct: 'Ver Producto',
     },
     detailModal: {
       specifications: 'Especificaciones Técnicas',

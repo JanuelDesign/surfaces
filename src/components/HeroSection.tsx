@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Package, Sparkles, ExternalLink, ShieldCheck, Layers, FileText } from 'lucide-react';
+import { Eye, Sparkles, ExternalLink, ShieldCheck, Layers, FileText } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ROOMVO_VISUALIZER_URL } from '../utils/constants';
 
@@ -31,12 +31,6 @@ export const HeroSection: React.FC<Props> = ({
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-[#0B0B0B] text-[11px] font-bold uppercase tracking-wider shadow-xs">
                 <Sparkles size={13} />
                 <span>{t('hero.badgeOfficial')}</span>
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#262626] text-[#F5F5F5] text-[11px] font-medium border border-[#383838]">
-                {t('hero.badgeWaterproof')}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#262626] text-[#BCBAB4] text-[11px] font-medium border border-[#383838]">
-                {language === 'en' ? 'SPC Flooring (5.5mm • 6.0mm • 8.0mm)' : 'Pisos SPC (5.5mm • 6.0mm • 8.0mm)'}
               </span>
             </div>
 
@@ -75,13 +69,6 @@ export const HeroSection: React.FC<Props> = ({
                 <span>{t('hero.btnVisualizer')}</span>
                 <ExternalLink size={12} className="opacity-70" />
               </a>
-              <button
-                onClick={onOpenOrderDrawer}
-                className="flex items-center gap-2 px-5 py-3 rounded-full bg-[#262626] hover:bg-[#333333] text-white text-xs font-semibold uppercase tracking-wider border border-[#444444] transition cursor-pointer"
-              >
-                <Package size={15} className="text-[#F5F5F5]" />
-                <span>{t('hero.btnSamples')}</span>
-              </button>
               <button
                 onClick={() => {
                   if (onNavigateToGuides) {

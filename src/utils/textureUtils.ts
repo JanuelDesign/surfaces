@@ -1,4 +1,5 @@
 import { ProductColor } from '../types';
+import { roundNumber } from './numberUtils';
 
 export function getSwatchBackground(color: ProductColor): { background: string; backgroundSize?: string } {
   const c1 = color.hexColor || '#d6c09b';
@@ -46,9 +47,9 @@ export function getSwatchBackground(color: ProductColor): { background: string; 
 
 export function formatSqftBoxes(sqftNumber: number, sqftPerBox: number | string | undefined): { boxes: number; exactSqft: number } {
   if (!sqftPerBox || typeof sqftPerBox !== 'number') {
-    return { boxes: Math.ceil(sqftNumber / 20), exactSqft: sqftNumber };
+    return { boxes: Math.ceil(sqftNumber / 20), exactSqft: roundNumber(sqftNumber, 2) };
   }
   const boxes = Math.ceil(sqftNumber / sqftPerBox);
-  const exactSqft = Math.round(boxes * sqftPerBox * 100) / 100;
+  const exactSqft = roundNumber(boxes * sqftPerBox, 2);
   return { boxes, exactSqft };
 }

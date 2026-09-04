@@ -36,13 +36,49 @@
 }
 
 @media print {
-  body {
-    background: white;
+  @page {
+    size: letter portrait;
+    margin: 12mm 15mm;
   }
-  .no-print {
+
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide app shell, navbar, hero, catalog, drawer modal overlay, footer, and buttons */
+  #root > *:not(#print-quote-container),
+  .no-print,
+  div[class*="fixed"],
+  header,
+  nav,
+  footer,
+  aside,
+  button {
     display: none !important;
   }
-  .print-only {
+
+  #print-quote-container {
     display: block !important;
+    position: static !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  #print-quote-document {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
   }
 }

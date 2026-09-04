@@ -37,6 +37,19 @@ export const Navbar: React.FC<Props> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const totalItems = orderItemCount + sampleItemCount;
 
+  // Visual cart bump animation when item is added
+  const [isCartBumping, setIsCartBumping] = React.useState(false);
+  const prevTotalRef = React.useRef(totalItems);
+
+  React.useEffect(() => {
+    if (totalItems > prevTotalRef.current) {
+      setIsCartBumping(true);
+      const timer = setTimeout(() => setIsCartBumping(false), 900);
+      return () => clearTimeout(timer);
+    }
+    prevTotalRef.current = totalItems;
+  }, [totalItems]);
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-[#D9D9D9] shadow-xs">
       {/* Micro top utility bar */}
@@ -196,10 +209,19 @@ export const Navbar: React.FC<Props> = ({
           {/* Quote / Cart Button */}
           <button
             onClick={onOpenOrderDrawer}
-            className="bg-[#0B0B0B] hover:bg-[#262626] text-white px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 sm:gap-2 shadow-xs border border-[#0B0B0B] cursor-pointer"
+            className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-bold rounded-full transition-all flex items-center gap-1.5 sm:gap-2 shadow-xs cursor-pointer min-h-[38px] ${
+              isCartBumping
+                ? 'bg-[#0B0B0B] text-white ring-2 ring-emerald-400 scale-105 border border-emerald-400'
+                : 'bg-[#0B0B0B] hover:bg-[#262626] text-white border border-[#0B0B0B]'
+            }`}
             aria-label="Open quote summary"
           >
-            <ShoppingCart size={14} className="text-white shrink-0" />
+            <ShoppingCart
+              size={14}
+              className={`shrink-0 transition-transform ${
+                isCartBumping ? 'animate-bounce text-emerald-400' : 'text-white'
+              }`}
+            />
             <span className="uppercase tracking-wider">
               {totalItems > 0
                 ? `${language === 'en' ? 'Quote' : 'Cotizar'} (${totalItems})`
@@ -263,7 +285,7 @@ export const Navbar: React.FC<Props> = ({
                   : 'bg-white hover:bg-[#F5F5F5] text-[#0B0B0B] border border-[#E5E5E5]'
               }`}
             >
-              <span>SPC Flooring (5.5mm • 6.0mm • 8.0mm)</span>
+              <span>SPC Flooring</span>
               <ChevronRight size={14} className={selectedCategory === 'spc-vinyl' ? 'text-white' : 'text-[#6B6762]'} />
             </button>
 
@@ -308,7 +330,7 @@ export const Navbar: React.FC<Props> = ({
                   : 'bg-white hover:bg-[#F5F5F5] text-[#0B0B0B] border border-[#E5E5E5]'
               }`}
             >
-              <span>{language === 'en' ? 'Baseboards & Trims (Rodapiés)' : 'Zócalos y Rodapiés (Baseboards)'}</span>
+              <span>{language === 'en' ? 'Baseboards & Trims' : 'Zócalos y Rodapiés'}</span>
               <ChevronRight size={14} className={selectedCategory === 'baseboards' ? 'text-white' : 'text-[#6B6762]'} />
             </button>
 

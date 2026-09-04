@@ -262,7 +262,7 @@ export const ProductCard: React.FC<Props> = ({
                     <button
                       key={keyId}
                       onClick={() => setSelectedColorIndex(idx)}
-                      title={`${col.name} ${col.code ? `(${col.code})` : ''}`}
+                      title={col.code && col.code !== col.name ? `${col.name} (${col.code})` : (col.code || col.name)}
                       className={`w-6 h-6 rounded-md border transition-all relative cursor-pointer flex items-center justify-center shrink-0 ${
                         isCurrent
                           ? 'border-[#0B0B0B] ring-2 ring-[#0B0B0B]/30 shadow-xs scale-105'
@@ -298,13 +298,13 @@ export const ProductCard: React.FC<Props> = ({
                 <span>{sampleAddedFeedback ? (language === 'en' ? 'Added' : 'Lista') : t('productCard.orderSample')}</span>
               </button>
 
-              {/* Add to order / quote */}
+              {/* View Product (opens detail modal to select color and quantity) */}
               <button
                 onClick={() => onAddToOrder(product, selectedColor)}
-                className="flex items-center justify-center gap-1 px-3 py-2 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#0B0B0B] hover:bg-[#262626] text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-xs cursor-pointer"
               >
-                <Plus size={14} className="text-white" />
-                <span>{t('productCard.addToQuote')}</span>
+                <Eye size={14} className="text-white" />
+                <span>{t('productCard.viewProduct')}</span>
               </button>
             </div>
 
